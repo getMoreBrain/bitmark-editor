@@ -1,0 +1,59 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# IDE
+.vscode/mise-tools
+
+# Local
+*.local
+*.local.*
+
+# AI
+.playwright-mcp
+
+# MISC
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.playwright-mcp
+bundle-stats.html
+
+
+# DEPENDENCIES
+/node_modules
+
+# BUILD
+/build
+/artifacts
+/dist
+package.tgz
+/packages/*/bundles
+/packages/*/dist/*
+/vscode-case-study
+.history
+tsconfig.tsbuildinfo
+bundle-stats.html
+
+# TESTING
+/coverage
+/test/**/results
+/test/**/coverage
+test.txt
+test-report.html
+junit.xml
+
+
+
+# PACKAGE SPECIFIC
+
+# Spikes
+/packages/**/node_modules
+/packages/**/spikes/**/dist
+/packages/**/spikes/**/results
+/packages/**/examples/**/results
+/packages/**/examples/**/dist
+/packages/**/examples/**/.angular
+/packages/bitmark-editor/docs/api
+# Playwright CLI output (may contain credentials)
+.playwright-cli/
