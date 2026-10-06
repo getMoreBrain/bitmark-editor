@@ -6,7 +6,7 @@ import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import tseslint from 'typescript-eslint';
 
 export default [
-  { ignores: ['dist', 'spikes', 'playground-spike', 'examples', 'node_modules', 'scripts'] },
+  { ignores: ['dist', 'examples', 'node_modules', 'scripts'] },
   eslint.configs.recommended,
   ...tseslint.configs.recommended.map((c) => ({ ...c, files: ['src/**/*.{ts,tsx}'] })),
   {

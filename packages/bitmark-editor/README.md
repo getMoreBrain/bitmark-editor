@@ -258,7 +258,3 @@ bun run lint
 bun run build       # dist/esm, dist/types, dist/bundled
 cd examples && bun install && bun run test   # browser checks (Playwright)
 ```
-
-The playground (at the repo root) uses this package from source through a
-path alias. `spikes/` and `playground-spike/` hold the PLAN-023 Phase 0 and
-Phase 1 browser checks.

@@ -81,11 +81,11 @@ the repo from Bun to npm, and prepares both packages for publishing to npm.
 
 ### Phase 1 — Remove the Playground app
 
-- [ ] Delete the app source, the app shell, `test/fixtures/`, both `bun.lock` files and the root `package-lock.json` (see Inventory)
-- [ ] Delete `packages/bitmark-editor/spikes/` and `packages/bitmark-editor/playground-spike/`
-- [ ] Delete `.awa/plans/PLAN-001` … `PLAN-021`
-- [ ] Drop `spikes` and `playground-spike` from the ignores in `packages/bitmark-editor/eslint.config.mjs`; drop the spike entries from `.gitignore`
-- [ ] Remove the parts of the README "Development" section that mention `spikes/`, `playground-spike/` and the playground path alias (`packages/bitmark-editor/README.md`)
+- [x] Delete the app source, the app shell, `test/fixtures/`, both `bun.lock` files and the root `package-lock.json` (see Inventory). The app's build output (`build/`, `bundle-stats.html`) is gone too
+- [x] Delete `packages/bitmark-editor/spikes/` and `packages/bitmark-editor/playground-spike/`
+- [x] Delete `.awa/plans/PLAN-001` … `PLAN-021`
+- [x] Drop `spikes` and `playground-spike` from the ignores in `packages/bitmark-editor/eslint.config.mjs`; drop the spike entries from `.gitignore`
+- [x] Remove the parts of the README "Development" section that mention `spikes/`, `playground-spike/` and the playground path alias (`packages/bitmark-editor/README.md`)
 
 ### Phase 2 — Root becomes a private workspace
 
