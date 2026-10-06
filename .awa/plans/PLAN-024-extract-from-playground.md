@@ -77,7 +77,7 @@ the repo from Bun to npm, and prepares both packages for publishing to npm.
 
 - [x] Record the Playground commit this copy was taken from, and diff `packages/` against the Playground's current `main`. Port any later package commits before continuing — `bitmark-playground@8297e94` (main, PR #9). `packages/` is identical, so there is nothing to port
 - [x] First commit: the copy as it is, "Import from bitmark-playground@8297e94". Do the extraction on a branch (`chore/extract`) as a PR, so the deletions can be reviewed and the CI changes run before they reach `main`
-- [ ] Freeze package changes in the Playground repo: from now on `@gmb/bitmark-editor` changes land here. Add a note to the Playground's `packages/bitmark-editor/README.md` (Playground follow-up)
+- [x] Freeze package changes in the Playground repo: from now on `@gmb/bitmark-editor` changes land here. Add a note to the Playground's `packages/bitmark-editor/README.md` (Playground follow-up) — branch `chore/bitmark-editor-moved` in `bitmark-playground`, with a "Moved" note in the root README and both package READMEs. Its PR still has to be opened and merged (by hand: no `gh` here)
 
 ### Phase 1 — Remove the Playground app
 
