@@ -1,4 +1,4 @@
-import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
+import { Component, effect, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import type { BitmarkTheme, SessionChange } from '@gmb/bitmark-editor';
@@ -20,21 +20,13 @@ export class App {
   protected readonly theme = signal<Extract<BitmarkTheme, string>>('auto');
 
   constructor() {
-    // The token colours (bm-session's theme) and Monaco's own theme must
-    // match. Monaco's theme is page-wide and this app owns its Monaco, so the
-    // app sets it, following the OS for `auto`. The page follows too.
-    const media = matchMedia('(prefers-color-scheme: dark)');
-    const apply = () => {
+    // bm-session sets the token colours and, with `applyMonacoTheme`
+    // (app.config.ts), Monaco's theme. The page follows too: `auto` lets the
+    // browser pick from the OS setting.
+    effect(() => {
       const theme = this.theme();
-      const dark = theme === 'dark' || (theme === 'auto' && media.matches);
       document.documentElement.style.colorScheme = theme === 'auto' ? 'light dark' : theme;
-      void import('./monaco')
-        .then((m) => m.loadMonaco())
-        .then((monaco) => monaco.editor.setTheme(dark ? 'vs-dark' : 'vs'));
-    };
-    effect(apply);
-    media.addEventListener('change', apply);
-    inject(DestroyRef).onDestroy(() => media.removeEventListener('change', apply));
+    });
   }
 
   protected onChange({ bitmark, source }: SessionChange): void {

@@ -182,5 +182,14 @@ export const BitmarkPane = (props: BitmarkPaneProps): ReactElement => {
     if (scrollSync !== undefined) paneRef.current?.setScrollSync(scrollSync);
   }, [scrollSync]);
 
-  return <div ref={ref} className={className} style={{ height: '100%', ...style }} />;
+  // border-box: a host's border or padding (via className) stays inside the
+  // 100%. With content-box it overflows, and a grid or flex parent sized by
+  // its content grows every frame as the editor follows (PLAN-026).
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={{ height: '100%', boxSizing: 'border-box', ...style }}
+    />
+  );
 };

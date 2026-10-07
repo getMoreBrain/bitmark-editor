@@ -18,10 +18,10 @@ A zoneless Angular 21 app on `@gmb/bitmark-editor-angular`.
   before the first editor. Without it the editors work, but unstyled.
   `"loader": { ".ttf": "file" }` handles the icon font that Monaco's own CSS
   imports.
-- Themes: `bm-session`'s `[theme]` sets the token colours. Monaco's own theme
-  is page-wide and `bm-session` doesn't set it, so the app does
-  (`monaco.editor.setTheme`, following the OS for Auto). See
-  [`src/app/app.ts`](src/app/app.ts).
+- Themes: `bm-session`'s `[theme]` sets the token colours, and
+  `applyMonacoTheme: true` in `provideBitmarkEditor` makes it set Monaco's
+  (page-wide) theme to match, following the OS for Auto. Use it when the app
+  owns its Monaco.
 
 For Angular with zones, Monaco loaded as AMD and an injected parser (as in
 cosmic), see the Angular project's own example in

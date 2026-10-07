@@ -14,6 +14,9 @@ export interface CustomTheme {
 
 export type BitmarkTheme = ThemeBase | 'auto' | CustomTheme;
 
+/** The palette a pane uses without a theme: the token styles' own fallbacks. */
+export const DEFAULT_THEME: ThemeBase = 'dark';
+
 export interface ApplyThemeOptions {
   /** The Monaco to set the theme on, when `applyMonacoTheme` is true. */
   monaco?: Monaco;
