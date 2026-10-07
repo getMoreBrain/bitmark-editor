@@ -85,6 +85,9 @@ test('try it: the full editor completes, converts and shows the other views', as
   // The HTML view, once the full parser is in.
   await page.getByRole('tab', { name: 'html' }).click();
   await expect.poll(() => paneText(page, 'html'), { timeout: 30_000 }).toContain('<bitmark-bit');
+  // Monaco creates some editor features only once the page is idle: give
+  // them time, so a missing service shows up here, not on a reader's page.
+  await page.waitForTimeout(3000);
   expect(errors).toEqual([]);
 });
 
