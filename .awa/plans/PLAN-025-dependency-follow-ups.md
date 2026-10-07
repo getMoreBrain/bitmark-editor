@@ -50,10 +50,13 @@ Findings as of 2026-10-07 (from `npm outdated` and `npm audit`, root and Angular
 
 ### 3. Toolchain majors
 
-- [ ] Vitest 5 with jsdom 30 (core): upgrade together, and run the 181 unit tests. Check `vitest.config.ts` for removed options
-- [ ] esbuild 0.28 (core build, examples): rebuild and compare `dist/` sizes with the README table (`bundled.js` 13 KB, `monaco.js` 808 KB br). Run the examples' browser checks, including the `/esm` consumer check (`examples/esm/check.mjs`)
-- [ ] `@types/node` ^22 in the core, to match `engines.node >=22`
-- [ ] TypeScript 7 (the native compiler): first a trial branch. Check `tsc --noEmit`, the declaration emit (`tsconfig.build.json`, `emitDeclarationOnly`), `typedoc` (which needs a version that supports TS 7) and `typescript-eslint` support. If declarations or typedoc are not ready, stay on 5.9 and write down the blocker here. The Angular wrapper stays on the TypeScript that its Angular version supports
+- [x] Vitest 5 with jsdom 30 (core): upgrade together, and run the 181 unit tests. Check `vitest.config.ts` for removed options — Vitest 5.0.3 and jsdom 30.1.2: all 181 pass, and the config needs no changes
+- [x] esbuild 0.28 (core build, examples): rebuild and compare `dist/` sizes with the README table (`bundled.js` 13 KB, `monaco.js` 808 KB br). Run the examples' browser checks, including the `/esm` consumer check (`examples/esm/check.mjs`) — 0.28.2: `/bundled` sizes are identical and `dist/esm` grew 17 bytes. The `/esm` check and the 10 browser checks pass. The README's size table had drifted before this (`bundled.js` 13 → 15 KB br, Monaco 808 → 809 KB); updated
+- [x] `@types/node` ^22 in the core, to match `engines.node >=22`
+- [x] TypeScript 7 (the native compiler): first a trial branch. Check `tsc --noEmit`, the declaration emit (`tsconfig.build.json`, `emitDeclarationOnly`), `typedoc` (which needs a version that supports TS 7) and `typescript-eslint` support. If declarations or typedoc are not ready, stay on 5.9 and write down the blocker here. The Angular wrapper stays on the TypeScript that its Angular version supports — trial result (2026-10-07):
+  - The code is ready. TypeScript 7.0.2 typechecks the core cleanly, and its declarations differ from 5.9's only in style: single quotes, and `cancel(): void` emitted as `cancel: () => void`.
+  - The tooling blocks it. typescript-eslint 8.71 supports TypeScript below 6.1, and typedoc 0.28 up to 6.0. TypeScript 7's package no longer exports the compiler API both of them use, only `version` and `unstable/*`.
+  - So the core stays on 5.9. Revisit when typescript-eslint and typedoc support 7. TypeScript 6.0 is supported by both, but is only worth taking as a step towards 7
 
 ### 4. Peer ranges that tests don't cover yet
 

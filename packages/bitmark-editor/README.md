@@ -269,8 +269,8 @@ same-origin.
 
 | File | Size | Loaded |
 |---|---|---|
-| `bundled.js` | 13 KB | on import |
-| `monaco.js` + `monaco.css` + `codicon.ttf` | 808 + 22 + 66 KB | when the first session starts |
+| `bundled.js` | 15 KB | on import |
+| `monaco.js` + `monaco.css` + `codicon.ttf` | 809 + 22 + 66 KB | when the first session starts |
 | `editor.worker.js`, `json.worker.js` | 74, 104 KB | on first use |
 | parser + `bitmark-json` wasm (+ `full`) | 13 + 222 (+ 346) KB | when the first session starts |
 
