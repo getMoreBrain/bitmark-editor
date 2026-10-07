@@ -2,6 +2,8 @@
 // (PLAN-022 D12):
 //   http://localhost:4611  the host site (static/, and angular/dist when built)
 //   http://localhost:4612  the "CDN": /pkg/ → the package's dist, /parser/ → the parser package
+// and, for the GitHub Pages site (pages/build.mjs, PLAN-024 Phase 6):
+//   http://localhost:4613/bitmark-editor/  pages/dist, under the sub-path Pages serves it at
 import { createReadStream, existsSync, statSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { createServer } from 'node:http';
@@ -22,6 +24,7 @@ const types = {
   '.ttf': 'font/ttf',
   '.map': 'application/json',
   '.txt': 'text/plain',
+  '.svg': 'image/svg+xml',
 };
 
 const serve = (port, routes, headers) =>
@@ -53,3 +56,4 @@ serve(
   { '/pkg/': path.join(pkg, 'dist/'), '/parser/': `${parser}/` },
   { 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'public, max-age=31536000, immutable' },
 );
+serve(4613, { '/bitmark-editor/': path.join(here, 'pages/dist/') }, { 'Cache-Control': 'no-store' });

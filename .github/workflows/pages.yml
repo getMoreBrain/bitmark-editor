@@ -1,0 +1,53 @@
+# The GitHub Pages site (PLAN-024 Phase 6): the demos, on the CDN parser,
+# and the API reference, from main. Built by
+# packages/bitmark-editor/examples/pages/build.mjs; smoke-checked under the
+# /bitmark-editor/ sub-path before it deploys.
+name: Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One deployment at a time; a queued run waits rather than cancelling a live one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm run docs
+      - run: npm run pages:build
+      - name: Smoke check under the sub-path
+        run: |
+          npx playwright install --with-deps chromium
+          npm run pages:test
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: packages/bitmark-editor/examples/pages/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

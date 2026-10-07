@@ -20,6 +20,8 @@
     "lint:fix": "eslint . --fix --max-warnings 0",
     "docs": "npm run docs -w @gmb/bitmark-editor",
     "examples:test": "npm run test -w bitmark-editor-examples",
+    "pages:build": "npm run pages:build -w bitmark-editor-examples",
+    "pages:test": "npm run test:pages -w bitmark-editor-examples",
     "angular:install": "npm ci --prefix packages/bitmark-editor-angular",
     "angular:build": "cd packages/bitmark-editor-angular && npx ng build bitmark-editor-angular && npx ng build example",
     "angular:test": "cd packages/bitmark-editor-angular/e2e && npx playwright test -c playwright.config.mjs",
