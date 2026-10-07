@@ -84,11 +84,20 @@ if (command === 'check') {
   const urls = readFileSync(at(README), 'utf8').match(CDN) ?? [];
   for (const url of urls)
     if (url !== `@gmb/bitmark-editor@${version}/`) problems.push(`${README} has ${url}`);
-  for (const [name, file] of Object.entries(CHANGELOGS))
+  for (const [name, file] of Object.entries(CHANGELOGS)) {
     if (!section(file)) problems.push(`${file} has no "## ${base}" section (${name})`);
+    // A final release dates its heading; a prerelease may still say "unreleased".
+    const heading = readFileSync(at(file), 'utf8')
+      .split('\n')
+      .find((l) => l === `## ${base}` || l.startsWith(`## ${base} `));
+    if (!version.includes('-') && /unreleased/i.test(heading ?? ''))
+      problems.push(`${file}: "${heading}" still says unreleased; date it for ${version}`);
+  }
   if (problems.length) {
     console.error(`Not ready to release ${version}:\n- ${problems.join('\n- ')}`);
-    console.error(`Run: npm run release:version -- ${version}`);
+    console.error(
+      `\`npm run release:version -- ${version}\` sets the versions, the peer range and the README; date the CHANGELOG headings by hand.`,
+    );
     process.exit(1);
   }
   console.log(version.includes('-') ? 'next' : 'latest');

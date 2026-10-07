@@ -3,7 +3,9 @@
 //   try-it.html   static/index.html, on the CDN parser
 //   inject.html   static/inject.html, on the CDN parser
 //   bundled/      the package's dist/bundled, same origin
-//   api/          the typedoc output (docs/api), when it has been built
+//   api/          the typedoc output (docs/api); a placeholder when it hasn't
+//                 been built, unless --require-api (the Pages deploy) makes
+//                 that an error
 // The static examples are written for serve.mjs's two local origins; each
 // rewrite below must match, so an edit to an example fails here, not live.
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -68,6 +70,14 @@ writeFileSync(
 copyDir(bundled, path.join(out, 'bundled'));
 const api = path.join(pkg, 'docs/api');
 if (existsSync(api)) copyDir(api, path.join(out, 'api'));
-else console.warn('docs/api not built: the site has no API reference (run `npm run docs`)');
+else if (process.argv.includes('--require-api')) throw new Error('docs/api not built: run `npm run docs` first');
+else {
+  console.warn('docs/api not built: the site gets a placeholder API page (run `npm run docs` for the real one)');
+  mkdirSync(path.join(out, 'api'), { recursive: true });
+  writeFileSync(
+    path.join(out, 'api/index.html'),
+    '<!doctype html><meta charset="utf-8"><title>API reference</title><p>Not built here: run <code>npm run docs</code>.</p>\n',
+  );
+}
 
 console.log(`pages/dist: @gmb/bitmark-editor ${version}, parser ${parserVersion}${existsSync(api) ? ', API docs' : ''}`);

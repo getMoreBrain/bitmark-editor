@@ -65,8 +65,8 @@ npm run examples:test     # browser checks, including the Pages site (Playwright
 npm run pack:check        # what npm would publish, publint, attw
 npm run docs              # API reference (typedoc) → packages/bitmark-editor/docs/api
 
-npm run angular:install   # the Angular project (after npm run build)
-npm run angular:build
+npm run angular:install   # the Angular project's own install
+npm run angular:build     # needs the core built (npm run build)
 npm run angular:test      # e2e: Monaco 0.46 AMD, injected parser
 npm run angular:pack:check
 ```

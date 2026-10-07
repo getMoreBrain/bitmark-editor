@@ -11,7 +11,11 @@ falls outside the extraction: ESLint 9 is no longer supported, two audit
 findings, peer ranges that claim versions no test covers, and major versions
 of the toolchain. Each section below is independent and is its own PR. Order
 them by the priorities given. Leave all of them until PLAN-024 is merged, so
-the extraction PR stays reviewable.
+the extraction PR stays reviewable. Once it is merged, Dependabot opens
+individual PRs for the root's major updates (it groups only minor and patch
+ones). Use those PRs for the steps below, adding the config and code changes
+to them, rather than opening parallel branches. The Angular project's majors
+are ignored there and stay planned work (Step 4).
 
 Findings as of 2026-10-07 (from `npm outdated` and `npm audit`, root and Angular):
 
@@ -26,7 +30,7 @@ Findings as of 2026-10-07 (from `npm outdated` and `npm audit`, root and Angular
 | React | 18.3 | 19.3 | core dev copy (peer `>=18`) |
 | TypeScript | 5.9 | 7.0 | core, Angular |
 | Vitest / jsdom / esbuild | 4.1 / 28 / 0.25 | 5.0 / 30 / 0.28 | core, examples, Angular |
-| `@types/node` | 20 | 26 | core (engines moves to `>=22` in PLAN-024 Phase 3) |
+| `@types/node` | 20 | 26 | core (`engines.node` is `>=22` since PLAN-024 Phase 3) |
 
 ## Steps
 
@@ -85,7 +89,7 @@ Findings as of 2026-10-07 (from `npm outdated` and `npm audit`, root and Angular
 
 ## Open Questions
 
-- [ ] Should a scheduled job (like the parser bump) open dependency PRs, or is Dependabot (PLAN-024 Phase 5) enough?
+- [x] Should a scheduled job (like the parser bump) open dependency PRs, or is Dependabot (PLAN-024 Phase 5) enough? — Dependabot is enough. The parser keeps its own workflow, because the default version is also a source constant
 - [ ] TypeScript 7: is it worth taking now, or should we wait for typedoc and Angular to support it?
 
 ## References

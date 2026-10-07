@@ -87,8 +87,11 @@ the `@gmb` npm org with 2FA:
 
    Then set "Publishing access" to require 2FA and disallow tokens. From then
    on, only the workflow can publish.
-5. Tag and push `v0.1.0-rc.0`. The workflow verifies the release, skips both
+5. In a PR, update the "not yet published" notes at the top of the root
+   README and the core README. For example: "0.1.0-rc.0 is on npm under
+   `next`".
+6. Tag and push `v0.1.0-rc.0`. The workflow verifies the release, skips both
    packages (they are already on npm) and creates the GitHub Release.
-6. Install `@gmb/bitmark-editor@next` in an app outside this repo and check
+7. Install `@gmb/bitmark-editor@next` in an app outside this repo and check
    it works there. Then release `0.1.0` with the normal steps. That is the
    first publish through trusted publishing.
