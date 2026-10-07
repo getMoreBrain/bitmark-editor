@@ -26,6 +26,7 @@
       "import": "./dist/esm/react/index.js"
     },
     "./worker": {
+      "types": "./dist/types/engine/worker/engineWorker.d.ts",
       "import": "./dist/esm/engineWorker.js"
     },
     "./bundled": {
@@ -87,8 +88,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/getMoreBrain/bitmark-playground.git",
+    "url": "git+https://github.com/getMoreBrain/bitmark-editor.git",
     "directory": "packages/bitmark-editor"
+  },
+  "bugs": {
+    "url": "https://github.com/getMoreBrain/bitmark-editor/issues"
   },
   "keywords": [
     "bitmark",
@@ -98,8 +102,8 @@
   "publishConfig": {
     "access": "public"
   },
-  "homepage": "https://github.com/getMoreBrain/bitmark-playground/tree/main/packages/bitmark-editor#readme",
+  "homepage": "https://github.com/getMoreBrain/bitmark-editor/tree/main/packages/bitmark-editor#readme",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   }
 }

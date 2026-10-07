@@ -108,13 +108,17 @@ the repo from Bun to npm, and prepares both packages for publishing to npm.
 
 ### Phase 3 — Repository metadata in both packages
 
-- [ ] `packages/bitmark-editor/package.json`: `repository.url` → `git+https://github.com/getMoreBrain/bitmark-editor.git` (keep `directory`); `homepage` → the new repo README or the Pages site; add `bugs`
-- [ ] `packages/bitmark-editor-angular/projects/bitmark-editor-angular/package.json`: the same changes
-- [ ] Check that `license` (ISC, D6) matches the root `LICENSE` and the package `LICENSE` files. Copy the root copyright line (`©2026 Get More Brain Ltd`, already updated) to `packages/bitmark-editor/LICENSE` and the Angular library's `LICENSE`. Add `LICENSE`/`README.md` to the Angular library's ng-packagr `assets` if missing
-- [ ] Check `files`, `exports`, `sideEffects`, `engines` and `peerDependencies`. For each package, `npm pack --dry-run` should list only `dist`, the README, the CHANGELOG and the LICENSE
-- [ ] Core `engines.node`: `>=20` → `>=22` (Node 20 is end of life). It is a browser library, so this only affects tooling that installs it
-- [ ] Run `publint` and `@arethetypeswrong/cli` (`attw --pack --profile esm-only`) on both packages, and fix what they report. Likely findings: `./worker` and `./bundled/*` have no `types`, and the `exports` entries have no `default` condition (some tools ignore `import`)
-- [ ] Angular: confirm the README and LICENSE end up in `dist/bitmark-editor-angular`. ng-packagr's `assets` lists only the CHANGELOG
+- [x] `packages/bitmark-editor/package.json`: `repository.url` → `git+https://github.com/getMoreBrain/bitmark-editor.git` (keep `directory`); `homepage` → the new repo README or the Pages site; add `bugs`
+- [x] `packages/bitmark-editor-angular/projects/bitmark-editor-angular/package.json`: the same changes, plus a `homepage`. Its `repository.directory` now points at the library folder (`…/projects/bitmark-editor-angular`), not the Angular workspace
+- [x] Check that `license` (ISC, D6) matches the root `LICENSE` and the package `LICENSE` files. Copy the root copyright line (`©2026 Get More Brain Ltd`, already updated) to `packages/bitmark-editor/LICENSE` and the Angular library's `LICENSE`. Add `LICENSE`/`README.md` to the Angular library's ng-packagr `assets` if missing — not needed: ng-packagr copies them itself
+- [x] Check `files`, `exports`, `sideEffects`, `engines` and `peerDependencies`. For each package, `npm pack --dry-run` should list only `dist`, the README, the CHANGELOG and the LICENSE — core: 71 files, 1.6 MB packed (5.8 MB unpacked, mostly `/bundled` Monaco); Angular: 7 files
+- [x] Core `engines.node`: `>=20` → `>=22` (Node 20 is end of life). It is a browser library, so this only affects tooling that installs it
+- [x] Run `publint` and `@arethetypeswrong/cli` (`attw --pack --profile esm-only`) on both packages, and fix what they report. Both are clean now (attw exits 0; the remaining rows are the ignored node10 and CommonJS ones). publint found nothing, and the `default` condition was not needed. attw found:
+  - core: the emitted `.d.ts` used extensionless relative imports (`./editor`), so the types broke under `moduleResolution: node16`/`nodenext`. Fixed in the source: all 218 relative specifiers in 54 files now carry `.js` or `/index.js`. The core `tsconfig.json` is now `module`/`moduleResolution: NodeNext`, so `typecheck` rejects a new extensionless import (TS2835). The build (esbuild) is unchanged
+  - core: `./worker` had no `types`. It now points at `dist/types/engine/worker/engineWorker.d.ts`
+  - Angular: clean apart from CommonJS, which doesn't apply
+- [x] Angular: confirm the README and LICENSE end up in `dist/bitmark-editor-angular`. ng-packagr's `assets` lists only the CHANGELOG — both are there
+- [x] Published READMEs: links that leave the package break on npmjs.com. The Angular README linked `../../../bitmark-editor/README.md`; it now links the npm page
 
 ### Phase 4 — Remove Playground wording from the package
 
