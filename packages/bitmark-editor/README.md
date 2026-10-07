@@ -52,6 +52,15 @@ Your Monaco needs the JSON language (for schema validation) and the suggest
 and hover contributions (for completion and hover). If one is missing, that
 feature is off and a warning is logged once; nothing crashes.
 
+Workers are your Monaco's, set up as for any Monaco editor. Give each
+language you include its own worker. That means `json` for the JSON pane, and
+`html` if your Monaco includes the HTML language (the full `monaco-editor`
+import does); otherwise its requests reach the generic editor worker and
+fail. From Monaco 0.57, the worker files are imported by
+`monaco-editor/editor/editor.worker` and
+`monaco-editor/language/json/json.worker`. Earlier versions use
+`monaco-editor/esm/vs/...`.
+
 The bitmark editor:
 - highlights, marks errors, and offers completion and hover from the parser;
 - auto-closes `[` (the language declares the `[` `]` pair, as the VS Code

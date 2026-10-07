@@ -176,27 +176,31 @@ the repo from Bun to npm, and prepares both packages for publishing to npm.
 
 ### Phase 8 — Docs and specs
 
-- [ ] Root `README.md`: rewrite for the repo. It should say what the packages are, link to each package README, the live demo and the API docs, and cover development commands, the release process and the badges (CI, npm)
-- [ ] `.awa/specs/ARCHITECTURE.md` (via awa-architecture):
+- [x] Root `README.md`: rewrite for the repo. It should say what the packages are, link to each package README, the live demo and the API docs, and cover development commands, the release process and the badges (CI, npm) — done. The npm badges show "not found" until the first publish. The release process is in `RELEASING.md`, linked from the README
+- [x] `.awa/specs/ARCHITECTURE.md` (via awa-architecture):
   - purpose: the editor packages, not the Playground
   - remove the UI, State and Build (Vite) layers that belonged to the Playground; Valtio and Theme UI; and the rules that applied only to the app (Valtio setters, `useSnapshot`, build info)
   - technology stack: Bun → npm workspaces (D5); remove Vite
   - directory structure, developer commands (npm), release status ("Alpha — 0.1.0, first publish")
   - change log entry 2.0.0: extracted from the Playground (PLAN-024)
-- [ ] `CLAUDE.md`/`.claude/settings.local.json`: remove any Playground-specific instructions or permissions
-- [ ] Run `awa check --spec-only` after the plan and spec edits
+  - as written, the components are the package's own: Engine, Monaco Services, Session and Panes, Scroll Sync, Themes, Framework Adapters, Bundled Build, and Build, Test and Release. The rules that still apply are kept (runtime-loaded or injected parser, no `init` on an injected one, semantic-token highlighting as decorations, Monaco injected and types-only in the core, a focused editor never overwritten). New rules: explicit `.js` imports under NodeNext, `exports`-only public API checked by publint and attw, one version for both packages, releases only through the tag workflow
+- [x] `CLAUDE.md`/`.claude/settings.local.json`: remove any Playground-specific instructions or permissions — `CLAUDE.md` has none; its one Bun line is awa's generic list of how to run it under each package manager. `.claude/settings.local.json` is personal and gitignored. Its old `bun` allow rules are harmless, and are left to its owner
+- [x] Run `awa check --spec-only` after the plan and spec edits
 
 ### Testing
 
-- [ ] From a clean clone: `npm ci`, then the root scripts `lint`, `typecheck`, `test`, `build` all pass
-- [ ] `examples` browser checks pass (`npm run examples:test`)
-- [ ] Angular: `npm run angular:install`, `ng build bitmark-editor-angular`, `ng build example`, the e2e checks pass
-- [ ] `grep -rI bun` (excluding `node_modules`, `dist`, `.awa/plans`) finds no Bun commands; only words like "bundled" remain
+- [x] From a clean clone: `npm ci`, then the root scripts `lint`, `typecheck`, `test`, `build` all pass — in CI on the extraction PR (a clean checkout)
+- [x] `examples` browser checks pass (`npm run examples:test`)
+- [x] Angular: `npm run angular:install`, `ng build bitmark-editor-angular`, `ng build example`, the e2e checks pass
+- [x] `grep -rI bun` (excluding `node_modules`, `dist`, `.awa/plans`) finds no Bun commands; only words like "bundled" remain — apart from awa's generic package-manager list and `docs/handoff-playground.md`, whose commands are the Playground's own (it still uses Bun)
 - [ ] A rebuilt devcontainer comes up with `npm ci` and no Bun
-- [ ] Consumer smoke test: in a scratch Vite app outside the repo, `npm install ./packages/bitmark-editor/<pack>.tgz` with `monaco-editor` and `@gmb/bitmark-parser`. Then `@gmb/bitmark-editor`, `/elements`, `/react` and `/bundled` all import and render
-- [ ] CI is green on the extraction PR (Phase 0)
-- [ ] Pages smoke check passes against the built site under `/bitmark-editor/`
-- [ ] `awa check` passes
+- [x] Consumer smoke test: in a scratch Vite app outside the repo, `npm install ./packages/bitmark-editor/<pack>.tgz` with `monaco-editor` and `@gmb/bitmark-parser`. Then `@gmb/bitmark-editor`, `/elements`, `/react` and `/bundled` all import and render — done in a scratch Vite 6 app on Monaco 0.57, built from the README's host quick start:
+  - all four entries typecheck under both `bundler` and `NodeNext`, and the app builds;
+  - in a browser, the session gets ready, bitmark is highlighted, the element and the React adapter load, and a typed edit reaches the bitmark, JSON and HTML models, with no errors.
+  The host's worker setup was the only snag (Monaco 0.57's worker subpaths, and the `html` worker that the full Monaco import needs), so the core README now has a paragraph on workers
+- [x] CI is green on the extraction PR (Phase 0)
+- [x] Pages smoke check passes against the built site under `/bitmark-editor/`
+- [x] `awa check` passes
 
 ## Risks
 
@@ -223,14 +227,14 @@ the repo from Bun to npm, and prepares both packages for publishing to npm.
 
 ## Completion Criteria
 
-- [ ] No Playground app files remain. `grep -ri playground` over `packages/`, the root files, `.github/` and `.devcontainer/` finds only deliberate mentions. Kept plans (PLAN-022/023) are historical and are left as they are
-- [ ] The root is a private workspace. A clean clone installs, lints, typechecks, tests and builds with root scripts
-- [ ] CI, Pages and release workflows exist. CI is green. Pages serves the examples and the API docs
-- [ ] `npm pack --dry-run` for both packages contains only the intended files, with the correct repo metadata
+- [x] No Playground app files remain. `grep -ri playground` over `packages/`, the root files, `.github/` and `.devcontainer/` finds only deliberate mentions. Kept plans (PLAN-022/023) are historical and are left as they are
+- [x] The root is a private workspace. A clean clone installs, lints, typechecks, tests and builds with root scripts
+- [ ] CI, Pages and release workflows exist. CI is green. Pages serves the examples and the API docs — all done except that Pages first deploys when this work merges to `main`
+- [x] `npm pack --dry-run` for both packages contains only the intended files, with the correct repo metadata
 - [ ] After the manual bootstrap, a pre-release tag publishes both packages under `next` through trusted publishing, and an outside app consumes them
-- [ ] `publint` and `attw` pass for both packages
+- [x] `publint` and `attw` pass for both packages
 - [ ] `docs/handoff-playground.md` exists, and the Playground follow-up is raised as an issue in `getMoreBrain/bitmark-playground` (D7)
-- [ ] `ARCHITECTURE.md` and the READMEs describe the packages, not the Playground. `awa check` passes
+- [x] `ARCHITECTURE.md` and the READMEs describe the packages, not the Playground. `awa check` passes
 
 ## Open Questions
 
