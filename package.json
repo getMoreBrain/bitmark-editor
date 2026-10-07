@@ -26,7 +26,9 @@
     "angular:build": "cd packages/bitmark-editor-angular && npx ng build bitmark-editor-angular && npx ng build example",
     "angular:test": "cd packages/bitmark-editor-angular/e2e && npx playwright test -c playwright.config.mjs",
     "pack:check": "npm pack --dry-run -w @gmb/bitmark-editor && publint packages/bitmark-editor && attw --pack packages/bitmark-editor --profile esm-only",
-    "angular:pack:check": "cd packages/bitmark-editor-angular/dist/bitmark-editor-angular && npm pack --dry-run && publint . && attw --pack . --profile esm-only"
+    "angular:pack:check": "cd packages/bitmark-editor-angular/dist/bitmark-editor-angular && npm pack --dry-run && publint . && attw --pack . --profile esm-only",
+    "release:version": "node scripts/release.mjs version",
+    "release:check": "node scripts/release.mjs check"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",

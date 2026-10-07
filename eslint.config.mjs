@@ -49,6 +49,16 @@ const config = [
     },
   },
   {
+    // Repo scripts run on Node.
+    files: ['scripts/**/*.mjs'],
+    languageOptions: {
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+      },
+    },
+  },
+  {
     files: ['**/*.js', '**/*.mjs'],
     plugins: {
       prettier,

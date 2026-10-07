@@ -159,16 +159,20 @@ the repo from Bun to npm, and prepares both packages for publishing to npm.
 
 ### Phase 7 — Publish on tag
 
-- [ ] Bootstrap (manual, once, by a member of the `@gmb` npm org with 2FA): publish `0.1.0-rc.0` of both packages from a clean build, using `npm publish --tag next --access public`. Then, on npmjs.com, add a trusted publisher to each package: repo `getMoreBrain/bitmark-editor`, workflow `release.yml`, environment `npm`
-- [ ] New workflow `release.yml`, triggered on `v*.*.*` tags (this also matches `v0.2.0-rc.1`):
+- [ ] Bootstrap (manual, once, by a member of the `@gmb` npm org with 2FA): publish `0.1.0-rc.0` of both packages from a clean build, using `npm publish --tag next --access public`. Then, on npmjs.com, add a trusted publisher to each package: repo `getMoreBrain/bitmark-editor`, workflow `release.yml`, environment `npm` — written up step by step in `RELEASING.md` ("The first publish"). It is still to be done by an `@gmb` org member, after this work merges. Pushing the `v0.1.0-rc.0` tag afterwards runs the workflow: it skips both packages (already on npm) and creates the GitHub Release
+- [x] New workflow `release.yml`, triggered on `v*.*.*` tags (this also matches `v0.2.0-rc.1`). As built, a `verify` job runs every CI check, packs both tarballs, and writes the notes. A `publish` job publishes exactly those tarballs, skipping a version already on npm so a release that failed half-way can be re-run, then creates the GitHub Release (with the tarballs attached, `--prerelease` for `next`):
   - check that the tag matches the `version` in both package.json files, and that the Angular peer range for `@gmb/bitmark-editor` includes it (fail otherwise)
   - build and test as in CI
-  - publish job in a GitHub environment `npm` (protected: tag rules or required reviewers), with `permissions: id-token: write, contents: write`. It needs npm 11.5+ for trusted publishing, which Node 24 has. The publish job turns off `setup-node`'s cache (`package-manager-cache: false`): a release build should not restore a cache that other workflows wrote
+  - publish job in a GitHub environment `npm` (protected: tag rules or required reviewers), with `permissions: id-token: write, contents: write`. It needs npm 11.5+ for trusted publishing, which Node 24 has. The publish job turns off `setup-node`'s cache (`package-manager-cache: false`): a release build should not restore a cache that other workflows wrote. Done with `gh`: the `npm` environment allows only `v*` tags to deploy, and a tag ruleset ("release tags", id 24618288) lets only repository admins create, move or delete `v*` tags. The job checks for npm 11.5.1 or later
   - dist-tag from the version: a prerelease (`-rc.N`, `-beta.N`) gets `--tag next`, otherwise `--tag latest`. Always pass `--tag`
   - `npm publish --access public --tag <tag>` for `packages/bitmark-editor`, then for `packages/bitmark-editor-angular/dist/bitmark-editor-angular`. Trusted publishing adds provenance automatically, because the repo is public (D6)
   - create a GitHub Release with that version's `CHANGELOG.md` section (core and Angular)
-- [ ] Angular peer range: in 0.x, `^0.1.0` means `<0.2.0`, so every minor release updates the Angular `peerDependencies` range for `@gmb/bitmark-editor` along with both versions. The release workflow's check enforces this
-- [ ] Root script `npm run release:version -- <version>`: sets both package versions and the Angular peer range together (`npm version --no-git-tag-version -w` plus a small edit). Add a release checklist to the root README: run it, update both CHANGELOGs, commit, tag, push
+- [x] Angular peer range: in 0.x, `^0.1.0` means `<0.2.0`, so every minor release updates the Angular `peerDependencies` range for `@gmb/bitmark-editor` along with both versions. The release workflow's check enforces this. The rule is simple: the peer range is always `^<version>`. That also works for a prerelease: `^0.1.0-rc.0` accepts the rc and every 0.1.x
+- [x] Root script `npm run release:version -- <version>`: sets both package versions and the Angular peer range together (`npm version --no-git-tag-version -w` plus a small edit). Add a release checklist to the root README: run it, update both CHANGELOGs, commit, tag, push — as built, `scripts/release.mjs` with three commands:
+  - `version` sets both versions, the peer range, the core README's CDN URL and both lockfiles (the Angular lockfile mirrors the core's metadata, and was stale);
+  - `check` (`npm run release:check -- <v>`) fails unless all of that matches and both CHANGELOGs have the version's section; it prints the dist-tag;
+  - `notes` prints the GitHub Release notes.
+  A trial bump to `0.1.0-rc.0` passed `check` and was reverted. The checklist is `RELEASING.md` (the root README links it in Phase 8). The root ESLint config gains Node globals for `scripts/`
 
 ### Phase 8 — Docs and specs
 
