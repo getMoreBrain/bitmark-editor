@@ -10,7 +10,7 @@ import 'monaco-editor/features/codicon/register';
 import * as api from 'monaco-editor/editor/editor.api';
 import * as json from 'monaco-editor/language/json/monaco.contribution';
 
-import type { Monaco } from '../monaco/types';
+import type { Monaco } from '../monaco/types.js';
 
 /** The editor API with the JSON language's defaults at `monaco.json`, as 0.55+ has them. */
 export const monaco = { ...api, json } as unknown as Monaco;

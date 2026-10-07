@@ -2,11 +2,11 @@ import * as parser from '@gmb/bitmark-parser';
 import { act, render } from '@testing-library/react';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { createBitmarkEngine } from '../engine/createBitmarkEngine';
-import type { BitmarkEngine, RawParserModule } from '../engine/types';
-import type { BitmarkPane as Pane } from '../session/types';
-import { createFakeMonaco, FakeModel } from '../testing/fakeMonaco';
-import { BitmarkPane, BitmarkSession } from './index';
+import { createBitmarkEngine } from '../engine/createBitmarkEngine.js';
+import type { BitmarkEngine, RawParserModule } from '../engine/types.js';
+import type { BitmarkPane as Pane } from '../session/types.js';
+import { createFakeMonaco, FakeModel } from '../testing/fakeMonaco.js';
+import { BitmarkPane, BitmarkSession } from './index.js';
 
 let engine: BitmarkEngine;
 beforeAll(async () => {
@@ -17,6 +17,21 @@ beforeAll(async () => {
 const DOC = '[.article]\nHello **World**!';
 
 describe('React adapter (PLAN-022 D3)', () => {
+  it('sizes its div with border-box, so a host border can’t make the layout grow', () => {
+    const { monaco } = createFakeMonaco();
+    const view = render(
+      <BitmarkSession monaco={monaco} engine={engine} schema={false} theme="dark">
+        <BitmarkPane type="bitmark" className="host" />
+        <BitmarkPane type="json" style={{ boxSizing: 'content-box' }} />
+      </BitmarkSession>,
+    );
+    const [first, second] = [...view.container.querySelectorAll<HTMLDivElement>(':scope > div')];
+    expect(first.style.boxSizing).toBe('border-box');
+    expect(first.style.height).toBe('100%');
+    // The host's own style still wins.
+    expect(second.style.boxSizing).toBe('content-box');
+  });
+
   it('mounts panes under a session, keeps them in sync, and reports changes', async () => {
     const { monaco } = createFakeMonaco();
     const panes: Record<string, Pane | undefined> = {};

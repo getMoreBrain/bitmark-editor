@@ -6,7 +6,6 @@ import simpleImportSort from 'eslint-plugin-simple-import-sort';
 // import fs from 'fs-extra';
 // import globals from 'globals';
 // import stringify from 'safe-stable-stringify';
-import tseslint from 'typescript-eslint';
 
 /** @type {import("eslint").Linter.Config[]} */
 const config = [
@@ -20,63 +19,17 @@ const config = [
       '**/dist',
       '**/docs',
       '**/coverage',
-      '**/build',
-      'assets',
-      'specs',
-      'plans',
+      // Build caches and test output (the Angular dev server caches Monaco here).
+      '**/.angular',
+      '**/test-results',
       '.github',
       '.awa',
-      'src/generated',
-      '**/*.d.ts',
-      // The package lints itself (its own eslint.config.mjs, PLAN-022 D6).
+      '.claude',
+      // The core lints itself (its own eslint.config.mjs, PLAN-022 D6); the
+      // Angular workspace is checked by its own build.
       'packages/bitmark-editor',
       'packages/bitmark-editor-angular',
     ],
-  },
-
-  //
-  // TypeScript files
-  //
-  ...tseslint.configs.recommended.map((config) => ({
-    ...config,
-    files: ['**/*.ts', '**/*.tsx'],
-  })),
-  {
-    files: ['**/*.ts', '**/*.tsx'],
-    plugins: {
-      prettier,
-      'simple-import-sort': simpleImportSort,
-    },
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.json'],
-      },
-    },
-    rules: {
-      'simple-import-sort/imports': 'error',
-      'simple-import-sort/exports': 'error',
-      'prettier/prettier': 'error',
-      '@typescript-eslint/no-floating-promises': 'error',
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-unused-vars': [
-        'warn',
-        {
-          vars: 'all',
-          args: 'after-used',
-          caughtErrors: 'all',
-          ignoreRestSiblings: true,
-          varsIgnorePattern: '^_', // Ignore variables that start with "_"
-          argsIgnorePattern: '^_', // Ignore function arguments that start with "_"
-          caughtErrorsIgnorePattern: '^_', // Ignore caught errors that start with "_"
-        },
-      ],
-      '@typescript-eslint/no-empty-object-type': [
-        2,
-        {
-          allowInterfaces: 'always',
-        },
-      ],
-    },
   },
 
   //
@@ -95,6 +48,16 @@ const config = [
         __dirname: 'readonly',
         __filename: 'readonly',
         exports: 'readonly',
+      },
+    },
+  },
+  {
+    // Repo scripts and the example apps' test harness run on Node.
+    files: ['scripts/**/*.mjs', 'examples/*.mjs'],
+    languageOptions: {
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
       },
     },
   },

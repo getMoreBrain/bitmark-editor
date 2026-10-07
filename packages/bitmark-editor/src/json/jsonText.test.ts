@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { jsonWithBitStarts } from './jsonText';
+import { jsonWithBitStarts } from './jsonText.js';
 
 const CASES: Record<string, unknown[]> = {
   empty: [],

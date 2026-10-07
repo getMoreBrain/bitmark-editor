@@ -1,6 +1,6 @@
-export { createEchoGuard } from './echoGuard';
-export { DEFAULT_MESSAGES } from './messages';
-export { createBitmarkSession } from './session';
+export { createEchoGuard } from './echoGuard.js';
+export { DEFAULT_MESSAGES } from './messages.js';
+export { createBitmarkSession } from './session.js';
 export type {
   BitmarkEditorMessages,
   BitmarkPane,
@@ -13,4 +13,4 @@ export type {
   SessionChange,
   SessionError,
   SessionEvents,
-} from './types';
+} from './types.js';

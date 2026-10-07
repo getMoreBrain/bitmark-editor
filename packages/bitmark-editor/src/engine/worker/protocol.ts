@@ -1,4 +1,4 @@
-import type { EngineCapabilities, Feature } from '../types';
+import type { EngineCapabilities, Feature } from '../types.js';
 
 /**
  * The messages between a worker engine and the engine it serves inside a

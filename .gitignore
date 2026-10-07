@@ -17,29 +17,19 @@
 .env.test.local
 .env.production.local
 .playwright-mcp
-bundle-stats.html
 
 
 # DEPENDENCIES
 /node_modules
 
 # BUILD
-/build
-/artifacts
 /dist
-package.tgz
-/packages/*/bundles
+*.tgz
 /packages/*/dist/*
-/vscode-case-study
-.history
 tsconfig.tsbuildinfo
-bundle-stats.html
 
 # TESTING
-/coverage
-/test/**/results
-/test/**/coverage
-test.txt
+coverage/
 test-report.html
 junit.xml
 
@@ -47,13 +37,17 @@ junit.xml
 
 # PACKAGE SPECIFIC
 
-# Spikes
 /packages/**/node_modules
-/packages/**/spikes/**/dist
-/packages/**/spikes/**/results
 /packages/**/examples/**/results
 /packages/**/examples/**/dist
 /packages/**/examples/**/.angular
 /packages/bitmark-editor/docs/api
 # Playwright CLI output (may contain credentials)
 .playwright-cli/
+
+# Example apps (PLAN-026)
+/examples/.packs/
+/examples/**/node_modules
+/examples/**/dist
+/examples/**/.angular
+/examples/test-results/

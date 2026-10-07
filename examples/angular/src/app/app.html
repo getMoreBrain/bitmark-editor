@@ -1,0 +1,20 @@
+<header>
+  <h1>bitmark editor: Angular</h1>
+  <label>Theme
+    <select [value]="theme()" (change)="setTheme($any($event.target).value)">
+      <option value="auto">Auto</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
+  </label>
+</header>
+<bm-session [formControl]="content" [theme]="theme()" (change)="onChange($event)" (error)="status.set('Error: ' + $event.error.message)">
+  <div class="panes">
+    <bm-pane type="bitmark" />
+    <bm-pane type="json" />
+    <bm-pane type="html" [readonly]="true" />
+  </div>
+</bm-session>
+<p>Last change: <output id="status">{{ status() }}</output></p>
+<p>Form value: <output id="form-value">{{ value().length }} characters</output></p>
+<button type="button" (click)="reset()">Reset</button>

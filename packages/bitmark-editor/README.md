@@ -3,8 +3,8 @@
 bitmark and JSON editors on Monaco, with optional HTML, XML, Text, Info and
 Mappings panes, for any framework.
 
-> Pre-release: 0.1.0, not yet published. Design: PLAN-022 / PLAN-023 in the
-> bitmark playground repo (`.awa/plans/`).
+> Pre-release: 0.1.0, not yet published. Design: PLAN-022 / PLAN-023 in this
+> repo (`.awa/plans/`).
 
 - **Session**: one bitmark document, the source of truth.
 - **Panes**: Monaco editors you mount anywhere. Editing any pane updates all
@@ -31,6 +31,11 @@ Mappings panes, for any framework.
 - **It doesn't**: use `/bundled`, which brings Monaco 0.57. If the page
   *does* have Monaco, `/bundled` warns and leaves it alone.
 
+Monaco vendors its own copy of DOMPurify, the HTML sanitiser for hovers and
+Markdown. `/bundled` replaces Monaco 0.57's copy (3.4.15) with the patched
+3.4.16. With the core or `/elements`, Monaco is yours, and so is keeping its
+DOMPurify current.
+
 ## Quick start: a host with Monaco
 
 ```ts
@@ -40,6 +45,7 @@ import { createBitmarkSession, createBitmarkPane, createJsonPane, createHtmlPane
 const session = createBitmarkSession({
   monaco,                                   // your Monaco: its workers, its theme
   value: '[.article]\nHello **World**!',
+  theme: 'light',                           // match your Monaco's theme (see below)
   // engine omitted → the parser loads from jsDelivr at the pinned version
 });
 createBitmarkPane(document.getElementById('bitmark')!, session);
@@ -48,9 +54,28 @@ createHtmlPane(document.getElementById('html')!, session, { readOnly: true });
 session.on('change', ({ bitmark, source }) => save(bitmark));
 ```
 
+Match the token colours to your Monaco's theme. `theme` sets the bitmark
+token colours, and defaults to `dark`. Your Monaco keeps its own theme,
+which is page-wide and starts as light `vs`. Left alone, that gives
+dark-theme token colours on a white editor, which are hard to read. Either:
+- set `theme` to match the Monaco theme you use (`'light'` for `vs`,
+  `'dark'` for `vs-dark`); or
+- pass `applyMonacoTheme: true`, and the session sets Monaco's theme from
+  `theme` too (including `'auto'`, which follows the OS). Use this when the
+  page's Monaco is yours to theme.
+
 Your Monaco needs the JSON language (for schema validation) and the suggest
 and hover contributions (for completion and hover). If one is missing, that
 feature is off and a warning is logged once; nothing crashes.
+
+Workers are your Monaco's, set up as for any Monaco editor. Give each
+language you include its own worker. That means `json` for the JSON pane, and
+`html` if your Monaco includes the HTML language (the full `monaco-editor`
+import does); otherwise its requests reach the generic editor worker and
+fail. From Monaco 0.57, the worker files are imported by
+`monaco-editor/editor/editor.worker` and
+`monaco-editor/language/json/json.worker`. Earlier versions use
+`monaco-editor/esm/vs/...`.
 
 The bitmark editor:
 - highlights, marks errors, and offers completion and hover from the parser;
@@ -202,8 +227,8 @@ The names are `--bm-tok-<type>-color` (also `-weight`, `-style`,
 - `<bitmark-tabs>`: tabs over its child panes; only the active one is
   mounted.
 - `<bitmark-split direction="row|column|auto">`
-- `<bitmark-editor panes="json,html,xml:xml-niso-iec">`: the playground
-  arrangement in one tag.
+- `<bitmark-editor panes="json,html,xml:xml-niso-iec">`: the full editor in
+  one tag (the bitmark pane beside tabs over the chosen panes).
 
 Importing `/elements` in server-side rendering is harmless: the elements are
 defined only in a browser.
@@ -230,6 +255,17 @@ purpose, call `session.setBitmark()`.
 See `@gmb/bitmark-editor-angular`: `bm-session` (a form control),
 `bm-pane`, `bm-tabs`, `bm-split`, and `provideBitmarkEditor`.
 
+## Tested versions
+
+CI tests both ends of each peer range on every change:
+
+| Peer | Range | Tested |
+|---|---|---|
+| `monaco-editor` | `>=0.46 <1` | 0.46 (the Angular example, AMD) and 0.57 (`/bundled`, the example apps) |
+| `react` | `>=18` | 18 and 19 (the React adapter's tests and typecheck; the React example app on 19) |
+| `@angular/core` | `>=21 <23` | 21 and 22 (`@gmb/bitmark-editor-angular`, built and tested on both) |
+| `@gmb/bitmark-parser` | `>=7.7 <8` | the pinned default, 7.9 (bumped weekly within the major) |
+
 ## Content Security Policy
 
 - `script-src` needs the CDN origin (or self-hosting), plus
@@ -244,21 +280,18 @@ same-origin.
 
 | File | Size | Loaded |
 |---|---|---|
-| `bundled.js` | 13 KB | on import |
-| `monaco.js` + `monaco.css` + `codicon.ttf` | 808 + 22 + 66 KB | when the first session starts |
+| `bundled.js` | 15 KB | on import |
+| `monaco.js` + `monaco.css` + `codicon.ttf` | 809 + 22 + 66 KB | when the first session starts |
 | `editor.worker.js`, `json.worker.js` | 74, 104 KB | on first use |
 | parser + `bitmark-json` wasm (+ `full`) | 13 + 222 (+ 346) KB | when the first session starts |
 
 ## Development
 
 ```bash
-bun run test        # vitest (jsdom), in this folder
-bun run typecheck
-bun run lint
-bun run build       # dist/esm, dist/types, dist/bundled
-cd examples && bun install && bun run test   # browser checks (Playwright)
+npm ci                 # at the repo root: the workspace (this package and its examples)
+npm test               # vitest (jsdom)
+npm run typecheck
+npm run lint
+npm run build          # dist/esm, dist/types, dist/bundled
+npm run test:browser  # browser checks (Playwright), after a build
 ```
-
-The playground (at the repo root) uses this package from source through a
-path alias. `spikes/` and `playground-spike/` hold the PLAN-023 Phase 0 and
-Phase 1 browser checks.

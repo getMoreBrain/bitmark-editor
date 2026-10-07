@@ -1,6 +1,6 @@
-export type { AttachBitmarkEditorOptions, BitmarkEditorServices } from './attach';
-export { attachBitmarkEditor } from './attach';
-export type { BitmarkSuggestion, CompletionQuery } from './completion';
+export type { AttachBitmarkEditorOptions, BitmarkEditorServices } from './attach.js';
+export { attachBitmarkEditor } from './attach.js';
+export type { BitmarkSuggestion, CompletionQuery } from './completion.js';
 export {
   COMPLETE_OPTIONS,
   COMPLETION_TRIGGER_CHARACTERS,
@@ -9,19 +9,19 @@ export {
   replacedSuffixLength,
   toMonacoSuggestion,
   triggerCharacterOf,
-} from './completion';
+} from './completion.js';
 export {
   attachBitmarkDiagnostics,
   BITMARK_MARKER_OWNER,
   buildBitmarkMarkers,
   DIAGNOSTICS_DEBOUNCE_MS,
   markerSeverity,
-} from './diagnostics';
+} from './diagnostics.js';
 export {
   attachBitmarkHighlighter,
   buildBitmarkDecorations,
   HIGHLIGHT_DEBOUNCE_MS,
-} from './highlighter';
+} from './highlighter.js';
 export {
   bindBitmarkJsonSchema,
   BITMARK_MODEL_FILE_MATCH,
@@ -30,8 +30,8 @@ export {
   loadBitmarkJsonSchema,
   schemaUrlFor,
   schemaUrlForVersion,
-} from './jsonSchema';
-export type { SetupBitmarkMonacoOptions } from './setup';
+} from './jsonSchema.js';
+export type { SetupBitmarkMonacoOptions } from './setup.js';
 export {
   bindModelEngine,
   BITMARK_LANGUAGE_CONFIGURATION,
@@ -39,5 +39,5 @@ export {
   engineForModel,
   setupBitmarkMonaco,
   toMonacoHover,
-} from './setup';
-export type { CodeEditor, IDisposable, Monaco, TextModel } from './types';
+} from './setup.js';
+export type { CodeEditor, IDisposable, Monaco, TextModel } from './types.js';

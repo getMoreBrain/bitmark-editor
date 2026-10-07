@@ -1,0 +1,33 @@
+{
+  "name": "bitmark-editor-example-angular",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build"
+  },
+  "private": true,
+  "packageManager": "npm@11.13.0",
+  "dependencies": {
+    "@angular/common": "^21.2.0",
+    "@angular/compiler": "^21.2.0",
+    "@angular/core": "^21.2.0",
+    "@angular/forms": "^21.2.0",
+    "@angular/platform-browser": "^21.2.0",
+    "@gmb/bitmark-editor": "file:../.packs/gmb-bitmark-editor.tgz",
+    "@gmb/bitmark-editor-angular": "file:../.packs/gmb-bitmark-editor-angular.tgz",
+    "monaco-editor": "0.57.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^21.2.25",
+    "@angular/cli": "^21.2.25",
+    "@angular/compiler-cli": "^21.2.0",
+    "typescript": "~5.9.2"
+  },
+  "description": "A zoneless Angular app on @gmb/bitmark-editor-angular, with Monaco from npm (PLAN-026).",
+  "overrides": {
+    "@modelcontextprotocol/sdk": "1.32.1"
+  }
+}

@@ -1,9 +1,9 @@
-import type { BitmarkEngine } from '../engine/types';
-import { log } from '../log';
-import { attachBitmarkDiagnostics } from './diagnostics';
-import { attachBitmarkHighlighter } from './highlighter';
-import { bindModelEngine, setupBitmarkMonaco } from './setup';
-import type { CodeEditor, IDisposable, Monaco } from './types';
+import type { BitmarkEngine } from '../engine/types.js';
+import { log } from '../log.js';
+import { attachBitmarkDiagnostics } from './diagnostics.js';
+import { attachBitmarkHighlighter } from './highlighter.js';
+import { bindModelEngine, setupBitmarkMonaco } from './setup.js';
+import type { CodeEditor, IDisposable, Monaco } from './types.js';
 
 export interface BitmarkEditorServices extends IDisposable {
   /** Switch the engine (or `undefined`: none yet). Highlighting and markers re-run. */

@@ -1,7 +1,7 @@
 import type * as MonacoApi from 'monaco-editor';
 
-import { BITMARK_MODEL_SCHEME } from '../monaco/jsonSchema';
-import type { Monaco, TextModel } from '../monaco/types';
+import { BITMARK_MODEL_SCHEME } from '../monaco/jsonSchema.js';
+import type { Monaco, TextModel } from '../monaco/types.js';
 
 /**
  * Passes on only a value that differs from the last one the editor held
@@ -74,11 +74,10 @@ export interface TextEditor extends MonacoApi.IDisposable {
 }
 
 /**
- * One Monaco editor on its own model, in plain TypeScript (PLAN-023 Step 6,
- * the behaviour of the playground's `MonacoTextArea`): user edits are
- * reported once per distinct value, a programmatic value never echoes back
- * as input, a focused editor is never overwritten, regeneration keeps undo,
- * and the editor lays itself out as its element resizes.
+ * One Monaco editor on its own model, in plain TypeScript (PLAN-023 Step 6):
+ * user edits are reported once per distinct value, a programmatic value never
+ * echoes back as input, a focused editor is never overwritten, regeneration
+ * keeps undo, and the editor lays itself out as its element resizes.
  */
 export const createTextEditor = (element: HTMLElement, options: TextEditorOptions): TextEditor => {
   const { monaco } = options;

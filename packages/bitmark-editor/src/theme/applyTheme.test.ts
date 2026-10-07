@@ -1,14 +1,14 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { createFakeMonaco } from '../testing/fakeMonaco';
-import { applyBitmarkTheme } from './applyTheme';
+import { createFakeMonaco } from '../testing/fakeMonaco.js';
+import { applyBitmarkTheme } from './applyTheme.js';
 import {
   buildBitmarkHighlightCss,
   LIGHT_TOKEN_STYLES,
   STYLED_MODIFIERS,
   TOKEN_STYLES,
   tokenVar,
-} from './tokens';
+} from './tokens.js';
 
 /** A media query whose `matches` the test flips. */
 const fakeMedia = (dark: boolean) => {

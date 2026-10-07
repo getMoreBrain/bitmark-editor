@@ -19,9 +19,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/getMoreBrain/bitmark-playground.git",
-    "directory": "packages/bitmark-editor-angular"
+    "url": "git+https://github.com/getMoreBrain/bitmark-editor.git",
+    "directory": "packages/bitmark-editor-angular/projects/bitmark-editor-angular"
   },
+  "bugs": {
+    "url": "https://github.com/getMoreBrain/bitmark-editor/issues"
+  },
+  "homepage": "https://github.com/getMoreBrain/bitmark-editor/tree/main/packages/bitmark-editor-angular/projects/bitmark-editor-angular#readme",
   "keywords": [
     "bitmark",
     "monaco",

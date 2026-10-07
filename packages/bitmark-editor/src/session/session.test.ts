@@ -1,8 +1,8 @@
 import * as parser from '@gmb/bitmark-parser';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { createBitmarkEngine } from '../engine/createBitmarkEngine';
-import type { BitmarkEngine, RawParserModule } from '../engine/types';
+import { createBitmarkEngine } from '../engine/createBitmarkEngine.js';
+import type { BitmarkEngine, RawParserModule } from '../engine/types.js';
 import {
   createBitmarkPane,
   createHtmlPane,
@@ -11,10 +11,10 @@ import {
   createMappingsPane,
   createTextPane,
   createXmlPane,
-} from '../panes';
-import { createFakeMonaco, FakeModel } from '../testing/fakeMonaco';
-import { createBitmarkSession } from './session';
-import type { BitmarkPane, BitmarkSession } from './types';
+} from '../panes/index.js';
+import { createFakeMonaco, FakeModel } from '../testing/fakeMonaco.js';
+import { createBitmarkSession } from './session.js';
+import type { BitmarkPane, BitmarkSession } from './types.js';
 
 const DOC = '[.article]\nHello **World**!';
 
@@ -280,6 +280,35 @@ describe('createBitmarkSession and its panes (PLAN-022 D9)', () => {
     expect(owned.fake.setTheme).toHaveBeenCalledWith('vs');
   });
 
+  it('gives Monaco the panes’ default (dark) when it sets Monaco’s theme without a theme', () => {
+    const { session, el, fake } = setup({ applyMonacoTheme: true });
+    const bitmark = createBitmarkPane(el(), session);
+    expect(fake.setTheme).toHaveBeenCalledWith('vs-dark');
+    // The panes' own default is the dark palette: no theme class, its fallbacks.
+    expect(bitmark.element.classList.contains('bm-theme-light')).toBe(false);
+  });
+
+  it('warns once per page when no theme is given and Monaco’s theme is the host’s', async () => {
+    // A fresh module graph: warnOnce is page state, and earlier tests here
+    // create sessions without a theme.
+    vi.resetModules();
+    const { createBitmarkSession: fresh } = await import('./session.js');
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      const make = (over: Partial<Parameters<typeof fresh>[0]>) =>
+        sessions.push(fresh({ monaco: createFakeMonaco().monaco, engine, schema: false, ...over }));
+      make({ theme: 'light' });
+      make({ applyMonacoTheme: true });
+      expect(warn).not.toHaveBeenCalled();
+      make({});
+      make({});
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(String(warn.mock.calls[0]?.[1])).toContain('no `theme`');
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
   it('reports the edited pane’s error to its error slot, with the host’s messages', async () => {
     const { session, el } = setup({ messages: { errorPrefix: 'Fehler: ' } });
     createBitmarkPane(el(), session);
@@ -472,7 +501,7 @@ describe('host integration options (PLAN-023 Step 14)', () => {
   });
 
   it('joins the host’s scroll group when given one', async () => {
-    const { createScrollSyncGroup } = await import('../scroll/scrollSyncGroup');
+    const { createScrollSyncGroup } = await import('../scroll/scrollSyncGroup.js');
     const group = createScrollSyncGroup();
     const { session, el } = setup({ scrollGroup: group });
     createJsonPane(el(), session);

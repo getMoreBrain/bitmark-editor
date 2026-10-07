@@ -11,8 +11,8 @@ import {
   useState,
 } from 'react';
 
-import type { BitmarkEngine } from '../engine/types';
-import type { Monaco } from '../monaco/types';
+import type { BitmarkEngine } from '../engine/types.js';
+import type { Monaco } from '../monaco/types.js';
 import {
   createBitmarkPane,
   createHtmlPane,
@@ -21,9 +21,9 @@ import {
   createMappingsPane,
   createTextPane,
   createXmlPane,
-} from '../panes/panes';
-import { createEchoGuard } from '../session/echoGuard';
-import { createBitmarkSession } from '../session/session';
+} from '../panes/panes.js';
+import { createEchoGuard } from '../session/echoGuard.js';
+import { createBitmarkSession } from '../session/session.js';
 import type {
   BitmarkPane as Pane,
   BitmarkSession as Session,
@@ -31,8 +31,8 @@ import type {
   PaneType,
   SessionChange,
   SessionError,
-} from '../session/types';
-import type { BitmarkTheme } from '../theme/applyTheme';
+} from '../session/types.js';
+import type { BitmarkTheme } from '../theme/applyTheme.js';
 
 const SessionContext = createContext<Session | undefined>(undefined);
 
@@ -137,7 +137,7 @@ export const BitmarkPane = (props: BitmarkPaneProps): ReactElement => {
   } = props;
   const session = useBitmarkSession();
   const ref = useRef<HTMLDivElement>(null);
-  const paneRef = useRef<Pane>();
+  const paneRef = useRef<Pane | undefined>(undefined);
   const onRenderRef = useRef(onRender);
   onRenderRef.current = onRender;
 
@@ -182,5 +182,14 @@ export const BitmarkPane = (props: BitmarkPaneProps): ReactElement => {
     if (scrollSync !== undefined) paneRef.current?.setScrollSync(scrollSync);
   }, [scrollSync]);
 
-  return <div ref={ref} className={className} style={{ height: '100%', ...style }} />;
+  // border-box: a host's border or padding (via className) stays inside the
+  // 100%. With content-box it overflows, and a grid or flex parent sized by
+  // its content grows every frame as the editor follows (PLAN-026).
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={{ height: '100%', boxSizing: 'border-box', ...style }}
+    />
+  );
 };

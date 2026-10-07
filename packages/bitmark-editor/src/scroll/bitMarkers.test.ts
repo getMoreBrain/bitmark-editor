@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import type { Monaco } from '../monaco/types';
-import { createFakeEditor } from '../testing/fakeScrollEditor';
-import { attachBitMarkers } from './bitMarkers';
+import type { Monaco } from '../monaco/types.js';
+import { createFakeEditor } from '../testing/fakeScrollEditor.js';
+import { attachBitMarkers } from './bitMarkers.js';
 
 const monaco = {
   editor: { TrackedRangeStickiness: { NeverGrowsWhenTypingAtEdges: 1 } },

@@ -1,6 +1,6 @@
-import type { Feature } from '../engine/types';
-import { log } from '../log';
-import type { Monaco } from '../monaco/types';
+import type { Feature } from '../engine/types.js';
+import { log } from '../log.js';
+import type { Monaco } from '../monaco/types.js';
 import {
   createBitmarkPane,
   createHtmlPane,
@@ -9,18 +9,18 @@ import {
   createMappingsPane,
   createTextPane,
   createXmlPane,
-} from '../panes/panes';
-import { createEchoGuard } from '../session/echoGuard';
-import { createBitmarkSession } from '../session/session';
+} from '../panes/panes.js';
+import { createEchoGuard } from '../session/echoGuard.js';
+import { createBitmarkSession } from '../session/session.js';
 import type {
   BitmarkPane,
   BitmarkSession,
   BitmarkSessionOptions,
   EngineSource,
   PaneType,
-} from '../session/types';
-import type { BitmarkTheme } from '../theme/applyTheme';
-import { defaultMonacoIsOwn, getDefaultEngine, loadDefaultMonaco } from './defaults';
+} from '../session/types.js';
+import type { BitmarkTheme } from '../theme/applyTheme.js';
+import { defaultMonacoIsOwn, getDefaultEngine, loadDefaultMonaco } from './defaults.js';
 
 /** Fired on a session element when its session exists, for its panes (bubbles). */
 const SESSION_READY = 'bitmark-session-connected';
@@ -531,8 +531,8 @@ export const defineBitmarkElements = (): void => {
   }
 
   /**
-   * `<bitmark-editor>`: the playground arrangement in one tag — a session,
-   * the bitmark pane beside tabs over the chosen panes (default `json`).
+   * `<bitmark-editor>`: the full editor in one tag — a session, the
+   * bitmark pane beside tabs over the chosen panes (default `json`).
    * `panes="json,html,xml:xml-niso-iec,text"`.
    */
   class BitmarkEditorElement extends HTMLElement {

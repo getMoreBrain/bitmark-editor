@@ -1,6 +1,6 @@
 # The pinned default parser version (PLAN-022 D13): weekly, open a PR that
-# bumps it to the latest @gmb/bitmark-parser. The PR runs the full
-# bitmark-editor CI; merging it makes the next patch release.
+# bumps it to the latest @gmb/bitmark-parser. The PR runs the full CI
+# (ci.yml); once merged, it goes out with the next release tag (release.yml).
 name: bitmark-editor parser bump
 
 on:
@@ -16,21 +16,21 @@ jobs:
   bump:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: "24.x"
+          node-version-file: .nvmrc
       - id: bump
         working-directory: packages/bitmark-editor
         run: echo "version=$(node scripts/bump-parser.mjs)" >> "$GITHUB_OUTPUT"
+      # Updates package-lock.json for the new dev dependency.
       - if: steps.bump.outputs.version != ''
-        run: bun install
+        run: npm install --package-lock-only --ignore-scripts
       - if: steps.bump.outputs.version != ''
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           # A PR opened with the default GITHUB_TOKEN triggers no workflows:
-          # the bot token lets the bitmark-editor CI run on it.
+          # the bot token lets CI run on it.
           token: ${{ secrets.BITMARK_EDITOR_BOT_TOKEN || github.token }}
           branch: bitmark-editor/parser-${{ steps.bump.outputs.version }}
           title: "chore(bitmark-editor): default parser ${{ steps.bump.outputs.version }}"
@@ -39,6 +39,6 @@ jobs:
             Bumps the pinned default parser version (PLAN-022 D13) to `${{ steps.bump.outputs.version }}`
             (within the declared peer range; a new major is left to a person).
 
-            The bitmark-editor CI should run the full unit and browser suite on this PR.
+            CI should run the full unit and browser suite on this PR.
             If it shows no checks, the `BITMARK_EDITOR_BOT_TOKEN` secret is not set:
-            run the "bitmark-editor" workflow on this branch by hand before merging.
+            run the "CI" workflow on this branch by hand before merging.

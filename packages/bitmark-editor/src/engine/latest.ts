@@ -13,8 +13,7 @@ export const SUPERSEDED: unique symbol = Symbol('superseded');
 export const createLatestRunner = <A extends unknown[], R>(run: (...args: A) => Promise<R>) => {
   let inFlight: Promise<unknown> | undefined;
   let waiting:
-    | { args: A; resolve(v: R | typeof SUPERSEDED): void; reject(e: unknown): void }
-    | undefined;
+    { args: A; resolve(v: R | typeof SUPERSEDED): void; reject(e: unknown): void } | undefined;
 
   const start = (args: A): Promise<R> => {
     const p = run(...args);

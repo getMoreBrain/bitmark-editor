@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { createFakeEditor, LINE_HEIGHT } from '../testing/fakeScrollEditor';
-import { createScrollSyncGroup } from './scrollSyncGroup';
+import { createFakeEditor, LINE_HEIGHT } from '../testing/fakeScrollEditor.js';
+import { createScrollSyncGroup } from './scrollSyncGroup.js';
 
 /** `lines` one-character lines; line i starts at offset 2i. */
 const textOf = (lines: number) => 'x\n'.repeat(lines - 1) + 'x';

@@ -2,284 +2,318 @@
 
 ## Project Purpose
 
-bitmark Playground is a web-based tool that enables real-time bidirectional conversion between bitmark markup and JSON, providing developers and content authors with an interactive environment to parse, validate, and experiment with bitmark content. Its editors are also published as a framework-agnostic package, `@gmb/bitmark-editor` (with an Angular wrapper), for other hosts such as the cosmic web app and the bitmark docs site.
+bitmark editor gives other web apps the bitmark and JSON editors of the
+bitmark Playground. It is a framework-agnostic package, `@gmb/bitmark-editor`,
+plus an Angular wrapper, `@gmb/bitmark-editor-angular`. Both are built on
+Monaco, with the bitmark parser doing the language work. A host gets one
+bitmark document per session and places its panes (bitmark, JSON, HTML, XML,
+Text, Info, Mappings) anywhere; editing any pane updates the others. Hosts
+include the cosmic web app (Angular), the bitmark docs site (static) and the
+Playground (React).
 
 ## System Overview
 
-- UI Layer — React SPA with side-by-side editor panels
-- Editor Layer — Monaco Editor with bitmark highlighting from the WASM parser's semantic tokens
-- Parser Layer — Pluggable bitmark parsers loaded dynamically from CDN
-- State Layer — Reactive state management via Valtio
-- Editor Package Layer — `@gmb/bitmark-editor`: the framework-free editor core (engine, session, panes, Monaco services), its custom elements and React adapter, and `@gmb/bitmark-editor-angular`
-- Build Layer — Bun workspaces and Vite for the playground; esbuild for the package; Angular CLI for the Angular wrapper
+- Engine — the bitmark parser behind an async interface: on the main thread or in a worker, injected by the host or loaded by the package
+- Monaco Services — bitmark highlighting, diagnostics, completion and hover, and the JSON schema, on a host's Monaco
+- Session and Panes — one document per session, with independent panes that convert through it
+- Scroll Sync — linked scrolling of any set of panes, by bit
+- Themes — dark, light, auto and custom themes over CSS variables
+- Framework Adapters — custom elements, a React adapter, and the Angular wrapper package
+- Bundled Build — the elements with their own Monaco, ready for a CDN
+- Build, Test and Release — npm workspace, esbuild, Angular CLI, GitHub Actions
 
 ## Technology Stack
 
-- `React 18` — UI framework
-- `TypeScript 5` — Type-safe development
-- `Monaco Editor 0` — Code editor (0.52 in the playground; the package supports 0.46 to 0.57)
-- `Valtio 1` — Proxy-based reactive state management (playground only)
-- `Theme UI 0` — Themeable component styling (playground only)
-- `Vite 6` — Playground dev server and build
-- `esbuild 0` — Package builds (`/esm`, `/bundled`)
-- `Angular 21` — The Angular wrapper and its example (ng-packagr)
-- `Bun 1` — Package management, workspaces and scripts
-- `Vitest 4` / `Playwright 1` — Unit tests / browser checks
-- `@gmb/bitmark-parser-generator` — PEG-based bitmark parser (CDN-loaded)
-- `@gmb/bitmark-parser` — Rust-based bitmark parser (CDN-loaded or injected)
+- `TypeScript 5` — the source of both packages
+- `Monaco Editor 0` — the editors (peer `>=0.46 <1`; `/bundled` ships 0.57)
+- `@gmb/bitmark-parser 7` — the Rust/WASM bitmark parser (peer, loaded at runtime or injected)
+- `React 18` — the optional React adapter (peer `>=18`)
+- `Angular 21` — the Angular wrapper (peer `>=21 <23`), built with ng-packagr
+- `esbuild 0` — the core's `/esm` and `/bundled` builds
+- `Vitest 4` — unit tests (jsdom)
+- `Playwright 1` — browser checks of the examples, the Pages site and the Angular example
+- `typedoc 0` — the API reference
+- `npm 11` — workspaces, scripts and publishing (trusted publishing)
+- `Node 24` — development and CI
+- `GitHub Actions` — CI, Pages, releases, parser bumps
 
 ## High-Level Architecture
 
 ```mermaid
 flowchart LR
-    subgraph UI["UI Layer (playground)"]
-        MarkupEditor[Markup Editor Panel]
-        JsonEditor[JSON Editor Panel]
-        StatusBar[Status Bar]
+    subgraph Hosts["Host apps"]
+        Static[Static site]
+        ReactHost[React app]
+        AngularHost[Angular app]
     end
 
-    subgraph Package["Editor Package Layer (@gmb/bitmark-editor)"]
-        Engine[BitmarkEngine: main thread or worker]
-        Services[Monaco services: highlight, diagnostics, completion, hover, schema]
-        Session[Session + panes]
-        Scroll[Scroll sync group]
-        Elements[Custom elements / React / Angular]
+    subgraph Adapters["Framework Adapters"]
+        Elements["Custom elements (/elements)"]
+        ReactAdapter["React (/react)"]
+        AngularPkg["@gmb/bitmark-editor-angular"]
+        Bundled["Bundled build (/bundled)"]
     end
 
-    subgraph Parser["Parser Layer"]
-        BPG["@gmb/bitmark-parser-generator"]
-        BP["@gmb/bitmark-parser"]
-        CDN[CDN Script Loader]
+    subgraph Core["@gmb/bitmark-editor core"]
+        Session[Session]
+        Panes[Panes and text editors]
+        Services[Monaco Services]
+        Scroll[Scroll Sync]
+        Theme[Themes]
+        Engine[Engine]
     end
 
-    subgraph State["State Layer"]
-        BitmarkState[Bitmark State]
+    subgraph External["Runtime dependencies"]
+        Monaco[Monaco Editor]
+        Parser["@gmb/bitmark-parser"]
+        CDN[jsDelivr CDN]
     end
 
-    MarkupEditor --> Services
-    MarkupEditor --> Scroll
-    JsonEditor --> Scroll
-    Services --> Engine
-    Engine --> BP
-    MarkupEditor -- "markup → json" --> BitmarkState
-    JsonEditor -- "json → markup" --> BitmarkState
-    BitmarkState --> BPG
-    BitmarkState --> BP
-    CDN --> BPG
-    CDN --> BP
-    BitmarkState --> MarkupEditor
-    BitmarkState --> JsonEditor
-    StatusBar --> BitmarkState
+    Static --> Bundled
+    ReactHost --> ReactAdapter
+    AngularHost --> AngularPkg
+    Bundled --> Elements
+    Bundled -- "brings its own" --> Monaco
+    AngularPkg --> Session
+    ReactAdapter --> Session
     Elements --> Session
-    Session --> Services
+    Session --> Panes
     Session --> Engine
     Session --> Scroll
+    Panes --> Services
+    Panes --> Theme
+    Services --> Engine
+    Services -- "injected" --> Monaco
+    Engine -- "injected or loaded" --> Parser
+    CDN --> Parser
 ```
 
 ## Directory Structure
 
-```
-src/                              # Playground application source
-src/components/bitmark/           # Bitmark-specific editor panels and duration displays
-src/components/monaco/            # Monaco editor wrapper components; attaches the package's editor services
-src/components/version/           # Version and copyright display components
-src/components/generic/           # Reusable generic UI components and utilities
-src/services/                     # Parser loading (through the package engine), conversion, application info
-src/state/                        # Valtio-based reactive state
-src/theme/                        # Theme UI theme configuration
-src/scrollSync/                   # The playground's scroll group adapter over the package (Link scrolling toggle)
-src/logging/                      # Console logging wrapper
-src/utils/                        # Shared utility functions
-src/generated/                    # Auto-generated build metadata
-packages/bitmark-editor/          # @gmb/bitmark-editor (bun workspace package; lifts out unchanged)
-packages/bitmark-editor/src/      # engine/, monaco/, session/, panes/, scroll/, theme/, editor/, elements/, react/, bundled/
-packages/bitmark-editor/examples/ # Maintained examples (static site, /esm consumer) with browser checks
-packages/bitmark-editor/spikes/   # PLAN-023 Phase 0 spikes and browser checks (throwaway)
-packages/bitmark-editor-angular/  # Angular CLI workspace: @gmb/bitmark-editor-angular and its cosmic-shaped example
-scripts/                          # Build-time scripts
-public/                           # Static assets
+```text
+packages/bitmark-editor/                  # @gmb/bitmark-editor (npm workspace)
+packages/bitmark-editor/src/engine/       # BitmarkEngine, the parser loader, the worker engine
+packages/bitmark-editor/src/monaco/       # Monaco setup and the per-editor services
+packages/bitmark-editor/src/session/      # Sessions, conversion, messages
+packages/bitmark-editor/src/panes/        # Pane types and their styles
+packages/bitmark-editor/src/editor/       # One Monaco editor on its own model
+packages/bitmark-editor/src/scroll/       # Scroll groups and bit positions
+packages/bitmark-editor/src/theme/        # Themes and token styles
+packages/bitmark-editor/src/elements/     # Custom elements (/elements)
+packages/bitmark-editor/src/react/        # React adapter (/react)
+packages/bitmark-editor/src/bundled/      # The CDN build with Monaco inside (/bundled)
+packages/bitmark-editor/scripts/          # The build and the parser bump
+packages/bitmark-editor/examples/         # Static-site and /esm examples, the Pages site (pages/), browser checks (npm workspace)
+packages/bitmark-editor/docs/             # Hand-offs to host apps; typedoc output (docs/api, not committed)
+packages/bitmark-editor-angular/          # Angular CLI project: the wrapper library and a cosmic-shaped example (standalone npm project)
+examples/                                 # Example apps (vanilla-ts, react, angular), each its own npm project on packed tarballs, and their smoke tests
+scripts/                                  # Repo scripts: the release helper, the example apps' pack/install/build/test
+.github/workflows/                        # CI, Pages, Release, parser bump
+.awa/                                     # Architecture and plans
 ```
 
 ## Component Details
 
-### UI Layer
+### Engine
 
-Side-by-side editor layout with a bitmark markup panel (left) and a JSON panel (right), plus a status bar showing version and copyright.
-
-RESPONSIBILITIES
-
-- Render two-panel editor layout (markup and JSON)
-- Display conversion duration per panel
-- Show application version and parser version in status bar
-- Link the scrolling of the top two panes by bit: the bitmark editor and the right-hand JSON, WASM Check, HTML, XML and Text tabs keep the same bit in view, whichever is scrolled (Settings → "Link scrolling", on by default)
-- Apply dark theme via Theme UI provider
-
-CONSTRAINTS
-
-- Full viewport height and width layout
-- Panels must be equal width (50/50 split)
-
-### Editor Layer
-
-Monaco Editor instances with bitmark highlighting driven by the WASM parser's semantic tokens (LSP shape), through the package's editor services.
+The bitmark parser behind one async interface, `BitmarkEngine`, whoever loaded it.
 
 RESPONSIBILITIES
 
-- Provide code editing with Monaco Editor
-- Register the `bitmark` language and its token stylesheet once per Monaco instance (`setupBitmarkMonaco`), and attach highlighting and diagnostics per editor (`attachBitmarkEditor`), with stale results dropped
-- Auto-resize editors to fit container via ResizeObserver
-- Suppress re-renders when editor has focus (uncontrolled input pattern); regenerate unfocused editors with an undoable full-range edit
+- Load the parser at a pinned default version from jsDelivr, or from a host URL, in two stages: `bitmark-json` first, then `full` in the background
+- Accept a parser module that the host already loaded and initialised, without initialising it again
+- Run on the main thread or in workers (`/worker`), with the same interface
+- Convert bitmark to JSON and other formats, and back, and provide the language results (semantic tokens, diagnostics, completion, hover)
 
 CONSTRAINTS
 
-- Only JSON language mode uses built-in Monaco highlighting
-- Bitmark highlighting is available only once the WASM parser has loaded; attached editors re-highlight at that point
-- Bitmark editors apply tokens as decorations directly rather than through Monaco's semantic tokens feature, whose 300 ms minimum request delay makes typing feel laggy
+- The default parser version is one exact version, bumped by a weekly PR within the peer range's major
+- A load failure shows in the panes and reaches the host as an `error` event; a failed stage 2 leaves stage 1 working
 
-### Parser Layer
+### Monaco Services
 
-Pluggable bitmark parsers loaded dynamically at runtime, selectable by the user.
+The bitmark language support on a Monaco instance that the host provides.
 
 RESPONSIBILITIES
 
-- Load parser libraries from jsdelivr CDN (the WASM parser through the package's two-stage loader)
-- Support version selection via URL query parameter (`?v=`, `?v2=`, `?engine=local`)
-- Provide `@gmb/bitmark-parser-generator` (PEG-based parser)
-- Provide `@gmb/bitmark-parser` (Rust/WASM-based parser)
-- Expose bidirectional conversion: markup-to-JSON and JSON-to-markup
-- Measure and report conversion duration
+- Register the `bitmark` language and its token styles once per Monaco instance (`setupBitmarkMonaco`), and attach highlighting, diagnostics, completion and hover per editor (`attachBitmarkEditor`)
+- Highlight bitmark from the parser's semantic tokens, applied as decorations
+- Complete a bit type to the bit's template, as a snippet
+- Bind the bitmark JSON schema in Monaco's JSON service for the package's own models
+- Drop results that a newer edit has made stale
 
 CONSTRAINTS
 
-- Parsers are loaded at runtime, not bundled
-- Parser version is controlled via URL query parameter
-- Application must handle load failures gracefully
+- Highlighting is available once the parser has loaded; attached editors re-highlight then
+- Services act only on the package's own models, never on a host's other editors
 
-### State Layer
+### Session and Panes
 
-Centralized reactive state for bitmark conversion results using Valtio proxies.
+One bitmark document, the source of truth, shown in any number of panes.
 
 RESPONSIBILITIES
 
-- Store current markup and JSON representations
-- Store conversion errors and error strings
-- Store conversion duration metrics
-- Track conversion update counts
-- Provide reactive snapshots to UI components via `useSnapshot`
+- Hold the document and convert each edit, with an optional debounce, last edit winning
+- Provide panes for bitmark, JSON, HTML, XML, Text, Info and Mappings; any pane can be read-only
+- Regenerate the other panes from each edit, without echoing a pane's own edit back to it
+- Keep each pane's undo history across regeneration, and never overwrite a focused editor
+- Report errors and status in the host's language (`messages`)
 
 CONSTRAINTS
 
-- State mutations must go through defined setter methods
-- State object is a Valtio proxy; consumers must use snapshots for reads
+- The host places panes anywhere; a session imposes no layout
 
-### Editor Package Layer
+### Scroll Sync
 
-`@gmb/bitmark-editor`: the bitmark and JSON editors as a framework-agnostic package (PLAN-022, PLAN-023), consumed by the playground and by other hosts.
+Linked scrolling of any set of panes and host editors, by bit.
 
 RESPONSIBILITIES
 
-- Wrap the parser as an async `BitmarkEngine`: injected by the host (never re-initialised) or loaded by the package at a pinned version; on the main thread or in workers
-- Provide the Monaco services on a host-injected Monaco, scoped to the package's own models
-- Hold one document per session, with independent panes (bitmark, JSON, HTML, XML, Text, Info, Mappings) that the host places anywhere; edits in any pane update the others
-- Link the scrolling of any set of panes by bit
-- Provide dark, light, auto and custom themes over CSS variables
-- Offer custom elements, a React adapter, a CDN-ready `/bundled` build, and the Angular wrapper `@gmb/bitmark-editor-angular`
+- Keep the same bit in view in every member of a scroll group, whichever member is scrolled
+- Map positions through the parser's bit spans, including in typed text
+- Let a host join its own editors to a session's group
 
-CONSTRAINTS
+### Themes
 
-- The core is framework-free and imports Monaco as types only (lint-enforced); only `/bundled` contains Monaco
-- The package is self-contained (own configs, examples and CI) so that it can move to its own repository unchanged
-
-### Build Layer
-
-Bun workspaces and Vite for the playground; esbuild for the package; the Angular CLI for the Angular wrapper.
+Dark, light, auto and custom looks, over CSS variables.
 
 RESPONSIBILITIES
 
-- Generate build-info metadata from package.json at build time
-- Resolve `@gmb/bitmark-editor` from source in the playground (path alias), so development needs no package build
-- Serve the playground development server on port 3010
-- Deploy the playground production build to GitHub Pages
-- Build, test and (on a release tag) publish the packages in their own CI workflow
+- Style panes and bitmark tokens through CSS variables that a host can map onto its own design tokens
+- Set Monaco's page-global theme only when the host asks for it
+
+### Framework Adapters
+
+The core in the shape each kind of host expects.
+
+RESPONSIBILITIES
+
+- Custom elements (`/elements`): `<bitmark-session>`, `<bitmark-pane>`, `<bitmark-tabs>`, `<bitmark-split>`, `<bitmark-editor>`, with lazy start (`idle`, `click`, `focus`, `visible`) and a static fallback on narrow touch screens
+- React (`/react`): `<BitmarkSession>`, `<BitmarkPane>`, `useBitmarkSession`
+- Angular (`@gmb/bitmark-editor-angular`): `bm-session` (a form control), `bm-pane`, `bm-tabs`, `bm-split`, `provideBitmarkEditor`
 
 CONSTRAINTS
 
-- Monaco is configured selectively (`monaco-setup.ts`): the JSON language, its worker and the suggest and hover contributions only
+- The Angular wrapper runs Monaco outside the Angular zone and re-enters it only to emit
+- Importing `/elements` during server-side rendering does nothing
+
+### Bundled Build
+
+The custom elements with their own Monaco, for pages without one.
+
+RESPONSIBILITIES
+
+- Load Monaco, its CSS and its workers only when the first session starts
+- Find its files beside `bundled.js`, or where `setBitmarkAssetBase` points
+- Leave a page's existing Monaco alone, with a warning
+
+### Build, Test and Release
+
+The repository's tooling, from a clean install to a published version.
+
+RESPONSIBILITIES
+
+- npm workspace for the core and its examples; the Angular project installs and builds separately against the core's `dist`
+- Build the core with esbuild (`/esm`, `/bundled`) and tsc (declarations); build the Angular library with ng-packagr
+- CI on every PR: lint, typecheck, unit tests, builds, package checks (publint, attw, `npm pack`), API docs, browser checks of the examples, the Pages site and the Angular example
+- Build the example apps (plain TypeScript, React, Angular) from tarballs of the current build, as an outside app would install them, and smoke-test each one
+- Deploy the demos and the API reference to GitHub Pages from `main`
+- Publish both packages from a `v<version>` tag by npm trusted publishing, then create the GitHub Release
+- Open weekly PRs for the default parser version (a workflow) and other dependencies (Dependabot)
+
+CONSTRAINTS
+
+- `main` changes only through PRs with the `core` and `angular` checks green
+- Only repository admins create release tags; only those tags can deploy to the `npm` environment
 
 ## Component Interactions
 
-The UI renders two Monaco editor panels. When a user edits bitmark markup, the markup text is passed to the active parser service, which converts it to JSON. The resulting JSON (or error) is stored in the Valtio state, which reactively updates the JSON panel. The reverse flow works identically: editing JSON triggers conversion to markup. The WASM parser is loaded asynchronously on application start through the package's engine loader (bitmark-json first, then the full variant); the UI shows a loading indicator until a parser is ready. The editors attach the package's services with that engine, and join the package's scroll group.
+A host creates a session (directly, or through an element or component)
+with its Monaco, or the bundled one, and an engine source. The session starts
+the engine and mounts its panes. Each pane's editor gets the Monaco services,
+which ask the engine for language results. An edit in any pane goes to the
+session, which converts it through the engine to bitmark and regenerates the
+other panes. Panes that link scrolling join the session's scroll group, which
+maps positions between them by bit.
 
-Hosts of the package create a session (or a `<bitmark-session>` element, `bm-session` component) with their Monaco and an engine, and mount panes into their own layout; the session converts every edit to bitmark and regenerates the other panes from it.
-
-### Conversion Flow
+### Edit Flow
 
 ```mermaid
 sequenceDiagram
     participant User
-    participant MarkupEditor
-    participant Converter
-    participant Parser
-    participant State
-    participant JsonEditor
+    participant Pane as Edited pane
+    participant Session
+    participant Engine
+    participant Others as Other panes
 
-    User->>MarkupEditor: Edit bitmark markup
-    MarkupEditor->>Converter: onInput(markup)
-    Converter->>Parser: convert(markup)
-    Parser-->>Converter: JSON result
-    Converter->>State: setJson(markup, json, duration)
-    State-->>JsonEditor: Reactive update
-    JsonEditor->>JsonEditor: Display JSON
+    User->>Pane: Edit
+    Pane->>Session: input (after the debounce)
+    Session->>Engine: convert to bitmark
+    Engine-->>Session: bitmark (or errors)
+    Session->>Engine: generate each other pane's format
+    Engine-->>Session: JSON, HTML, XML, …
+    Session->>Others: regenerate (keeping undo, skipping a focused editor)
 ```
 
 ### Parser Loading Flow
 
 ```mermaid
 sequenceDiagram
-    participant App
-    participant Provider
-    participant Engine as Package engine loader
+    participant Host
+    participant Session
+    participant Engine
     participant CDN
 
-    App->>Provider: Render ParserProvider
-    Provider->>Engine: loadBitmarkModule(url)
-    Engine->>CDN: Import parser (?v2= / ?engine=local)
-    CDN-->>Engine: Module loaded
-    Engine->>Engine: init bitmark-json (stage 1)
-    Engine-->>Provider: Engine and module available
-    Engine->>Engine: init full (stage 2, background)
-    Engine-->>Provider: Markup formats ready
+    Host->>Session: start (engine: injected, URL or default)
+    alt injected
+        Session->>Engine: wrap the host's module (no init)
+    else loaded
+        Engine->>CDN: import the parser (pinned version or host URL)
+        Engine->>Engine: init bitmark-json (stage 1)
+        Engine-->>Session: ready: JSON panes work
+        Engine->>Engine: init full (stage 2, background)
+        Engine-->>Session: markup formats ready
+    end
 ```
 
 ## Architectural Rules
 
-- Parsers MUST be loaded at runtime — from the CDN, from a host URL, or injected by a host — never bundled into the playground
+- The parser MUST be loaded at runtime (from the CDN or a host URL) or injected by the host; it is never bundled into the package
 - The package MUST NOT call `init` on a parser module a host injected
-- State mutations MUST go through Valtio proxy setter methods
-- UI components MUST read state via `useSnapshot`, never directly from proxy
-- Monaco editor components MUST suppress re-renders when focused (uncontrolled pattern)
-- Bitmark highlighting MUST come from the WASM parser's semantic tokens, never from a separate grammar
-- The package core MUST receive Monaco by injection and stay free of React, Valtio and Theme UI
-- Build info MUST be auto-generated from package.json before each build/start
+- Bitmark highlighting MUST come from the parser's semantic tokens, never from a separate grammar
+- Bitmark editors MUST apply tokens as decorations, not through Monaco's semantic tokens feature, whose request delay makes typing lag
+- The core MUST receive Monaco by injection and import it as types only, and MUST NOT depend on React or Angular (lint-enforced); only `/bundled` contains Monaco
+- A focused editor MUST never be overwritten by regeneration
+- Relative imports in the core MUST name their file (`.js`); the core typechecks with NodeNext so that its published types work for every TypeScript module resolution
+- Hosts use only the package's `exports` entry points; each release passes publint and attw
+- Both packages MUST share one version, and the Angular peer range for the core MUST be `^<version>`
+- Releases MUST go through the tag-triggered workflow, never a local `npm publish` (the one-time first publish excepted, see RELEASING.md)
 
 ## Release Status
 
-STATUS: Alpha
-
-Core markup-to-JSON and JSON-to-markup conversion is functional. Deployed to GitHub Pages. `@gmb/bitmark-editor` and `@gmb/bitmark-editor-angular` are at 0.1.0, built and tested, not yet published.
+STATUS: Alpha — both packages are at 0.1.0, built and tested, and not yet published. The first publish (`0.1.0-rc.0`) is manual and enables trusted publishing; releases after it go through the tag-triggered workflow.
 
 ## Developer Commands
 
-- `bun install` — Install dependencies (the playground and the workspace package)
-- `bun start` — Start development server (port 3010)
-- `bun run build` — Build for production
-- `bun run test` — Run the playground test suite
-- `cd packages/bitmark-editor && bun run test && bun run build` — Test and build the package
-- `cd packages/bitmark-editor-angular && npm install && npx ng build bitmark-editor-angular` — Build the Angular wrapper
+- `npm ci` — Install the workspace (the core and its examples)
+- `npm run lint` — Lint the root files and the core
+- `npm run typecheck` — Typecheck the core
+- `npm test` — Run the core's unit tests
+- `npm run build` — Build the core (`dist/esm`, `dist/types`, `dist/bundled`)
+- `npm run test:browser` — Browser checks of the examples and the Pages site
+- `npm run check:package` — Check what npm would publish (publint, attw)
+- `npm run build:docs` — Build the API reference
+- `npm run build:pages` — Build the GitHub Pages site
+- `npm run install:angular` / `build:angular` / `test:angular` — Install, build and test the Angular project
+- `npm run pack:examples` / `install:examples` / `build:examples` / `test:examples` — The example apps, on tarballs of the current build
+- `npm run release:version -- <version>` — Set the release version everywhere
+- `npm run release:check -- <version>` — Check that the repo is ready to tag that version
 
 ## Change Log
 
-- 1.0.0 (2026-02-17): Initial architecture
-- 1.1.0 (2026-09-09): Tree-sitter highlighting replaced by the WASM parser's semantic tokens (PLAN-016)
-- 1.2.0 (2026-09-29): Linked scrolling between the bitmark and output panes, by bit, from the parser's bit spans (PLAN-018)
-- 1.3.0 (2026-10-06): The editors extracted into `@gmb/bitmark-editor` and `@gmb/bitmark-editor-angular` (PLAN-022, PLAN-023); the build described as it is (Vite, Bun workspaces); the parser-loading rule allows host injection; main's typed-text scroll positions (PLAN-020) and bit templates with the `[` `]` pair (PLAN-021) carried into the package
+- 1.0.0 (2026-02-17): Initial architecture (the bitmark Playground)
+- 1.1.0 (2026-09-09): Tree-sitter highlighting replaced by the WASM parser's semantic tokens
+- 1.2.0 (2026-09-29): Linked scrolling between the bitmark and output panes, by bit, from the parser's bit spans
+- 1.3.0 (2026-10-06): The editors extracted into `@gmb/bitmark-editor` and `@gmb/bitmark-editor-angular` (PLAN-022, PLAN-023)
+- 2.0.0 (2026-10-07): This repository holds only the editor packages (PLAN-024). The Playground app, its state and UI layers, and its Vite build are gone; npm workspaces replace Bun; CI, GitHub Pages and the tag-triggered release are added. Plans before PLAN-022 stay in the Playground repo
+- 2.1.0 (2026-10-07): Example apps for plain TypeScript, React and Angular, built from packed tarballs and smoke-tested in CI (PLAN-026)

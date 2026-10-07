@@ -1,6 +1,6 @@
-import { DEFAULT_PARSER_VERSION } from '../engine/loadBitmarkEngine';
-import { log } from '../log';
-import type { Monaco } from './types';
+import { DEFAULT_PARSER_VERSION } from '../engine/loadBitmarkEngine.js';
+import { log } from '../log.js';
+import type { Monaco } from './types.js';
 
 /**
  * Every model the package creates lives under this URI scheme, so the
@@ -70,8 +70,7 @@ export const loadBitmarkJsonSchema = async (url: string): Promise<unknown | unde
 
 /**
  * Bind `schema` in Monaco's JSON service for the package's models (D5). A
- * host whose every JSON model is bitmark JSON (the playground) may widen
- * `fileMatch`. Returns false when this Monaco has no JSON language.
+ * host whose every JSON model is bitmark JSON may widen `fileMatch`. Returns false when this Monaco has no JSON language.
  */
 export const bindBitmarkJsonSchema = (
   monaco: Monaco,

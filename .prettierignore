@@ -4,4 +4,3 @@ lib
 .yarn/
 dist/
 docs/
-src/generated/

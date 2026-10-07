@@ -8,13 +8,13 @@
  * - a page that already has Monaco (`MonacoEnvironment` set) is warned and
  *   left alone: use the `/esm` build with your own Monaco instead.
  */
-import { setMonacoLoader } from '../elements/defaults';
-import { defineBitmarkElements } from '../elements/elements';
-import type { BitmarkEngine } from '../engine/types';
-import { createBitmarkWorkerEngine } from '../engine/worker/createBitmarkWorkerEngine';
-import type { EnginePort } from '../engine/worker/protocol';
-import { log } from '../log';
-import type { Monaco } from '../monaco/types';
+import { setMonacoLoader } from '../elements/defaults.js';
+import { defineBitmarkElements } from '../elements/elements.js';
+import type { BitmarkEngine } from '../engine/types.js';
+import { createBitmarkWorkerEngine } from '../engine/worker/createBitmarkWorkerEngine.js';
+import type { EnginePort } from '../engine/worker/protocol.js';
+import { log } from '../log.js';
+import type { Monaco } from '../monaco/types.js';
 
 let assetBase = new URL('./', import.meta.url).href;
 
@@ -94,6 +94,6 @@ export const createBundledWorkerEngine = (
 setMonacoLoader(loadBundledMonaco, { own: true });
 defineBitmarkElements();
 
-export { setDefaultEngine, setMonacoLoader } from '../elements/defaults';
-export { defineBitmarkElements } from '../elements/elements';
-export * from '../index';
+export { setDefaultEngine, setMonacoLoader } from '../elements/defaults.js';
+export { defineBitmarkElements } from '../elements/elements.js';
+export * from '../index.js';

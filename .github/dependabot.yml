@@ -1,0 +1,68 @@
+# Weekly dependency PRs (PLAN-024 Phase 5). The default parser version has
+# its own workflow (bitmark-editor-parser-bump.yml), so Dependabot leaves
+# @gmb/bitmark-parser alone.
+version: 2
+updates:
+  - package-ecosystem: npm
+    # The root workspace: the core and its examples.
+    directory: /
+    schedule:
+      interval: weekly
+    ignore:
+      - dependency-name: "@gmb/bitmark-parser"
+    groups:
+      dev-minor-and-patch:
+        dependency-type: development
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    # The standalone Angular project (PLAN-024 D5).
+    directory: /packages/bitmark-editor-angular
+    schedule:
+      interval: weekly
+    ignore:
+      - dependency-name: "@gmb/bitmark-parser"
+      # Pinned to 0.46 on purpose: the example reproduces cosmic's Monaco.
+      - dependency-name: monaco-editor
+      # Angular majors and the TypeScript they need are planned work
+      # (PLAN-025), not a weekly PR.
+      - dependency-name: "@angular/*"
+        update-types: [version-update:semver-major]
+      - dependency-name: "@angular-devkit/*"
+        update-types: [version-update:semver-major]
+      - dependency-name: ng-packagr
+        update-types: [version-update:semver-major]
+      - dependency-name: typescript
+        update-types: [version-update:semver-major, version-update:semver-minor]
+    groups:
+      angular-minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+
+  # The example apps (PLAN-026) and their test harness. They track the
+  # newest Monaco, React and Vite on purpose; Angular majors are planned
+  # work (PLAN-025).
+  - package-ecosystem: npm
+    directories:
+      - /examples
+      - /examples/vanilla-ts
+      - /examples/react
+      - /examples/angular
+    schedule:
+      interval: monthly
+    ignore:
+      - dependency-name: "@gmb/*"
+      - dependency-name: "@angular/*"
+        update-types: [version-update:semver-major]
+      - dependency-name: "@angular-devkit/*"
+        update-types: [version-update:semver-major]
+    groups:
+      example-apps:
+        patterns: ["*"]

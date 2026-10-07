@@ -52,6 +52,8 @@ export class BmSessionComponent implements OnInit, OnDestroy, ControlValueAccess
   readonly monaco = input<Monaco>();
   readonly engine = input<EngineSource>();
   readonly theme = input<BitmarkTheme>();
+  /** Set Monaco's (page-wide) theme from `theme` too. Read at start. Default: the config's, else false. */
+  readonly applyMonacoTheme = input<boolean>();
   readonly debounceMs = input<number>();
   /** The JSON schema: an object, a URL, or `false`. */
   readonly schema = input<unknown>();
@@ -114,6 +116,7 @@ export class BmSessionComponent implements OnInit, OnDestroy, ControlValueAccess
         engine,
         value: this.pendingValue ?? this.value() ?? '',
         theme: this.theme() ?? this.config.theme,
+        applyMonacoTheme: this.applyMonacoTheme() ?? this.config.applyMonacoTheme,
         messages: this.config.messages,
         debounceMs: this.debounceMs(),
         schema: this.schema() ?? this.config.schema,

@@ -1,6 +1,6 @@
 # @gmb/bitmark-editor-angular
 
-Angular components for [`@gmb/bitmark-editor`](../../../bitmark-editor/README.md)
+Angular components for [`@gmb/bitmark-editor`](https://www.npmjs.com/package/@gmb/bitmark-editor)
 (PLAN-022 D10): `bm-session`, `bm-pane`, `bm-tabs`, `bm-split`, with forms
 support. Angular 21+.
 
@@ -27,15 +27,21 @@ providers: [
 </bm-session>
 ```
 
-- `bm-session` inputs: `value`, `monaco`, `engine`, `theme`, `debounceMs`,
-  `schema`; outputs: `change`, `ready`, `error`. As a form control, its
-  value is the bitmark text; disabling the control makes the panes read-only.
+- `bm-session` inputs: `value`, `monaco`, `engine`, `theme`,
+  `applyMonacoTheme`, `debounceMs`, `schema`; outputs: `change`, `ready`,
+  `error`. As a form control, its value is the bitmark text; disabling the
+  control makes the panes read-only.
 - `bm-pane` inputs: `type` (`bitmark` | `json` | `html` | `xml` | `text` |
   `info` | `mappings`), `mode`, `mapping`, `label`, `readonly`,
   `scrollSync`, `inactive`. It fills its box: size the outermost one.
 - Monaco and the session run outside the Angular zone; the outputs re-enter
   it, so change detection runs once per document change, not per Monaco
   event.
+- Themes: `theme` sets the bitmark token colours. Monaco's own theme is
+  page-wide and stays yours, so match the two: set `theme` to your Monaco's
+  theme, or, if the app owns its Monaco, pass `applyMonacoTheme: true` (in
+  `provideBitmarkEditor` or on `bm-session`), and the session sets Monaco's
+  theme from `theme` as well.
 - Monaco's widgets go to one fixed overflow node by default
   (`fixedOverflowWidgets: false` in the config to turn that off).
 

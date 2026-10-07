@@ -1,110 +1,101 @@
-@gmb/bitmark-playground
-================
+# bitmark editor
 
-![Build & Deploy](https://github.com/getMoreBrain/bitmark-playground/actions/workflows/build-and-deploy-to-github-pages.yml/badge.svg?branch=main)
+[![CI](https://github.com/getMoreBrain/bitmark-editor/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/getMoreBrain/bitmark-editor/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/@gmb/bitmark-editor?label=%40gmb%2Fbitmark-editor)](https://www.npmjs.com/package/@gmb/bitmark-editor)
+[![npm](https://img.shields.io/npm/v/@gmb/bitmark-editor-angular?label=%40gmb%2Fbitmark-editor-angular)](https://www.npmjs.com/package/@gmb/bitmark-editor-angular)
 
-A web playground for parsing and generating bitmark
+bitmark and JSON editors on Monaco, with optional HTML, XML, Text, Info and
+Mappings panes, for any framework. Editing any pane updates the others,
+through the bitmark parser.
 
-[Try out bitmark - visit the bitmark Playground](https://getmorebrain.github.io/bitmark-playground/)
+**[Try it](https://getmorebrain.github.io/bitmark-editor/try-it.html)** ·
+[Demos and API reference](https://getmorebrain.github.io/bitmark-editor/)
 
-Features:
-- Convert bitmark to JSON, and vice-versa.
-- Editing help from the parser: diagnostics, hover, and completion — choosing a bit type after `[.` inserts the bit's template (its usual tags, body and card structure) as a snippet.
+> Pre-release: 0.1.0 is not yet published.
 
-## The editors as a package
+## Packages
 
-The playground's bitmark and JSON editors are also a framework-agnostic
-package, in this repo's workspace:
+| Package | What it is |
+|---|---|
+| [`@gmb/bitmark-editor`](packages/bitmark-editor/README.md) | The core (engine, session, panes, themes, scroll linking), custom elements, a React adapter, and a CDN-ready `/bundled` build with its own Monaco. |
+| [`@gmb/bitmark-editor-angular`](packages/bitmark-editor-angular/projects/bitmark-editor-angular/README.md) | Angular components: `bm-session`, `bm-pane`, `bm-tabs`, `bm-split`, with forms support. |
 
-- [`@gmb/bitmark-editor`](packages/bitmark-editor/README.md): the core,
-  custom elements, a React adapter, and a CDN-ready `/bundled` build;
-- [`@gmb/bitmark-editor-angular`](packages/bitmark-editor-angular/projects/bitmark-editor-angular/README.md):
-  Angular components.
+Start with the [core README](packages/bitmark-editor/README.md). It says
+which build to use, with quick starts for a host that already has Monaco and
+for a static site without a bundler.
 
-The playground uses the package from source. Both packages are at 0.1.0
-and not yet published.
+Three small example apps, in [`examples/`](examples/), show the minimal
+setup for each kind of host: [plain TypeScript](examples/vanilla-ts/),
+[React](examples/react/) and [Angular](examples/angular/). CI installs them
+from tarballs of the current build and smoke-tests each one.
 
+Guides for specific hosts are in [`packages/bitmark-editor/docs/`](packages/bitmark-editor/docs/):
 
-## Available Scripts
+- [`handoff-cosmic.md`](packages/bitmark-editor/docs/handoff-cosmic.md): an
+  Angular app with its own AMD Monaco and parser;
+- [`handoff-docs-site.md`](packages/bitmark-editor/docs/handoff-docs-site.md):
+  a static Eleventy site;
+- [`handoff-playground.md`](packages/bitmark-editor/docs/handoff-playground.md):
+  the bitmark Playground, a React app on Vite.
 
-In the project directory, you can run:
+## Repository layout
 
-### `bun start`
+```text
+packages/bitmark-editor/            @gmb/bitmark-editor (npm workspace)
+  src/                              engine/, monaco/, session/, panes/, scroll/, theme/,
+                                    editor/, elements/, react/, bundled/
+  examples/                         static-site and /esm examples, the GitHub Pages
+                                    site (pages/), browser checks (npm workspace)
+  docs/                             hand-offs to host apps
+packages/bitmark-editor-angular/    Angular CLI project: the library and a cosmic-shaped
+                                    example (standalone npm project)
+examples/                           example apps: vanilla-ts, react, angular (each its own
+                                    npm project, installed from packed tarballs)
+scripts/                           release.mjs (one version for both packages),
+                                    example-apps.mjs (pack, install, build, test the apps)
+.awa/                               architecture and plans
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3010](http://localhost:3010) to view it in the browser.
+The Angular project is not in the root npm workspace. It pins Monaco 0.46
+and its own TypeScript to match cosmic, and builds against the core's `dist`.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Development
 
-### `bun test`
+Node 24 (`.nvmrc`) and npm. The devcontainer sets both up.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+npm ci                    # the workspace: the core and its examples
+npm run lint
+npm run typecheck
+npm test                  # unit tests (Vitest, jsdom)
+npm run build             # dist/esm, dist/types, dist/bundled
+npm run test:browser     # browser checks, including the Pages site (Playwright)
+npm run check:package        # what npm would publish, publint, attw
+npm run build:docs              # API reference (typedoc) → packages/bitmark-editor/docs/api
 
-### `bun run build`
+npm run install:angular   # the Angular project's own install
+npm run build:angular     # needs the core built (npm run build)
+npm run test:angular      # e2e: Monaco 0.46 AMD, injected parser
+npm run check:package:angular
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+npm run pack:examples       # after both builds; see examples/README.md
+npm run install:examples
+npm run build:examples
+npm run test:examples
+npm run start:example:vanilla-ts  # or :react, :angular — dev servers
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+CI ([`ci.yml`](.github/workflows/ci.yml)) runs all of these on every PR.
+`main` needs a PR, with the `core` and `angular` checks green.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+The default parser version is pinned in the core. A weekly workflow opens a
+PR when a newer `@gmb/bitmark-parser` is out within the supported major.
 
+## Releasing
 
-
-## Basic Usage
-
-
-
-
+Both packages release together, from a `v<version>` tag, by npm trusted
+publishing. See [RELEASING.md](RELEASING.md).
 
 ## License
 
-This open source software is licenced under the [ISC licence](https://opensource.org/license/isc-license-txt).
-
-
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `bun start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3010](http://localhost:3010) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `bun test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `bun run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `bun run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+This open source software is licensed under the [ISC license](LICENSE).

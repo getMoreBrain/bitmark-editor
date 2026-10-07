@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import type { BitmarkEngine } from '../engine/types';
-import { createFakeEditor } from '../testing/fakeScrollEditor';
-import { createSplitBitStarts } from './splitBitStarts';
+import type { BitmarkEngine } from '../engine/types.js';
+import { createFakeEditor } from '../testing/fakeScrollEditor.js';
+import { createSplitBitStarts } from './splitBitStarts.js';
 
 const slice = (start: number | undefined) => ({
   index: 0,

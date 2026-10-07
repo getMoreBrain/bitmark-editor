@@ -1,5 +1,5 @@
-import type { Monaco } from '../monaco/types';
-import type { EngineSource } from '../session/types';
+import type { Monaco } from '../monaco/types.js';
+import type { EngineSource } from '../session/types.js';
 
 /**
  * Page-wide defaults for the elements: where Monaco and the engine come

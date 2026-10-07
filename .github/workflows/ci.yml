@@ -1,0 +1,158 @@
+# CI for @gmb/bitmark-editor and @gmb/bitmark-editor-angular (PLAN-024 Phase 5).
+# Publishing is release.yml's job (PLAN-024 Phase 7).
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - name: Package contents, publint, attw
+        run: npm run check:package
+      - name: API docs build
+        run: npm run build:docs
+      - name: Examples and the Pages site (Monaco 0.57, /esm consumer)
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:browser
+      - uses: actions/upload-artifact@v7
+        with:
+          name: bitmark-editor-dist
+          path: packages/bitmark-editor/dist
+
+  angular:
+    needs: core
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            packages/bitmark-editor-angular/package-lock.json
+      # The root install brings publint and attw for the pack check.
+      - run: npm ci
+      - uses: actions/download-artifact@v8
+        with:
+          name: bitmark-editor-dist
+          path: packages/bitmark-editor/dist
+      # A standalone npm project, not a workspace member (PLAN-024 D5).
+      - run: npm run install:angular
+      - run: npm run build:angular
+      - name: Package contents, publint, attw
+        run: npm run check:package:angular
+      - name: "Example (cosmic-shaped: zones, Monaco 0.46 AMD, injected parser)"
+        # The root and the Angular project pin the same Playwright (1.63.0),
+        # so the root's browser install serves both.
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:angular
+      - uses: actions/upload-artifact@v7
+        with:
+          name: bitmark-editor-angular-dist
+          path: packages/bitmark-editor-angular/dist/bitmark-editor-angular
+
+  # The bottom of the React peer range (PLAN-025 Step 4): the core is
+  # developed on React 19, and this job runs the React adapter's tests and
+  # the typecheck on React 18.
+  react-18:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: React 18 (a fresh install; see the script)
+        run: node scripts/set-react.mjs 18
+      - run: npm run typecheck
+      - run: npm test -- src/react
+
+  # The top of the Angular peer range (PLAN-025 Step 4): the wrapper is built
+  # on Angular 21, and this job checks it on Angular 22 (with the TypeScript
+  # 6.0 it needs), installed outside the lockfile.
+  angular-22:
+    needs: core
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            packages/bitmark-editor-angular/package-lock.json
+      - uses: actions/download-artifact@v8
+        with:
+          name: bitmark-editor-dist
+          path: packages/bitmark-editor/dist
+      - run: npm run install:angular
+      - name: Angular 22 and TypeScript 6.0
+        working-directory: packages/bitmark-editor-angular
+        run: >-
+          npm install --no-save --no-audit --no-fund
+          @angular/common@22 @angular/compiler@22 @angular/core@22 @angular/forms@22
+          @angular/platform-browser@22 @angular/router@22 @angular/build@22 @angular/cli@22
+          @angular/compiler-cli@22 ng-packagr@22 typescript@~6.0.3
+      - run: npm run build:angular
+      - name: "Example (cosmic-shaped: zones, Monaco 0.46 AMD, injected parser)"
+        run: |
+          (cd packages/bitmark-editor-angular && npx playwright install --with-deps chromium)
+          npm run test:angular
+
+  # The example apps (PLAN-026), installed from tarballs of what the two
+  # jobs above built: what an outside app would get from npm.
+  example-apps:
+    needs: [core, angular]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: |
+            examples/package-lock.json
+            examples/vanilla-ts/package-lock.json
+            examples/react/package-lock.json
+            examples/angular/package-lock.json
+      - uses: actions/download-artifact@v8
+        with:
+          name: bitmark-editor-dist
+          path: packages/bitmark-editor/dist
+      - uses: actions/download-artifact@v8
+        with:
+          name: bitmark-editor-angular-dist
+          path: packages/bitmark-editor-angular/dist/bitmark-editor-angular
+      - run: npm run pack:examples
+      - run: npm run install:examples
+      - run: npm run build:examples
+      - name: Smoke tests (vanilla TS, React 19, zoneless Angular)
+        run: |
+          (cd examples && npx playwright install --with-deps chromium)
+          npm run test:examples

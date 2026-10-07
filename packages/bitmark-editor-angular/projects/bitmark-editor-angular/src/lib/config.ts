@@ -8,6 +8,11 @@ export interface BitmarkEditorConfig {
   /** The parser (D2, D7): injected, or how to load it. A factory is called once per session. */
   engine?: EngineSource | (() => EngineSource);
   theme?: BitmarkTheme;
+  /**
+   * Set Monaco's theme from each session's `theme` too. Monaco's theme is
+   * page-wide, so only when the app owns its Monaco. Default false.
+   */
+  applyMonacoTheme?: boolean;
   messages?: BitmarkSessionOptions['messages'];
   /** The JSON schema for every session: an object, a URL, or `false`. */
   schema?: unknown;

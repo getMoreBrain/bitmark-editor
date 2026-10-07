@@ -6,19 +6,19 @@ import {
   loadBitmarkModule,
   parserCdnUrl,
   SUPERSEDED,
-} from '../engine';
-import { log } from '../log';
+} from '../engine/index.js';
+import { log } from '../log.js';
 import {
   bindBitmarkJsonSchema,
   loadBitmarkJsonSchema,
   schemaUrlFor,
   schemaUrlForVersion,
-} from '../monaco/jsonSchema';
-import { debounce } from '../monaco/modelJob';
-import { setupBitmarkMonaco } from '../monaco/setup';
-import { createScrollSyncGroup } from '../scroll/scrollSyncGroup';
-import { applyBitmarkTheme, BitmarkTheme } from '../theme/applyTheme';
-import { resolveMessages } from './messages';
+} from '../monaco/jsonSchema.js';
+import { debounce } from '../monaco/modelJob.js';
+import { setupBitmarkMonaco } from '../monaco/setup.js';
+import { createScrollSyncGroup } from '../scroll/scrollSyncGroup.js';
+import { applyBitmarkTheme, BitmarkTheme, DEFAULT_THEME } from '../theme/applyTheme.js';
+import { resolveMessages } from './messages.js';
 import type {
   BitmarkPane,
   BitmarkSession,
@@ -29,7 +29,7 @@ import type {
   PaneControl,
   SessionEvents,
   SessionInternals,
-} from './types';
+} from './types.js';
 
 const isEngine = (s: EngineSource): s is BitmarkEngine =>
   typeof (s as BitmarkEngine).bitmarkToJsonText === 'function';
@@ -118,19 +118,30 @@ export const createBitmarkSession = (options: BitmarkSessionOptions): BitmarkSes
   stage2Pending = resolved.loading;
   const ready = resolved.engine;
 
-  // The session-wide theme: Monaco's is global, so it is set here once (D11),
-  // from the first theme the session gets (at start or later).
+  // The session-wide theme: Monaco's is global, so it is set here once (D11).
+  // Without a `theme`, the panes use the dark palette, so Monaco gets the
+  // same default rather than keeping a light theme under dark tokens.
   let monacoTheme: ReturnType<typeof applyBitmarkTheme> | undefined;
   const applyMonacoTheme = (next: BitmarkTheme | undefined) => {
-    if (!options.applyMonacoTheme || next === undefined) return;
-    if (monacoTheme) monacoTheme.setTheme(next);
+    if (!options.applyMonacoTheme) return;
+    const effective = next ?? DEFAULT_THEME;
+    if (monacoTheme) monacoTheme.setTheme(effective);
     else
-      monacoTheme = applyBitmarkTheme(document.createElement('div'), next, {
+      monacoTheme = applyBitmarkTheme(document.createElement('div'), effective, {
         monaco,
         applyMonacoTheme: true,
       });
   };
   applyMonacoTheme(theme);
+  // No theme, and Monaco's theme left to the host: the dark token palette
+  // meets whatever Monaco theme the host has, `vs` (light) unless it set one.
+  if (theme === undefined && !options.applyMonacoTheme) {
+    log.warnOnce(
+      'theme-unset',
+      `no \`theme\`: the bitmark token colours use the ${DEFAULT_THEME} palette, but your Monaco keeps its own theme ` +
+        '(light `vs` unless you set one). Set `theme` to match your Monaco, or pass `applyMonacoTheme: true`.',
+    );
+  }
 
   const commit = (text: string, source: PaneControl | undefined, edit: EditOrigin | undefined) => {
     editSeq++;

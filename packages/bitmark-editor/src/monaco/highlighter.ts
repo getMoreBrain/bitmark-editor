@@ -1,11 +1,11 @@
 import type { SemanticToken } from '@gmb/bitmark-parser';
 import type * as MonacoApi from 'monaco-editor';
 
-import type { BitmarkEngine } from '../engine/types';
-import { log } from '../log';
-import { tokenClassName } from '../theme/tokens';
-import { attachModelJob } from './modelJob';
-import type { CodeEditor, IDisposable, Monaco } from './types';
+import type { BitmarkEngine } from '../engine/types.js';
+import { log } from '../log.js';
+import { tokenClassName } from '../theme/tokens.js';
+import { attachModelJob } from './modelJob.js';
+import type { CodeEditor, IDisposable, Monaco } from './types.js';
 
 /**
  * Delay between the last edit and re-highlighting. Monaco's own semantic
