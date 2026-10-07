@@ -30,13 +30,13 @@ jobs:
       - run: npm test
       - run: npm run build
       - name: Package contents, publint, attw
-        run: npm run pack:check
+        run: npm run check:package
       - name: API docs build
-        run: npm run docs
+        run: npm run build:docs
       - name: Examples and the Pages site (Monaco 0.57, /esm consumer)
         run: |
           npx playwright install --with-deps chromium
-          npm run examples:test
+          npm run test:browser
       - uses: actions/upload-artifact@v7
         with:
           name: bitmark-editor-dist
@@ -61,16 +61,16 @@ jobs:
           name: bitmark-editor-dist
           path: packages/bitmark-editor/dist
       # A standalone npm project, not a workspace member (PLAN-024 D5).
-      - run: npm run angular:install
-      - run: npm run angular:build
+      - run: npm run install:angular
+      - run: npm run build:angular
       - name: Package contents, publint, attw
-        run: npm run angular:pack:check
+        run: npm run check:package:angular
       - name: "Example (cosmic-shaped: zones, Monaco 0.46 AMD, injected parser)"
         # The root and the Angular project pin the same Playwright (1.63.0),
         # so the root's browser install serves both.
         run: |
           npx playwright install --with-deps chromium
-          npm run angular:test
+          npm run test:angular
       - uses: actions/upload-artifact@v7
         with:
           name: bitmark-editor-angular-dist
@@ -100,10 +100,10 @@ jobs:
         with:
           name: bitmark-editor-angular-dist
           path: packages/bitmark-editor-angular/dist/bitmark-editor-angular
-      - run: npm run example-apps:pack
-      - run: npm run example-apps:install
-      - run: npm run example-apps:build
+      - run: npm run pack:examples
+      - run: npm run install:examples
+      - run: npm run build:examples
       - name: Smoke tests (vanilla TS, React 19, zoneless Angular)
         run: |
           (cd examples && npx playwright install --with-deps chromium)
-          npm run example-apps:test
+          npm run test:examples

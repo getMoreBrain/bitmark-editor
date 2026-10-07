@@ -45,14 +45,20 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
-      - run: npm run pack:check
-      - run: npm run docs
+      - run: npm run check:package
+      - run: npm run build:docs
       - run: npx playwright install --with-deps chromium
-      - run: npm run examples:test
-      - run: npm run angular:install
-      - run: npm run angular:build
-      - run: npm run angular:pack:check
-      - run: npm run angular:test
+      - run: npm run test:browser
+      - run: npm run install:angular
+      - run: npm run build:angular
+      - run: npm run check:package:angular
+      - run: npm run test:angular
+      - name: The example apps, on tarballs of this build
+        run: |
+          npm run pack:examples
+          npm run install:examples
+          npm run build:examples
+          npm run test:examples
       - name: Pack the tarballs to publish, and the release notes
         run: |
           mkdir -p release

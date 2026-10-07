@@ -2,7 +2,7 @@
 // examples/angular, each installed like an outside app.
 //
 //   node scripts/example-apps.mjs pack     pack both packages into examples/.packs/
-//                                          (needs npm run build and npm run angular:build)
+//                                          (needs npm run build and npm run build:angular)
 //   node scripts/example-apps.mjs install  install each app and the test harness
 //   node scripts/example-apps.mjs build    build each app for production
 //   node scripts/example-apps.mjs test     smoke-test the production builds
@@ -45,7 +45,7 @@ const commands = {
     for (const { dir, built, file } of PACKAGES) {
       const cwd = path.join(root, dir);
       if (!existsSync(path.join(cwd, built))) {
-        throw new Error(`${dir} is not built: run npm run build and npm run angular:build first`);
+        throw new Error(`${dir} is not built: run npm run build and npm run build:angular first`);
       }
       const [{ filename }] = JSON.parse(
         run(['pack', '--json', '--pack-destination', packs], cwd, 'utf8'),

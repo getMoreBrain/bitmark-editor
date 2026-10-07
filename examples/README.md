@@ -20,18 +20,29 @@ The apps install the packages from tarballs of the current build
 
 ```bash
 npm ci && npm run build
-npm run angular:install && npm run angular:build
-npm run example-apps:pack       # pack both packages into examples/.packs/
-npm run example-apps:install    # install each app, and the test harness
-npm run example-apps:build      # production builds
-npm run example-apps:test       # smoke tests (Playwright)
+npm run install:angular && npm run build:angular
+npm run pack:examples       # pack both packages into examples/.packs/
+npm run install:examples    # install each app, and the test harness
+npm run build:examples      # production builds
+npm run test:examples       # smoke tests (Playwright)
 ```
 
-Then, in an app's folder, `npm run dev` (Angular: `npm start`).
+Then start one with its dev server:
+
+| Script | URL |
+|---|---|
+| `npm run start:example:vanilla-ts` | http://localhost:5173 |
+| `npm run start:example:react` | http://localhost:5174 |
+| `npm run start:example:angular` | http://localhost:4200 |
+
+Options after `--` reach the dev server, for example
+`npm run start:example:react -- --port 3000`. The dev servers listen on every
+address, so a devcontainer's port forwarding reaches them. Inside an app's
+folder, `npm run dev` (Angular: `npm start`) does the same.
 
 Don't run a plain `npm install` or `npm ci` in an app after re-packing. The
 lockfile pins an older pack's integrity hash, and npm installs that cached
-tarball without a warning. `example-apps:install` installs the packs by path
+tarball without a warning. `install:examples` installs the packs by path
 instead.
 
 CI runs all of this on every PR (the `example-apps` job).

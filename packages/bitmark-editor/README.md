@@ -266,5 +266,5 @@ npm test               # vitest (jsdom)
 npm run typecheck
 npm run lint
 npm run build          # dist/esm, dist/types, dist/bundled
-npm run examples:test  # browser checks (Playwright), after a build
+npm run test:browser  # browser checks (Playwright), after a build
 ```

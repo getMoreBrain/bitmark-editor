@@ -63,11 +63,11 @@ the `@gmb` npm org with 2FA:
    ```bash
    npm ci
    npm run build
-   npm run angular:install
-   npm run angular:build
+   npm run install:angular
+   npm run build:angular
    npm run release:check -- 0.1.0-rc.0
-   npm run pack:check
-   npm run angular:pack:check
+   npm run check:package
+   npm run check:package:angular
    ```
 
 3. Publish both packages under `next`:

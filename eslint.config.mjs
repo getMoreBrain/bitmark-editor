@@ -19,6 +19,9 @@ const config = [
       '**/dist',
       '**/docs',
       '**/coverage',
+      // Build caches and test output (the Angular dev server caches Monaco here).
+      '**/.angular',
+      '**/test-results',
       '.github',
       '.awa',
       '.claude',

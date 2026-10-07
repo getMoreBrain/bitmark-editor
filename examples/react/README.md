@@ -15,4 +15,5 @@ The Monaco setup ([`src/monaco.ts`](src/monaco.ts)) is the same as the plain
 TypeScript example.
 
 Run it from the repo root as described in [`../README.md`](../README.md),
-then `npm run dev` here.
+then `npm run start:example:react` (or `npm run dev` here):
+http://localhost:5174.

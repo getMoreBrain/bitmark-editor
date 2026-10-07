@@ -4,7 +4,7 @@ import { expect, test } from '@playwright/test';
 
 const pane = (page, n) => page.locator(`.panes > :nth-child(${n}) .monaco-editor`).first();
 
-test('loads, highlights, and converts a typed edit', async ({ page }, testInfo) => {
+test('loads, highlights, converts a typed edit, and resets', async ({ page }, testInfo) => {
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));
   page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
@@ -33,5 +33,10 @@ test('loads, highlights, and converts a typed edit', async ({ page }, testInfo) 
     // bm-session is a form control: the FormControl's value follows too.
     await expect(formValue).not.toHaveText(before);
   }
+  // Reset sets the document from the app: the panes follow.
+  await page.getByRole('button', { name: 'Reset' }).click();
+  await expect(pane(page, 1)).not.toContainText('Typed in the example', { timeout: 10_000 });
+  await expect(pane(page, 2)).not.toContainText('Typed in the example');
+  await expect(pane(page, 1)).toContainText('Hello **World**!');
   expect(errors).toEqual([]);
 });

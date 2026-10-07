@@ -38,7 +38,7 @@ AMD and an injected parser.
 
 ### Scaffold
 
-- [x] `examples/.packs/` (gitignored): a root script `example-apps:pack` packs
+- [x] `examples/.packs/` (gitignored): a root script `pack:examples` packs
   the core and the built Angular library there, under fixed names
   (`gmb-bitmark-editor.tgz`, `gmb-bitmark-editor-angular.tgz`), so the
   apps' `file:` dependencies don't change with the version
@@ -64,7 +64,7 @@ AMD and an injected parser.
   tarball from npm's cache, matched by the lockfile's hash, with no warning.
   Without a lockfile, or with the pack named on the command line, npm
   installs the new one. So the lockfiles are committed (Vite, React, Angular
-  and Monaco stay reproducible), and `example-apps:install` runs `npm ci`
+  and Monaco stay reproducible), and `install:examples` runs `npm ci`
   then `npm install --no-save ../.packs/…`. The README warns against a plain
   install in an app
 
@@ -76,8 +76,24 @@ AMD and an injected parser.
 - [x] One smoke test per app: the page loads with no errors; the session is
   ready; bitmark is highlighted; a typed edit reaches the JSON pane (and,
   in Angular, the form control's value) — `examples/tests/app.spec.mjs`, run once per project. The Angular check compares the form value before and after the edit
-- [x] Root scripts: `example-apps:pack`, `example-apps:install`,
-  `example-apps:build`, `example-apps:test` — all in `scripts/example-apps.mjs`
+- [x] Root scripts: `pack:examples`, `install:examples`,
+  `build:examples`, `test:examples` — all in `scripts/example-apps.mjs`
+
+### Double-check (2026-10-07)
+
+- [x] Root script names: they mixed target-first (`angular:build`) and verb-first (`lint:fix`), and "examples" meant two things. They are now verb-first, so related scripts group together:
+  - `build`, `build:angular`, `build:docs` (was `docs`), `build:pages`, `build:examples`
+  - `test`, `test:browser` (the core's browser checks, was `examples:test`), `test:pages`, `test:angular`, `test:examples`
+  - `check:package`, `check:package:angular`, `install:angular`, `install:examples`, `pack:examples`
+  - unchanged: `typecheck`, `lint`, `release:version`, `release:check`
+
+  Live docs and workflows use the new names; the completed PLAN-024/025 keep the old ones as history. `lint:fix` now also fixes the core, as `lint` checks it
+- [x] Start scripts: `start:example:vanilla-ts` (5173), `start:example:react` (5174), `start:example:angular` (4200). Each ends with `--`, so options reach the dev server. Without it, `npm run start:example:react -- --port 3000` gave npm the `--port` and gave Vite `3000` as its root folder
+- [x] Dev servers in the devcontainer: Vite and `ng serve` listened on `localhost`, which resolved to IPv6 `::1` only. Port forwarding connects over IPv4, so every app hung in the browser (reported by the user). Each app now listens on every address: Vite `server.host: true`, Angular serve `"host": "0.0.0.0"`. Checked: reachable on `127.0.0.1`, and the smoke test passes against all three dev servers
+- [x] Reset is in all three apps and in the smoke test: it covers the app-to-session direction (`setBitmark`, React's `value`, Angular's `writeValue`)
+- [x] The release's verify job runs the example apps as well, so "verifies everything CI does" stays true
+- [x] Root lint ignores the `.angular` and `test-results` folders. The Angular dev server's cache, which includes Monaco, had made lint run for minutes
+- [x] `packageManager: npm@11.13.0` in every app and the harness, as in the root
 
 ### CI and upkeep
 

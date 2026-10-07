@@ -300,12 +300,12 @@ STATUS: Alpha — both packages are at 0.1.0, built and tested, and not yet publ
 - `npm run typecheck` — Typecheck the core
 - `npm test` — Run the core's unit tests
 - `npm run build` — Build the core (`dist/esm`, `dist/types`, `dist/bundled`)
-- `npm run examples:test` — Browser checks of the examples and the Pages site
-- `npm run pack:check` — Check what npm would publish (publint, attw)
-- `npm run docs` — Build the API reference
-- `npm run pages:build` — Build the GitHub Pages site
-- `npm run angular:install` / `angular:build` / `angular:test` — Install, build and test the Angular project
-- `npm run example-apps:pack` / `example-apps:install` / `example-apps:build` / `example-apps:test` — The example apps, on tarballs of the current build
+- `npm run test:browser` — Browser checks of the examples and the Pages site
+- `npm run check:package` — Check what npm would publish (publint, attw)
+- `npm run build:docs` — Build the API reference
+- `npm run build:pages` — Build the GitHub Pages site
+- `npm run install:angular` / `build:angular` / `test:angular` — Install, build and test the Angular project
+- `npm run pack:examples` / `install:examples` / `build:examples` / `test:examples` — The example apps, on tarballs of the current build
 - `npm run release:version -- <version>` — Set the release version everywhere
 - `npm run release:check -- <version>` — Check that the repo is ready to tag that version
 

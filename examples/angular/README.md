@@ -19,4 +19,5 @@ cosmic), see the Angular project's own example in
 `packages/bitmark-editor-angular/projects/example`.
 
 Run it from the repo root as described in [`../README.md`](../README.md),
-then `npm start` here.
+then `npm run start:example:angular` (or `npm start` here):
+http://localhost:4200.

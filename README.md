@@ -69,19 +69,20 @@ npm run lint
 npm run typecheck
 npm test                  # unit tests (Vitest, jsdom)
 npm run build             # dist/esm, dist/types, dist/bundled
-npm run examples:test     # browser checks, including the Pages site (Playwright)
-npm run pack:check        # what npm would publish, publint, attw
-npm run docs              # API reference (typedoc) → packages/bitmark-editor/docs/api
+npm run test:browser     # browser checks, including the Pages site (Playwright)
+npm run check:package        # what npm would publish, publint, attw
+npm run build:docs              # API reference (typedoc) → packages/bitmark-editor/docs/api
 
-npm run angular:install   # the Angular project's own install
-npm run angular:build     # needs the core built (npm run build)
-npm run angular:test      # e2e: Monaco 0.46 AMD, injected parser
-npm run angular:pack:check
+npm run install:angular   # the Angular project's own install
+npm run build:angular     # needs the core built (npm run build)
+npm run test:angular      # e2e: Monaco 0.46 AMD, injected parser
+npm run check:package:angular
 
-npm run example-apps:pack       # after both builds; see examples/README.md
-npm run example-apps:install
-npm run example-apps:build
-npm run example-apps:test
+npm run pack:examples       # after both builds; see examples/README.md
+npm run install:examples
+npm run build:examples
+npm run test:examples
+npm run start:example:vanilla-ts  # or :react, :angular — dev servers
 ```
 
 CI ([`ci.yml`](.github/workflows/ci.yml)) runs all of these on every PR.

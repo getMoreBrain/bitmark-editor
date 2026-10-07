@@ -1,5 +1,5 @@
 // The example apps' smoke tests (PLAN-026), each on its production build.
-// Build them first: npm run example-apps:build at the repo root.
+// Build them first: npm run build:examples at the repo root.
 import { defineConfig } from '@playwright/test';
 
 export const APPS = [
