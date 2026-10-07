@@ -34,7 +34,8 @@ provideBitmarkEditor({
   `applyMonacoTheme`, `debounceMs`, `schema`; outputs: `change`, `ready`,
   `error`. As a form control, its value is the bitmark text.
 - `bm-pane` inputs: `type`, `mode`, `mapping`, `label`, `readonly`,
-  `scrollSync`, `inactive`. It fills its box.
+  `scrollSync`, `editorOptions` (passed to Monaco), `inactive`. It fills its
+  box.
 - Monaco and the session run outside the Angular zone.
 
 The [example app](https://github.com/getMoreBrain/bitmark-editor/tree/main/examples/angular)

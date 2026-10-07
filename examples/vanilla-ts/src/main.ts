@@ -15,8 +15,14 @@ const INITIAL = '[.article]\nHello **World**!\n\n[.cloze]\nThe capital of France
 const session = createBitmarkSession({ monaco, value: INITIAL, theme: 'auto', applyMonacoTheme: true });
 
 createBitmarkPane(document.getElementById('bitmark')!, session);
-createJsonPane(document.getElementById('json')!, session);
-createHtmlPane(document.getElementById('html')!, session, { readOnly: true });
+// Monaco's sticky scroll (nested scopes pinned at the top) is off in the
+// generated views: `editorOptions` goes straight to Monaco.
+const noStickyScroll = { stickyScroll: { enabled: false } };
+createJsonPane(document.getElementById('json')!, session, { editorOptions: noStickyScroll });
+createHtmlPane(document.getElementById('html')!, session, {
+  readOnly: true,
+  editorOptions: noStickyScroll,
+});
 
 const status = document.getElementById('status')!;
 session.on('change', ({ bitmark, source }) => {

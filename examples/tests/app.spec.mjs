@@ -63,6 +63,13 @@ test('loads, highlights, converts a typed edit, and resets', async ({ page }, te
     // bm-session is a form control: the FormControl's value follows too.
     await expect(formValue).not.toHaveText(before);
   }
+  // No sticky scroll in the generated views: scrolled into the JSON's
+  // nested objects, nothing is pinned at the top.
+  await pane(page, 2).hover();
+  await page.mouse.wheel(0, 400);
+  await page.waitForTimeout(500);
+  await expect(page.locator('.panes > :nth-child(2) .sticky-line-content')).toHaveCount(0);
+
   // Themes: the token palette and Monaco's own theme switch together, and
   // tokens stay readable on the editor background.
   const theme = page.getByLabel('Theme');

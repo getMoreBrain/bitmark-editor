@@ -4,6 +4,10 @@ import { useEffect, useState } from 'react';
 
 import { monaco } from './monaco';
 
+// Monaco's sticky scroll (nested scopes pinned at the top) is off in the
+// generated views: `editorOptions` goes straight to Monaco.
+const NO_STICKY_SCROLL = { stickyScroll: { enabled: false } };
+
 const INITIAL = '[.article]\nHello **World**!\n\n[.cloze]\nThe capital of France is [_Paris].';
 
 export const App = () => {
@@ -57,11 +61,22 @@ export const App = () => {
             </section>
             <section className="pane-card">
               <h2>JSON</h2>
-              <BitmarkPane type="json" className="pane" style={{ height: 'auto' }} />
+              <BitmarkPane
+                type="json"
+                editorOptions={NO_STICKY_SCROLL}
+                className="pane"
+                style={{ height: 'auto' }}
+              />
             </section>
             <section className="pane-card">
               <h2>HTML · read-only</h2>
-              <BitmarkPane type="html" readOnly className="pane" style={{ height: 'auto' }} />
+              <BitmarkPane
+                type="html"
+                readOnly
+                editorOptions={NO_STICKY_SCROLL}
+                className="pane"
+                style={{ height: 'auto' }}
+              />
             </section>
           </div>
           <footer className="status-bar">
