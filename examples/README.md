@@ -46,9 +46,10 @@ Options after `--` reach the dev server, for example
 address, so a devcontainer's port forwarding reaches them. Inside an app's
 folder, `npm run dev` (Angular: `npm start`) does the same.
 
-Don't run a plain `npm install` or `npm ci` in an app after re-packing. The
-lockfile pins an older pack's integrity hash, and npm installs that cached
-tarball without a warning. `install:examples` installs the packs by path
-instead.
+Don't run a plain `npm install` or `npm ci` in an app. The lockfile holds the
+integrity hash of whichever pack it was written with, and every build changes
+it. So npm either fails (`EINTEGRITY`, on a clean machine) or installs an
+older pack from its cache without a warning. `install:examples` leaves the
+packs' hashes out for its `npm ci`, then installs the packs by path.
 
 CI runs all of this on every PR (the `example-apps` job).
