@@ -30,7 +30,7 @@ updates:
       interval: weekly
     ignore:
       - dependency-name: "@gmb/bitmark-parser"
-      # Pinned to 0.46 on purpose: the example reproduces cosmic's Monaco.
+      # Pinned to 0.46 on purpose: the example reproduces an AMD Monaco 0.46 host.
       - dependency-name: monaco-editor
       # Angular majors and the TypeScript they need are planned work
       # (PLAN-025), not a weekly PR.

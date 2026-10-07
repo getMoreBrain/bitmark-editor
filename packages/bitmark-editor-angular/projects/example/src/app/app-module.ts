@@ -1,4 +1,4 @@
-// The example app, shaped like cosmic (PLAN-022 D10, PLAN-023 Step 15a):
+// The NgModule example app (PLAN-022 D10, PLAN-023 Step 15a):
 // NgModule bootstrap, zone change detection, Monaco 0.46 AMD from assets as
 // `window.monaco`, the parser bundled and initialised by the app.
 import { NgModule, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
@@ -21,7 +21,7 @@ type Win = Window & {
   require?: { config(c: unknown): void; (deps: string[], cb: () => void): void };
 };
 
-/** Load the AMD Monaco from the app's assets, once (as ngx-monaco-editor-v2 does in cosmic). */
+/** Load the AMD Monaco from the app's assets, once (as ngx-monaco-editor-v2 does). */
 let monacoPromise: Promise<Monaco> | undefined;
 export const loadAmdMonaco = (): Promise<Monaco> =>
   (monacoPromise ??= new Promise((resolve, reject) => {
@@ -37,7 +37,7 @@ export const loadAmdMonaco = (): Promise<Monaco> =>
     document.body.appendChild(script);
   }));
 
-/** The host initialises its own parser, as cosmic does (D7: the package never calls init). */
+/** The host initialises its own parser (D7: the package never calls init). */
 export const parserReady = parser.init({
   feature: 'bitmark-json',
   module_or_path: '/assets/bitmark-parser/bitmark_json_wasm_bg.wasm',

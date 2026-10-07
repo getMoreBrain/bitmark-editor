@@ -14,7 +14,7 @@ import {
 
 import { BmSessionComponent } from './session.component';
 
-/** One fixed node for every pane's Monaco widgets (as cosmic does). */
+/** One fixed node for every pane's Monaco widgets. */
 let overflowNode: HTMLElement | undefined;
 const sharedOverflowNode = (): HTMLElement => {
   if (!overflowNode) {

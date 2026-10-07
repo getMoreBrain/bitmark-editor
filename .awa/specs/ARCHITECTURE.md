@@ -8,7 +8,7 @@ plus an Angular wrapper, `@gmb/bitmark-editor-angular`. Both are built on
 Monaco, with the bitmark parser doing the language work. A host gets one
 bitmark document per session and places its panes (bitmark, JSON, HTML, XML,
 Text, Info, Mappings) anywhere; editing any pane updates the others. Hosts
-include the cosmic web app (Angular), the bitmark docs site (static) and the
+include an Angular web app, the bitmark docs site (static) and the
 Playground (React).
 
 ## System Overview
@@ -105,8 +105,8 @@ packages/bitmark-editor/src/react/        # React adapter (/react)
 packages/bitmark-editor/src/bundled/      # The CDN build with Monaco inside (/bundled)
 packages/bitmark-editor/scripts/          # The build and the parser bump (`npm run bump:parser`)
 packages/bitmark-editor/examples/         # Static-site and /esm examples, browser checks (npm workspace)
-packages/bitmark-editor/docs/             # Hand-offs to host apps; typedoc output (docs/api, not committed)
-packages/bitmark-editor-angular/          # Angular CLI project: the wrapper library and a cosmic-shaped example (standalone npm project)
+packages/bitmark-editor/docs/             # typedoc output (docs/api, not committed)
+packages/bitmark-editor-angular/          # Angular CLI project: the wrapper library and an NgModule example (zones, Monaco 0.46 AMD, injected parser; standalone npm project)
 examples/                                 # Example apps (vanilla-ts, react, angular), each its own npm project on packed tarballs, and their smoke tests
 docs-site/                                # The docs site: guides, live demos, the API reference (Eleventy, Pagefind; npm workspace; built and tested, not yet deployed)
 scripts/                                  # Repo scripts: the release helper, the example apps' pack/install/build/test

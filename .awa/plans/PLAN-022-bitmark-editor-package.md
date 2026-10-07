@@ -7,7 +7,7 @@ TRACEABILITY: Reuses PLAN-016 (semantic-token highlighting), PLAN-017 (editor se
 ## Context
 
 The playground's bitmark ↔ JSON editors are useful outside the playground:
-in other web apps (cosmic, an Angular 21 app) and on the bitmark docs site
+in other web apps (an Angular 21 host app) and on the bitmark docs site
 (the parser repo's `docs-site`, a static Eleventy site with no bundler).
 Today they are tied to the playground in four ways:
 
@@ -107,8 +107,8 @@ likes, and the playground consumes the package.
   3. Adapters:
      - `@gmb/bitmark-editor/react` (the playground uses it);
      - an Angular wrapper in v1 (D10).
-- D10 — Angular wrapper in v1, because Angular is a definite target: cosmic
-  (`getMoreBrain/cosmic`, `gmb.web`).
+- D10 — Angular wrapper in v1, because Angular is a definite target: an
+  Angular host app.
   - It is a separate package, `@gmb/bitmark-editor-angular`, in the same
     workspace (`packages/bitmark-editor-angular`). Angular components must be
     compiled by ng-packagr (partial Ivy), which the core's tsup / Vite build
@@ -125,7 +125,7 @@ likes, and the playground consumes the package.
     (`formControlName`, `ngModel`).
   - It creates and runs Monaco outside the Angular zone
     (`NgZone.runOutsideAngular`), and re-enters the zone only to emit
-    outputs. cosmic uses zone change detection
+    outputs. The Angular host app uses zone change detection
     (`provideZoneChangeDetection`); in a zoneless app the same code is a
     no-op.
   - `provideBitmarkEditor({ monaco, engine })` provides app-wide defaults, so
@@ -155,15 +155,15 @@ likes, and the playground consumes the package.
     - no `monaco.languages.json`: the JSON pane runs without schema
       validation;
     - no suggest / hover contributions: no completion / hover.
-  - The supported Monaco range starts at 0.46 (cosmic's version) and runs up
+  - The supported Monaco range starts at 0.46 (the Angular host app's version) and runs up
     to the current release, as the peer range. Monaco has no runtime version
     on its ESM API, so setup checks the APIs and contributions it needs
     instead of a version number (Phase 1 Step 4). Both the AMD global build
-    (0.46, as cosmic loads it) and the ESM build (current, as the playground
+    (0.46, as the Angular host app loads it) and the ESM build (current, as the playground
     loads it) are tested in CI. `/bundled` always ships the current Monaco.
   - Panes pass Monaco `editorOptions` through. The Angular wrapper defaults
     to `fixedOverflowWidgets` with one shared `overflowWidgetsDomNode` (as
-    cosmic's own editor does), so widgets are not clipped inside scroll
+    the Angular host app's own editor does), so widgets are not clipped inside scroll
     containers and dialogs.
   - A host without Monaco uses `/bundled`.
   - Guard: when `/bundled` finds `self.MonacoEnvironment` already set, it
@@ -336,7 +336,7 @@ likes, and the playground consumes the package.
   - Injection is unchanged (D7): an injected module runs on the main
     thread. A host that wants the worker lets the package load it, or
     passes `worker: true` with its own parser URL. It can choose per
-    session (e.g. cosmic: injected for small documents, worker for books).
+    session (e.g. the Angular host app: injected for small documents, worker for books).
   - The default is the main thread. There is no automatic switch by size;
     the README gives the table above as guidance (use the worker beyond
     about 100 KB).
@@ -509,7 +509,7 @@ likes, and the playground consumes the package.
     - when the package owns Monaco (`/bundled`), it calls `setTheme`;
     - with an injected Monaco, it does not by default. The host's theme
       stays in charge and only the token palette follows `theme`;
-      `applyMonacoTheme: true` opts in. cosmic (already on `vs-dark`) passes
+      `applyMonacoTheme: true` opts in. The Angular host app (already on `vs-dark`) passes
       `theme: 'dark'`;
     - two sessions with different themes on one Monaco each get their own
       token colours, but share the last applied Monaco base theme. The
@@ -584,7 +584,7 @@ each plan within the size limit. Decision ids (D1 to D12) are defined here.
 - [x] Theme? — Dark, light, `auto` and custom, with token CSS variables;
   an injected Monaco's theme is left alone unless asked (D11).
 - [x] Angular wrapper in v1? — Yes: `@gmb/bitmark-editor-angular` (D10).
-  cosmic is the first Angular host. Findings from its repo (`gmb.web`):
+  An Angular host app is the first Angular host. Findings from its repo:
   - Angular 21.2, NgModule bootstrap, `provideZoneChangeDetection` (zone.js
     0.15), `@angular/build`;
   - it already has Monaco: 0.46.0 through `ngx-monaco-editor-v2`. This is the
@@ -597,7 +597,7 @@ each plan within the size limit. Decision ids (D1 to D12) are defined here.
     flag;
   - it has no test runner (verified by build and browser only).
 
-  So cosmic is the "inject both" case (D2, D7, D8): it passes its own parser
+  So the Angular host app is the "inject both" case (D2, D7, D8): it passes its own parser
   module (`feature: 'bitmark-json'`) and its own `window.monaco`.
 - [x] Layout? — None fixed. A session and independent panes the host places
   anywhere; optional layout helpers (D9).
@@ -606,7 +606,7 @@ each plan within the size limit. Decision ids (D1 to D12) are defined here.
   read-only (D9).
 - [x] Scroll sync? — A per-pane membership set, switchable at runtime (D9).
 - [x] Which Angular version must the example target? — Angular 21, shaped
-  like cosmic (Step 15a).
+  like the Angular host app (Step 15a).
 - [x] The docs site (not Astro): switch from CodeMirror to the package? —
   Yes (D12), with lazy load, the narrow-screen option, CDN-safe workers,
   `messages` and a debounce option.
@@ -620,8 +620,9 @@ each plan within the size limit. Decision ids (D1 to D12) are defined here.
   pane content (D15).
 - [x] Remaining defaults (regeneration, names, license, a11y, API docs, order,
   upstream asks)? — Agreed as listed (D16).
-- [x] Is cosmic integration in scope? — A proof of concept on a cosmic branch
-  as the last step (Step 17); the real cosmic feature is a separate plan.
+- [x] Is integration in the Angular host app in scope? — A proof of concept on
+  a branch of that app as the last step (Step 17); the real feature is a
+  separate plan.
 
 ## References
 

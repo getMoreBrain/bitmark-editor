@@ -62,10 +62,10 @@ packages/bitmark-editor/            @gmb/bitmark-editor (npm workspace)
                                     editor/, elements/, react/, bundled/
   examples/                         static-site and /esm examples, with browser checks
                                     (npm workspace)
-  docs/                             integration notes for specific apps that use the editor
-packages/bitmark-editor-angular/    Angular CLI project: the library and an example shaped
-                                    like cosmic, an Angular app of ours with its own AMD
-                                    Monaco and parser (standalone npm project)
+  docs/api/                         the API reference (generated, not committed)
+packages/bitmark-editor-angular/    Angular CLI project: the library and an NgModule
+                                    example with zones, an AMD Monaco 0.46 and its own
+                                    parser (standalone npm project)
 examples/                           example apps: vanilla-ts, react, angular (each its own
                                     npm project, installed from packed tarballs)
 docs-site/                          the docs site (Eleventy, Pagefind; npm workspace),
@@ -77,7 +77,7 @@ scripts/                            release.mjs (one version for both packages),
 ```
 
 The Angular project is not in the root npm workspace. It pins Monaco 0.46
-and its own TypeScript to match cosmic, and builds against the core's build
+and its own TypeScript for its example, and builds against the core's build
 output (`dist`).
 
 ## Development
@@ -105,7 +105,7 @@ npm run start:site         # the docs site's dev server: http://localhost:8080
 # The Angular package
 npm run install:angular    # its own install
 npm run build:angular
-npm run test:angular       # end-to-end tests of its cosmic-shaped example
+npm run test:angular       # end-to-end tests of its NgModule example
 npm run check:package:angular
 
 # The example apps (after build and build:angular)

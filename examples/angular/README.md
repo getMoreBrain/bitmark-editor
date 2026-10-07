@@ -23,8 +23,7 @@ A zoneless Angular 21 app on `@gmb/bitmark-editor-angular`.
   (page-wide) theme to match, following the OS for Auto. Use it when the app
   owns its Monaco.
 
-For Angular with zones, Monaco loaded as AMD and an injected parser (as in
-cosmic), see the Angular project's own example in
+For Angular with zones, Monaco loaded as AMD and an injected parser, see the Angular project's own example in
 `packages/bitmark-editor-angular/projects/example`.
 
 Run it from the repo root as described in [`../README.md`](../README.md),

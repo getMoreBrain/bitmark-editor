@@ -1,7 +1,7 @@
 # bitmark-editor-angular (workspace)
 
 The Angular CLI workspace for `@gmb/bitmark-editor-angular` (PLAN-023 Step
-13a) and its cosmic-shaped example app (Step 15a).
+13a) and its NgModule example app (Step 15a).
 
 ```bash
 npm install
