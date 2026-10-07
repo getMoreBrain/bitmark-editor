@@ -144,7 +144,7 @@ the repo from Bun to npm, and prepares both packages for publishing to npm.
 - [x] `bitmark-editor-parser-bump.yml`: remove `setup-bun`; `bun install` → `npm install` (it updates `package-lock.json`); update the comments; keep `BITMARK_EDITOR_BOT_TOKEN` — `npm install --package-lock-only --ignore-scripts`, since the PR only needs the lockfile. The comments now say a merged bump ships with the next release tag (releases are tag-triggered, Phase 7), not automatically
 - [x] Remove the README badge for the Playground deploy workflow — replaced by the CI badge; the rest of the root README is rewritten in Phase 8
 - [x] Add `.github/dependabot.yml` for `github-actions` and `npm` (root and Angular directories), grouped and weekly. Ignore `@gmb/bitmark-parser`, because the parser-bump workflow owns it. The Angular directory also ignores `monaco-editor` (pinned to 0.46 to match cosmic), and Angular, ng-packagr and TypeScript majors (planned in PLAN-025)
-- [ ] Branch protection on `main`: require the CI jobs to pass and require PRs. This is a manual step for a repo admin
+- [x] Branch protection on `main`: require the CI jobs to pass and require PRs. This is a manual step for a repo admin — done with `gh` as a repository ruleset named `main` (id 24618038). It requires a PR (0 approvals, so a sole maintainer and the bot PRs can merge), requires the `core` and `angular` checks with branches up to date, and blocks force pushes and deletion. Nobody can bypass it
 
 ### Phase 6 — GitHub Pages (examples + API docs)
 
