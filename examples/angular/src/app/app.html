@@ -1,5 +1,5 @@
-<header>
-  <h1>bitmark editor: Angular</h1>
+<header class="app-header">
+  <h1><b>[.bitmark]</b> editor · Angular</h1>
   <label>Theme
     <select [value]="theme()" (change)="setTheme($any($event.target).value)">
       <option value="auto">Auto</option>
@@ -8,13 +8,17 @@
     </select>
   </label>
 </header>
-<bm-session [formControl]="content" [theme]="theme()" (change)="onChange($event)" (error)="status.set('Error: ' + $event.error.message)">
-  <div class="panes">
-    <bm-pane type="bitmark" />
-    <bm-pane type="json" />
-    <bm-pane type="html" [readonly]="true" />
-  </div>
-</bm-session>
-<p>Last change: <output id="status">{{ status() }}</output></p>
-<p>Form value: <output id="form-value">{{ value().length }} characters</output></p>
-<button type="button" (click)="reset()">Reset</button>
+<main>
+  <bm-session [formControl]="content" [theme]="theme()" (change)="onChange($event)" (error)="status.set('Error: ' + $event.error.message)">
+    <div class="panes">
+      <section class="pane-card"><h2>bitmark</h2><bm-pane class="pane" type="bitmark" /></section>
+      <section class="pane-card"><h2>JSON</h2><bm-pane class="pane" type="json" /></section>
+      <section class="pane-card"><h2>HTML · read-only</h2><bm-pane class="pane" type="html" [readonly]="true" /></section>
+    </div>
+  </bm-session>
+  <footer class="status-bar">
+    <span>Last change: <output id="status">{{ status() }}</output></span>
+    <span>Form value: <output id="form-value">{{ value().length }} characters</output></span>
+    <button type="button" (click)="reset()">Reset</button>
+  </footer>
+</main>

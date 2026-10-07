@@ -20,8 +20,10 @@ export const App = () => {
 
   return (
     <>
-      <header>
-        <h1>bitmark editor: React</h1>
+      <header className="app-header">
+        <h1>
+          <b>[.bitmark]</b> editor · React
+        </h1>
         <label>
           Theme{' '}
           <select value={theme} onChange={(e) => setTheme(e.target.value as typeof theme)}>
@@ -45,18 +47,33 @@ export const App = () => {
         }}
         onError={({ error }) => setStatus(`Error: ${error.message}`)}
       >
-        <div className="panes">
-          <BitmarkPane type="bitmark" />
-          <BitmarkPane type="json" />
-          <BitmarkPane type="html" readOnly />
-        </div>
+        <main>
+          {/* <BitmarkPane> sets height: 100% on its div; `height: auto` lets the
+              card's flex layout size it instead. */}
+          <div className="panes">
+            <section className="pane-card">
+              <h2>bitmark</h2>
+              <BitmarkPane type="bitmark" className="pane" style={{ height: 'auto' }} />
+            </section>
+            <section className="pane-card">
+              <h2>JSON</h2>
+              <BitmarkPane type="json" className="pane" style={{ height: 'auto' }} />
+            </section>
+            <section className="pane-card">
+              <h2>HTML · read-only</h2>
+              <BitmarkPane type="html" readOnly className="pane" style={{ height: 'auto' }} />
+            </section>
+          </div>
+          <footer className="status-bar">
+            <span>
+              Last change: <output id="status">{status}</output>
+            </span>
+            <button type="button" onClick={() => setBitmark(INITIAL)}>
+              Reset
+            </button>
+          </footer>
+        </main>
       </BitmarkSession>
-      <p>
-        Last change: <output id="status">{status}</output>
-      </p>
-      <button type="button" onClick={() => setBitmark(INITIAL)}>
-        Reset
-      </button>
     </>
   );
 };

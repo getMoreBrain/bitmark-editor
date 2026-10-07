@@ -10,7 +10,6 @@ const INITIAL = '[.article]\nHello **World**!\n\n[.cloze]\nThe capital of France
   selector: 'app-root',
   imports: [ReactiveFormsModule, BmSessionComponent, BmPaneComponent],
   templateUrl: './app.html',
-  styleUrl: './app.css',
 })
 export class App {
   /** The document, as a form control: bm-session is a ControlValueAccessor. */

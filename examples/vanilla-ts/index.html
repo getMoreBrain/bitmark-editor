@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <header>
-      <h1>bitmark editor: plain TypeScript</h1>
+    <header class="app-header">
+      <h1><b>[.bitmark]</b> editor · plain TypeScript</h1>
       <label>Theme
         <select id="theme">
           <option value="auto">Auto</option>
@@ -17,13 +17,17 @@
         </select>
       </label>
     </header>
-    <div class="panes">
-      <div id="bitmark"></div>
-      <div id="json"></div>
-      <div id="html"></div>
-    </div>
-    <p>Last change: <output id="status">none yet</output></p>
-    <button type="button" id="reset">Reset</button>
+    <main>
+      <div class="panes">
+        <section class="pane-card"><h2>bitmark</h2><div id="bitmark" class="pane"></div></section>
+        <section class="pane-card"><h2>JSON</h2><div id="json" class="pane"></div></section>
+        <section class="pane-card"><h2>HTML · read-only</h2><div id="html" class="pane"></div></section>
+      </div>
+      <footer class="status-bar">
+        <span>Last change: <output id="status">none yet</output></span>
+        <button type="button" id="reset">Reset</button>
+      </footer>
+    </main>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

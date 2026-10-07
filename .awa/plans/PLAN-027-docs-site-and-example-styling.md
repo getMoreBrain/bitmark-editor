@@ -43,33 +43,47 @@ look finished, without becoming hard to copy from.
 
 ### Docs site
 
-- [ ] Scaffold `docs-site/`: `package.json` (Eleventy 3, Pagefind), `eleventy.config.js`, `src/` with `_data/site.js` (name, version from the core's `package.json`, repo URL, the pinned parser version), `_includes/layouts/base.njk` (header, sidebar, main, footer) and `_data/nav.js` (the sidebar)
-- [ ] Styles in `src/assets/css/`: `tokens.css` (brand and theme tokens, light and dark), `base.css`, `shell.css` (header, sidebar, layout, responsive), `content.css` (prose, code, tables, callouts, demo frames)
-- [ ] Scripts in `src/assets/js/`: `theme.js` (toggle, stored choice, no flash before paint), `nav.js` (mobile sidebar). The demo pages bring their own scripts
-- [ ] Pages, from the README content (D3):
+- [x] Scaffold `docs-site/`: `package.json` (Eleventy 3, Pagefind), `eleventy.config.js`, `src/` with `_data/site.js` (name, version from the core's `package.json`, repo URL, the pinned parser version), `_includes/layouts/base.njk` (header, sidebar, main, footer) and `_data/nav.js` (the sidebar)
+- [x] Styles in `src/assets/css/`: `tokens.css` (brand and theme tokens, light and dark), `base.css`, `shell.css` (header, sidebar, layout, responsive), `content.css` (prose, code, tables, callouts, demo frames)
+- [x] Scripts in `src/assets/js/`: `theme.js` (toggle, stored choice, no flash before paint), `nav.js` (mobile sidebar). The demo pages bring their own scripts
+- [x] Pages, from the README content (D3):
   - Home: what it is, a live Try it, install, where to go next
   - Getting started: which build, install, peer dependencies
   - Guides: static site (`/bundled`), host with Monaco (core and `/elements`), React, Angular, custom elements, panes, session, the parser (loaded, injected, worker), theming (themes, CSS variables, matching Monaco), scroll linking, Content Security Policy, sizes
   - Demos: Try it, injected parser, and the example apps (links to their source)
   - Reference: API (typedoc), tested versions, changelog
-- [ ] Build: `npm run build:site` builds the core, typedoc into the site's `api/`, `dist/bundled` beside the demos, then Eleventy with `--pathprefix=/bitmark-editor/` and Pagefind. `npm run start:site` runs the dev server (Eleventy `--serve`, listening on every address, as the example apps do)
-- [ ] Code samples use Eleventy's syntax highlighting, without client-side JavaScript
+- [x] Build: `npm run build:site` builds the core, typedoc into the site's `api/`, `dist/bundled` beside the demos, then Eleventy with `--pathprefix=/bitmark-editor/` and Pagefind. `npm run start:site` runs the dev server (Eleventy `--serve`, listening on every address, as the example apps do)
+- [x] Code samples use Eleventy's syntax highlighting, without client-side JavaScript
 
 ### Tests and deploy
 
-- [ ] Site smoke test (Playwright, served under `/bitmark-editor/`): every internal link resolves (the whole site is crawled), Try it works (ready, conversion, completion, the JSON schema), the injected-parser demo works, a search finds a guide page, and the theme toggle switches and remembers
-- [ ] `pages.yml` deploys the site; CI's `core` job builds it and runs the smoke test. Remove `packages/bitmark-editor/examples/pages/` and `tests/pages.spec.mjs`, and the root `build:pages` / `test:pages` scripts become the site's
+- [x] Site smoke test (Playwright, served under `/bitmark-editor/`): every internal link resolves (the whole site is crawled), Try it works (ready, conversion, completion, the JSON schema), the injected-parser demo works, a search finds a guide page, and the theme toggle switches and remembers
+- [x] `pages.yml` deploys the site; CI's `core` job builds it and runs the smoke test. Remove `packages/bitmark-editor/examples/pages/` and `tests/pages.spec.mjs`, and the root `build:pages` / `test:pages` scripts become the site's
 
 ### READMEs
 
-- [ ] Core README: overview, install, which build, the host quick start, links to the site's guides and API
-- [ ] Angular library README: the same shape
-- [ ] Root README: links to the site first
+- [x] Core README: overview, install, which build, the host quick start, links to the site's guides and API
+- [x] Angular library README: the same shape
+- [x] Root README: links to the site first
 
 ### Example apps
 
-- [ ] A shared look in each app's CSS: tokens (light and dark), header (wordmark, theme switcher), panes as labelled cards, status line. The markup changes only where the labels need it
-- [ ] Smoke tests still pass, including the theme and contrast checks
+- [x] A shared look in each app's CSS: tokens (light and dark), header (wordmark, theme switcher), panes as labelled cards, status line. The markup changes only where the labels need it
+- [x] Smoke tests still pass, including the theme and contrast checks
+
+## As built (2026-10-07)
+
+- Search uses Pagefind's component UI (`pagefind-modal-trigger` and `pagefind-modal`: a button opening a search dialog, with keyboard hints), which Pagefind recommends from 1.5 for new integrations. Its `--pf-*` variables are mapped onto the site's tokens, so it follows the three theme states. It is icon-only on narrow screens and hidden in dev, where there is no index
+- The theme toggle cycles system, light and dark and is remembered. The live editors follow it (`auto` for system), and `/bundled` sets Monaco's theme to match
+- Each demo is one fixed-height stage: the static fallback, then the panes. The page doesn't jump when the editor loads
+- The changelog page renders the packages' own CHANGELOG files (RenderPlugin). The version and the parser version come from the core package. Nothing is copied by hand
+- The Content Security Policy guide was checked in a browser, and it corrects the old README:
+  - a strict policy also needs `style-src` with `'unsafe-inline'` (Monaco and the panes insert `<style>` elements) and `font-src`. With only the three directives the README listed, the editor starts but unstyled;
+  - scripts need no `'unsafe-inline'`
+- The link test crawls the whole site under `/bitmark-editor/` and checks every page and asset (it was checked with a planted 404). The other tests: Try it (completion, the HTML view), the injected parser (bitmark-json, then full), search, and the theme toggle (with Monaco's theme and a reload)
+- The build fails with a clear message if `npm run build` or `npm run build:docs` hasn't run. `start:site` (port 8080) listens on every address, as the example apps' dev servers do
+- Root lint ignores `docs-site/_site`, and uses the `globals` package for each environment (Node, browser, Playwright tests). The site's Markdown is Nunjucks-templated, so `markdown/no-missing-label-refs` is off for it
+- Example apps: one shared stylesheet in each app, with `light-dark()` colours that follow the theme switcher's `color-scheme`; a header with the wordmark and the switcher; panes as labelled cards; a status bar with Reset. The Angular app's own `app.css` is gone. The React app passes `style={{ height: 'auto' }}`, so each card sizes its pane
 
 ## Risks
 
@@ -83,10 +97,10 @@ look finished, without becoming hard to copy from.
 
 ## Completion Criteria
 
-- [ ] The site builds, its smoke test passes locally and in CI, and it deploys to https://getmorebrain.github.io/bitmark-editor/
-- [ ] Every guide topic lives on the site; the READMEs link to it and keep a quick start
-- [ ] The example apps share the site's look and still pass their smoke tests
-- [ ] `awa check` passes
+- [ ] The site builds, its smoke test passes locally and in CI, and it deploys to https://getmorebrain.github.io/bitmark-editor/ — builds and passes locally; CI and the deploy come with the merge
+- [x] Every guide topic lives on the site; the READMEs link to it and keep a quick start
+- [x] The example apps share the site's look and still pass their smoke tests
+- [x] `awa check` passes
 
 ## References
 

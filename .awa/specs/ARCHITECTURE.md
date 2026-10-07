@@ -31,7 +31,8 @@ Playground (React).
 - `Angular 21` — the Angular wrapper (peer `>=21 <23`), built with ng-packagr
 - `esbuild 0` — the core's `/esm` and `/bundled` builds
 - `Vitest 4` — unit tests (jsdom)
-- `Playwright 1` — browser checks of the examples, the Pages site and the Angular example
+- `Playwright 1` — browser checks of the examples, the docs site and the Angular example
+- `Eleventy 3` and `Pagefind 1` — the docs site and its search
 - `typedoc 0` — the API reference
 - `npm 11` — workspaces, scripts and publishing (trusted publishing)
 - `Node 24` — development and CI
@@ -103,10 +104,11 @@ packages/bitmark-editor/src/elements/     # Custom elements (/elements)
 packages/bitmark-editor/src/react/        # React adapter (/react)
 packages/bitmark-editor/src/bundled/      # The CDN build with Monaco inside (/bundled)
 packages/bitmark-editor/scripts/          # The build and the parser bump
-packages/bitmark-editor/examples/         # Static-site and /esm examples, the Pages site (pages/), browser checks (npm workspace)
+packages/bitmark-editor/examples/         # Static-site and /esm examples, browser checks (npm workspace)
 packages/bitmark-editor/docs/             # Hand-offs to host apps; typedoc output (docs/api, not committed)
 packages/bitmark-editor-angular/          # Angular CLI project: the wrapper library and a cosmic-shaped example (standalone npm project)
 examples/                                 # Example apps (vanilla-ts, react, angular), each its own npm project on packed tarballs, and their smoke tests
+docs-site/                                # The docs site: guides, live demos, the API reference (Eleventy, Pagefind; npm workspace; GitHub Pages)
 scripts/                                  # Repo scripts: the release helper, the example apps' pack/install/build/test
 .github/workflows/                        # CI, Pages, Release, parser bump
 .awa/                                     # Architecture and plans
@@ -215,9 +217,9 @@ RESPONSIBILITIES
 
 - npm workspace for the core and its examples; the Angular project installs and builds separately against the core's `dist`
 - Build the core with esbuild (`/esm`, `/bundled`) and tsc (declarations); build the Angular library with ng-packagr
-- CI on every PR: lint, typecheck, unit tests, builds, package checks (publint, attw, `npm pack`), API docs, browser checks of the examples, the Pages site and the Angular example
+- CI on every PR: lint, typecheck, unit tests, builds, package checks (publint, attw, `npm pack`), API docs, browser checks of the examples, the docs site and the Angular example
 - Build the example apps (plain TypeScript, React, Angular) from tarballs of the current build, as an outside app would install them, and smoke-test each one
-- Deploy the demos and the API reference to GitHub Pages from `main`
+- Deploy the docs site (guides, live demos on `/bundled`, the API reference) to GitHub Pages from `main`, after a smoke test of every internal link, the demos, search and the theme toggle
 - Publish both packages from a `v<version>` tag by npm trusted publishing, then create the GitHub Release
 - Open weekly PRs for the default parser version (a workflow) and other dependencies (Dependabot)
 
@@ -300,10 +302,10 @@ STATUS: Alpha — both packages are at 0.1.0, built and tested, and not yet publ
 - `npm run typecheck` — Typecheck the core
 - `npm test` — Run the core's unit tests
 - `npm run build` — Build the core (`dist/esm`, `dist/types`, `dist/bundled`)
-- `npm run test:browser` — Browser checks of the examples and the Pages site
+- `npm run test:browser` — Browser checks of the core's examples
 - `npm run check:package` — Check what npm would publish (publint, attw)
 - `npm run build:docs` — Build the API reference
-- `npm run build:pages` — Build the GitHub Pages site
+- `npm run build:site` / `test:site` / `start:site` — Build, smoke-test or serve the docs site
 - `npm run install:angular` / `build:angular` / `test:angular` — Install, build and test the Angular project
 - `npm run pack:examples` / `install:examples` / `build:examples` / `test:examples` — The example apps, on tarballs of the current build
 - `npm run release:version -- <version>` — Set the release version everywhere
@@ -317,3 +319,4 @@ STATUS: Alpha — both packages are at 0.1.0, built and tested, and not yet publ
 - 1.3.0 (2026-10-06): The editors extracted into `@gmb/bitmark-editor` and `@gmb/bitmark-editor-angular` (PLAN-022, PLAN-023)
 - 2.0.0 (2026-10-07): This repository holds only the editor packages (PLAN-024). The Playground app, its state and UI layers, and its Vite build are gone; npm workspaces replace Bun; CI, GitHub Pages and the tag-triggered release are added. Plans before PLAN-022 stay in the Playground repo
 - 2.1.0 (2026-10-07): Example apps for plain TypeScript, React and Angular, built from packed tarballs and smoke-tested in CI (PLAN-026)
+- 2.2.0 (2026-10-07): The docs site (Eleventy, Pagefind) replaces the Pages landing page; the long-form docs move from the READMEs to it (PLAN-027)
