@@ -52,6 +52,8 @@ export class BmPaneComponent implements OnDestroy {
   readonly label = input<string>();
   readonly readonly = input(false);
   readonly scrollSync = input<boolean>();
+  /** Monaco editor options for this pane (e.g. `{ stickyScroll: { enabled: false } }`). Read when the pane is created. */
+  readonly editorOptions = input<PaneOptions['editorOptions']>();
   /** An inactive pane is not mounted. */
   readonly inactive = input(false);
   /** Set by an enclosing `bm-tabs` for every tab but the active one. */
@@ -73,9 +75,13 @@ export class BmPaneComponent implements OnDestroy {
         readOnly: this.readonly() || this.sessionHost.disabled(),
         scrollSync: this.scrollSync(),
         label,
-        editorOptions: this.sessionHost.fixedOverflowWidgets
-          ? { fixedOverflowWidgets: true, overflowWidgetsDomNode: sharedOverflowNode() }
-          : undefined,
+        // The host's options win over the wrapper's overflow defaults.
+        editorOptions: {
+          ...(this.sessionHost.fixedOverflowWidgets
+            ? { fixedOverflowWidgets: true, overflowWidgetsDomNode: sharedOverflowNode() }
+            : {}),
+          ...this.editorOptions(),
+        },
       }));
       const el = this.el.nativeElement as HTMLElement;
       const pane = this.zone.runOutsideAngular(() => {

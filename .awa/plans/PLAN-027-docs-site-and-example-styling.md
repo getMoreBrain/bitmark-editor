@@ -85,6 +85,15 @@ look finished, without becoming hard to copy from.
 - Root lint ignores `docs-site/_site`, and uses the `globals` package for each environment (Node, browser, Playwright tests). The site's Markdown is Nunjucks-templated, so `markdown/no-missing-label-refs` is off for it
 - Example apps: one shared stylesheet in each app, with `light-dark()` colours that follow the theme switcher's `color-scheme`; a header with the wordmark and the switcher; panes as labelled cards; a status bar with Reset. The Angular app's own `app.css` is gone. The React app passes `style={{ height: 'auto' }}`, so each card sizes its pane
 
+## Found by the site's tests (2026-10-07)
+
+- `/bundled` bug: the Try it test failed intermittently, about two runs in three, with "depends on UNKNOWN service ICodeLensCache" (and `treeViewsDndService`), thrown from Monaco's idle-time creation of editor features. The cause:
+  - the JSON language loads its mode lazily, and with it Monaco's `internal/common/workers.js`, which imports nearly all editor features, CodeLens and drop-into-editor among them;
+  - by then Monaco has taken its services (the HTML and XML language registrations initialise it), so those features' services were never registered;
+  - any editor created afterwards (a tab, a pane added at runtime) then threw once the page was idle.
+
+  Fix in `src/bundled/monaco.ts`: import `monaco-editor/internal/common/workers` first, statically. The code was already in the bundle, so the size is unchanged (809 KB br). Tests: the site's Try it test now waits for the idle phase (it failed every time on the old build), and the core's static `/bundled` test adds a pane late and waits (it failed on the old build, and passes on the fix)
+
 ## Risks
 
 - The site's internal links and the API reference move together under one prefix. The link-crawl test covers broken links.

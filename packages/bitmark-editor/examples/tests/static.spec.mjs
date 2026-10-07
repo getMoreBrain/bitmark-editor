@@ -49,6 +49,18 @@ test('loads on idle from the CDN, then every service works', async ({ page }) =>
   // The site's token mapping applies: bit types take the site's tag colour.
   const color = await page.locator('bitmark-pane[type="bitmark"] .bm-tok-bitType').first().evaluate((el) => getComputedStyle(el).color);
   expect(color).toBe('rgb(255, 212, 121)'); // --syntax-tag in the dark site theme
+  // A pane added now, after the JSON language loaded (and with it, lazily,
+  // most of Monaco's editor features), then the page left idle: Monaco
+  // creates some features only then, and one whose service /bundled failed
+  // to register throws ("depends on UNKNOWN service ICodeLensCache").
+  await page.evaluate(() => {
+    const pane = document.createElement('bitmark-pane');
+    pane.setAttribute('type', 'html');
+    pane.style.cssText = 'display:block;height:200px';
+    document.querySelector('bitmark-session').append(pane);
+  });
+  await expect.poll(() => paneValue(page, 'html'), { timeout: 10_000 }).toContain('bitmark-bit');
+  await page.waitForTimeout(3000);
   expect(errors).toEqual([]);
 });
 

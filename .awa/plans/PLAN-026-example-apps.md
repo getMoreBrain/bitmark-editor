@@ -110,6 +110,10 @@ AMD and an injected parser.
 
 - [x] `example-apps` failed on `main`: `npm ci` gave `EINTEGRITY`. The committed lockfile's hash for a pack is never the current pack's. Locally the npm cache had hidden this by quietly serving the old pack, and on the PR runs the job was skipped, because `core` had failed first. Fix in `scripts/example-apps.mjs`: `npm ci` runs with the packs' integrity hashes removed from the lockfile (restored after), then the packs are installed by path with `--no-save`. Checked both ways with a changed pack, via a probe line in the build: with an empty npm cache (as in CI: no `EINTEGRITY`) and with a warm one (no stale pack). In both cases all three apps got the current pack, and the lockfiles were left unchanged
 
+### Sticky scroll (2026-10-07)
+
+- [x] Monaco's sticky scroll (nested scopes pinned at the top) is off in the example apps' JSON and HTML panes, at the user's request: `editorOptions: { stickyScroll: { enabled: false } }`. The Angular wrapper's `bm-pane` had no `editorOptions` input, unlike the core and React, so it gained one, merged over the wrapper's own overflow-widget defaults (the host's options win). The smoke test scrolls the JSON pane into its nested objects and expects no sticky lines. It failed against builds made before the change, and passes after
+
 ### CI and upkeep
 
 - [x] `ci.yml`: a job `example-apps`, after `core` and `angular`. It

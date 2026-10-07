@@ -16,6 +16,8 @@ export class App {
   protected readonly content = new FormControl(INITIAL, { nonNullable: true });
   protected readonly value = toSignal(this.content.valueChanges, { initialValue: INITIAL });
   protected readonly status = signal('none yet');
+  /** Monaco's sticky scroll (nested scopes pinned at the top), off in the generated views. */
+  protected readonly noStickyScroll = { stickyScroll: { enabled: false } };
   protected readonly theme = signal<Extract<BitmarkTheme, string>>('auto');
 
   constructor() {
