@@ -10,8 +10,6 @@ any framework. Alongside it, optional scroll-linked editors can show the bitmark
 to JSON, HTML, XML and Text. It uses its own built-in Monaco and bitmark
 parser, or the ones your app already has.
 
-> Pre-release: 0.1.0 is not yet published.
-
 **[API reference](https://getmorebrain.github.io/bitmark-editor/)**
 
 <!-- docs-site-links: hidden until the docs site is deployed (only the API reference is). To show them, remove the comment.

@@ -294,7 +294,7 @@ sequenceDiagram
 
 ## Release Status
 
-STATUS: Alpha — both packages are at 0.1.0-rc.0, built and tested. Both names are reserved on npm with trusted publishing set up; the first release goes through the tag-triggered workflow.
+STATUS: Alpha — both packages are released at 0.1.0 on npm, published by the tag-triggered workflow with trusted publishing.
 
 ## Developer Commands
 
