@@ -94,6 +94,16 @@ look finished, without becoming hard to copy from.
 
   Fix in `src/bundled/monaco.ts`: import `monaco-editor/internal/common/workers` first, statically. The code was already in the bundle, so the size is unchanged (809 KB br). Tests: the site's Try it test now waits for the idle phase (it failed every time on the old build), and the core's static `/bundled` test adds a pane late and waits (it failed on the old build, and passes on the fix)
 
+## Guides hidden until ready (2026-10-07)
+
+- [x] At the user's request, only the API reference is public for now; the guides get more work first. One flag, `guidesPublic` in `docs-site/src/_data/site.js` (false), controls it. While false:
+  - the root is a redirect page to `api/` (meta refresh and a link, `noindex`);
+  - the overview moves from the root to `/overview/` (the header logo and the sidebar follow `site.home`);
+  - every page on the site's own layout carries `noindex, nofollow`; the API reference (typedoc) does not.
+
+  Nothing else changes: the guides and demos are still built, deployed and tested at their URLs. Setting the flag to true restores the root overview. A site test checks the redirect and the `noindex` marks
+- [x] The API reference's index page showed the package name twice: typedoc's page title, then the README's own heading. A small typedoc plugin (`packages/bitmark-editor/scripts/typedoc-readme-title.mjs`) drops the README's first heading on that page only; the README keeps it on npm and GitHub
+
 ## Risks
 
 - The site's internal links and the API reference move together under one prefix. The link-crawl test covers broken links.

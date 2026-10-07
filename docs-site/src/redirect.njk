@@ -1,0 +1,19 @@
+---
+layout: false
+eleventyExcludeFromCollections: true
+---
+{#- While the guides aren't public (site.js), the root sends readers and
+    search engines to the API reference. -#}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{ site.title }}: API reference</title>
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href="/api/" />
+    <meta http-equiv="refresh" content="0; url=/api/" />
+  </head>
+  <body data-pagefind-ignore="all">
+    <p><a href="/api/">The {{ site.title }} API reference</a></p>
+  </body>
+</html>

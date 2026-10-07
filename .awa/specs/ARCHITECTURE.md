@@ -219,7 +219,7 @@ RESPONSIBILITIES
 - Build the core with esbuild (`/esm`, `/bundled`) and tsc (declarations); build the Angular library with ng-packagr
 - CI on every PR: lint, typecheck, unit tests, builds, package checks (publint, attw, `npm pack`), API docs, browser checks of the examples, the docs site and the Angular example
 - Build the example apps (plain TypeScript, React, Angular) from tarballs of the current build, as an outside app would install them, and smoke-test each one
-- Deploy the docs site (guides, live demos on `/bundled`, the API reference) to GitHub Pages from `main`, after a smoke test of every internal link, the demos, search and the theme toggle
+- Deploy the docs site (guides, live demos on `/bundled`, the API reference) to GitHub Pages from `main`, after a smoke test of every internal link, the demos, search and the theme toggle. Until the guides are public (`guidesPublic` in `docs-site/src/_data/site.js`), the root redirects to the API reference, the overview is at `/overview/`, and every guide page is marked `noindex`
 - Publish both packages from a `v<version>` tag by npm trusted publishing, then create the GitHub Release
 - Open weekly dependency PRs (Dependabot); the default parser version is bumped by hand
 
@@ -321,3 +321,4 @@ STATUS: Alpha — both packages are at 0.1.0, built and tested, and not yet publ
 - 2.1.0 (2026-10-07): Example apps for plain TypeScript, React and Angular, built from packed tarballs and smoke-tested in CI (PLAN-026)
 - 2.1.1 (2026-10-07): The weekly parser-bump workflow is removed; the parser is bumped by hand (`npm run bump:parser`)
 - 2.2.0 (2026-10-07): The docs site (Eleventy, Pagefind) replaces the Pages landing page; the long-form docs move from the READMEs to it (PLAN-027)
+- 2.2.1 (2026-10-07): The guides are hidden until they are ready: the site's root redirects to the API reference, and the guide pages are `noindex` (PLAN-027)

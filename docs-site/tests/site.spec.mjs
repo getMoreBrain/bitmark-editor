@@ -3,6 +3,8 @@ import { expect, test } from '@playwright/test';
 
 const ORIGIN = 'http://localhost:4631';
 const BASE = '/bitmark-editor/';
+/** The overview, relative to BASE: the root once the guides are public (site.js). */
+const HOME = 'overview/';
 
 /** A pane's editor text, by its position in the page's first session. */
 const paneText = (page, type) =>
@@ -28,8 +30,8 @@ const collectErrors = (page) => {
 };
 
 test('every internal link, script, stylesheet and image resolves', async ({ request }) => {
-  const pages = new Set([BASE]);
-  const queue = [BASE];
+  const pages = new Set([BASE, BASE + HOME]);
+  const queue = [BASE, BASE + HOME];
   const assets = new Set();
   const broken = [];
   while (queue.length) {
@@ -71,7 +73,7 @@ test('every internal link, script, stylesheet and image resolves', async ({ requ
 
 test('home: the live editor converts, under the sub-path', async ({ page }) => {
   const errors = collectErrors(page);
-  await page.goto('');
+  await page.goto(HOME);
   await expect(page.locator('bitmark-session')).toHaveAttribute('data-state', 'ready', {
     timeout: 30_000,
   });
@@ -120,7 +122,7 @@ test('injected parser: the page’s parser, then its full variant', async ({ pag
 });
 
 test('search finds a guide', async ({ page }) => {
-  await page.goto('');
+  await page.goto(HOME);
   await page.locator('pagefind-modal-trigger').click();
   await page.keyboard.type('applyMonacoTheme');
   const result = page.locator('pagefind-modal a[href*="/guides/theming/"]').first();
@@ -131,7 +133,7 @@ test('the theme toggle cycles, is remembered, and the demos and Monaco follow', 
   page,
 }) => {
   await page.emulateMedia({ colorScheme: 'light' });
-  await page.goto('');
+  await page.goto(HOME);
   await expect(page.locator('bitmark-session')).toHaveAttribute('data-state', 'ready', {
     timeout: 30_000,
   });
@@ -149,4 +151,14 @@ test('the theme toggle cycles, is remembered, and the demos and Monaco follow', 
   await toggle.click();
   await expect(html).not.toHaveAttribute('data-theme', /./);
   await expect(page.locator('bitmark-session')).toHaveAttribute('theme', 'auto');
+});
+
+test('until the guides are public, the root sends readers to the API reference', async ({
+  page,
+}) => {
+  await page.goto('');
+  await expect(page).toHaveURL(`${ORIGIN}${BASE}api/`);
+  await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+  await page.goto('guides/react/');
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
 });
