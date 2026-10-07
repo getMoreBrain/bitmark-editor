@@ -28,7 +28,11 @@
     "pack:check": "npm pack --dry-run -w @gmb/bitmark-editor && publint packages/bitmark-editor && attw --pack packages/bitmark-editor --profile esm-only",
     "angular:pack:check": "cd packages/bitmark-editor-angular/dist/bitmark-editor-angular && npm pack --dry-run && publint . && attw --pack . --profile esm-only",
     "release:version": "node scripts/release.mjs version",
-    "release:check": "node scripts/release.mjs check"
+    "release:check": "node scripts/release.mjs check",
+    "example-apps:pack": "node scripts/example-apps.mjs pack",
+    "example-apps:install": "node scripts/example-apps.mjs install",
+    "example-apps:build": "node scripts/example-apps.mjs build",
+    "example-apps:test": "node scripts/example-apps.mjs test"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",

@@ -24,6 +24,11 @@ Start with the [core README](packages/bitmark-editor/README.md). It says
 which build to use, with quick starts for a host that already has Monaco and
 for a static site without a bundler.
 
+Three small example apps, in [`examples/`](examples/), show the minimal
+setup for each kind of host: [plain TypeScript](examples/vanilla-ts/),
+[React](examples/react/) and [Angular](examples/angular/). CI installs them
+from tarballs of the current build and smoke-tests each one.
+
 Guides for specific hosts are in [`packages/bitmark-editor/docs/`](packages/bitmark-editor/docs/):
 
 - [`handoff-cosmic.md`](packages/bitmark-editor/docs/handoff-cosmic.md): an
@@ -44,7 +49,10 @@ packages/bitmark-editor/            @gmb/bitmark-editor (npm workspace)
   docs/                             hand-offs to host apps
 packages/bitmark-editor-angular/    Angular CLI project: the library and a cosmic-shaped
                                     example (standalone npm project)
-scripts/release.mjs                 one version for both packages
+examples/                           example apps: vanilla-ts, react, angular (each its own
+                                    npm project, installed from packed tarballs)
+scripts/                           release.mjs (one version for both packages),
+                                    example-apps.mjs (pack, install, build, test the apps)
 .awa/                               architecture and plans
 ```
 
@@ -69,6 +77,11 @@ npm run angular:install   # the Angular project's own install
 npm run angular:build     # needs the core built (npm run build)
 npm run angular:test      # e2e: Monaco 0.46 AMD, injected parser
 npm run angular:pack:check
+
+npm run example-apps:pack       # after both builds; see examples/README.md
+npm run example-apps:install
+npm run example-apps:build
+npm run example-apps:test
 ```
 
 CI ([`ci.yml`](.github/workflows/ci.yml)) runs all of these on every PR.

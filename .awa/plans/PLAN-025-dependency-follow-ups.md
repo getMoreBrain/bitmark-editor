@@ -58,10 +58,12 @@ Findings as of 2026-10-07 (from `npm outdated` and `npm audit`, root and Angular
 ### 4. Peer ranges that tests don't cover yet
 
 - [ ] Angular 22: the wrapper's peer range (`>=21.0.0 <23`) already claims 22, but CI builds and tests only 21. Add a CI matrix job that installs Angular 22 in the Angular project (outside its lockfile), then builds the library and the example and runs the e2e test. Keep the library on 21 as its build baseline, so that output built against 21 still works for 21 consumers
-- [ ] React 19: the core's peer range (`react >=18`) claims 19, but the dev copy and tests use 18.3. Add a test run of the `/react` adapter tests against React 19 (a Vitest project or a CI matrix entry with `react@19`/`react-dom@19`/`@types/react@19`)
+- [ ] React 19: the core's peer range (`react >=18`) claims 19, but the dev copy and tests use 18.3. Partly covered since PLAN-026: the React example app runs React 19 and its smoke test passes. The adapter's own unit tests still run on 18 only. Add a test run of the `/react` adapter tests against React 19 (a Vitest project or a CI matrix entry with `react@19`/`react-dom@19`/`@types/react@19`)
 - [ ] Monaco: the peer range is `>=0.46.0 <1`. The Angular e2e test covers 0.46 and the examples cover 0.57. Write down that both ends are tested (README, compatibility section)
 
 ### 5. Small clean-ups
+
+- [ ] React adapter sizing (found in PLAN-026): `<BitmarkPane>` sets `height: 100%` on its `<div>`. A host `className` with a border or padding (`content-box`) then makes a grid or flex container grow forever. Set `boxSizing: 'border-box'` in the adapter's default style, with a unit test, and note it in the CHANGELOG
 
 - [ ] `.vscode/settings.json`: remove the leftovers from other projects. That means `pasteImage.*` (pointing at `packages/gatsby/static`), the `jest.*` settings and the Java paths
 - [ ] typedoc: `npm run docs` reports 22 warnings, from links between doc pages (e.g. `RawParserModule.convert`). They predate PLAN-024. Fix the TSDoc `{@link}` targets, or set `validation.invalidLink`, and consider `--treatWarningsAsErrors` in CI once it is clean

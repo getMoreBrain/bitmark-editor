@@ -1,0 +1,12 @@
+{
+  "name": "bitmark-editor-example-apps",
+  "private": true,
+  "type": "module",
+  "description": "Smoke tests for the example apps, on their production builds (PLAN-026).",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  }
+}

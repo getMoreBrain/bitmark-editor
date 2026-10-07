@@ -106,7 +106,8 @@ packages/bitmark-editor/scripts/          # The build and the parser bump
 packages/bitmark-editor/examples/         # Static-site and /esm examples, the Pages site (pages/), browser checks (npm workspace)
 packages/bitmark-editor/docs/             # Hand-offs to host apps; typedoc output (docs/api, not committed)
 packages/bitmark-editor-angular/          # Angular CLI project: the wrapper library and a cosmic-shaped example (standalone npm project)
-scripts/                                  # Repo scripts: the release helper
+examples/                                 # Example apps (vanilla-ts, react, angular), each its own npm project on packed tarballs, and their smoke tests
+scripts/                                  # Repo scripts: the release helper, the example apps' pack/install/build/test
 .github/workflows/                        # CI, Pages, Release, parser bump
 .awa/                                     # Architecture and plans
 ```
@@ -215,6 +216,7 @@ RESPONSIBILITIES
 - npm workspace for the core and its examples; the Angular project installs and builds separately against the core's `dist`
 - Build the core with esbuild (`/esm`, `/bundled`) and tsc (declarations); build the Angular library with ng-packagr
 - CI on every PR: lint, typecheck, unit tests, builds, package checks (publint, attw, `npm pack`), API docs, browser checks of the examples, the Pages site and the Angular example
+- Build the example apps (plain TypeScript, React, Angular) from tarballs of the current build, as an outside app would install them, and smoke-test each one
 - Deploy the demos and the API reference to GitHub Pages from `main`
 - Publish both packages from a `v<version>` tag by npm trusted publishing, then create the GitHub Release
 - Open weekly PRs for the default parser version (a workflow) and other dependencies (Dependabot)
@@ -303,6 +305,7 @@ STATUS: Alpha — both packages are at 0.1.0, built and tested, and not yet publ
 - `npm run docs` — Build the API reference
 - `npm run pages:build` — Build the GitHub Pages site
 - `npm run angular:install` / `angular:build` / `angular:test` — Install, build and test the Angular project
+- `npm run example-apps:pack` / `example-apps:install` / `example-apps:build` / `example-apps:test` — The example apps, on tarballs of the current build
 - `npm run release:version -- <version>` — Set the release version everywhere
 - `npm run release:check -- <version>` — Check that the repo is ready to tag that version
 
@@ -313,3 +316,4 @@ STATUS: Alpha — both packages are at 0.1.0, built and tested, and not yet publ
 - 1.2.0 (2026-09-29): Linked scrolling between the bitmark and output panes, by bit, from the parser's bit spans
 - 1.3.0 (2026-10-06): The editors extracted into `@gmb/bitmark-editor` and `@gmb/bitmark-editor-angular` (PLAN-022, PLAN-023)
 - 2.0.0 (2026-10-07): This repository holds only the editor packages (PLAN-024). The Playground app, its state and UI layers, and its Vite build are gone; npm workspaces replace Bun; CI, GitHub Pages and the tag-triggered release are added. Plans before PLAN-022 stay in the Playground repo
+- 2.1.0 (2026-10-07): Example apps for plain TypeScript, React and Angular, built from packed tarballs and smoke-tested in CI (PLAN-026)

@@ -75,3 +75,35 @@ jobs:
         with:
           name: bitmark-editor-angular-dist
           path: packages/bitmark-editor-angular/dist/bitmark-editor-angular
+
+  # The example apps (PLAN-026), installed from tarballs of what the two
+  # jobs above built: what an outside app would get from npm.
+  example-apps:
+    needs: [core, angular]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: |
+            examples/package-lock.json
+            examples/vanilla-ts/package-lock.json
+            examples/react/package-lock.json
+            examples/angular/package-lock.json
+      - uses: actions/download-artifact@v8
+        with:
+          name: bitmark-editor-dist
+          path: packages/bitmark-editor/dist
+      - uses: actions/download-artifact@v8
+        with:
+          name: bitmark-editor-angular-dist
+          path: packages/bitmark-editor-angular/dist/bitmark-editor-angular
+      - run: npm run example-apps:pack
+      - run: npm run example-apps:install
+      - run: npm run example-apps:build
+      - name: Smoke tests (vanilla TS, React 19, zoneless Angular)
+        run: |
+          (cd examples && npx playwright install --with-deps chromium)
+          npm run example-apps:test

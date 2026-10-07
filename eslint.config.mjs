@@ -49,8 +49,8 @@ const config = [
     },
   },
   {
-    // Repo scripts run on Node.
-    files: ['scripts/**/*.mjs'],
+    // Repo scripts and the example apps' test harness run on Node.
+    files: ['scripts/**/*.mjs', 'examples/*.mjs'],
     languageOptions: {
       globals: {
         console: 'readonly',

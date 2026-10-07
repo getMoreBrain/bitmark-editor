@@ -45,3 +45,24 @@ updates:
     groups:
       actions:
         patterns: ["*"]
+
+  # The example apps (PLAN-026) and their test harness. They track the
+  # newest Monaco, React and Vite on purpose; Angular majors are planned
+  # work (PLAN-025).
+  - package-ecosystem: npm
+    directories:
+      - /examples
+      - /examples/vanilla-ts
+      - /examples/react
+      - /examples/angular
+    schedule:
+      interval: monthly
+    ignore:
+      - dependency-name: "@gmb/*"
+      - dependency-name: "@angular/*"
+        update-types: [version-update:semver-major]
+      - dependency-name: "@angular-devkit/*"
+        update-types: [version-update:semver-major]
+    groups:
+      example-apps:
+        patterns: ["*"]

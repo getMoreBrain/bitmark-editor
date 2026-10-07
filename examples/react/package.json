@@ -1,0 +1,24 @@
+{
+  "name": "bitmark-editor-example-react",
+  "private": true,
+  "type": "module",
+  "description": "A React app on @gmb/bitmark-editor/react, with Monaco from npm (PLAN-026).",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@gmb/bitmark-editor": "file:../.packs/gmb-bitmark-editor.tgz",
+    "monaco-editor": "0.57.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "typescript": "~5.9.3",
+    "vite": "^8.3.3"
+  }
+}
