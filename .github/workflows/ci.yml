@@ -76,6 +76,55 @@ jobs:
           name: bitmark-editor-angular-dist
           path: packages/bitmark-editor-angular/dist/bitmark-editor-angular
 
+  # The bottom of the React peer range (PLAN-025 Step 4): the core is
+  # developed on React 19, and this job runs the React adapter's tests and
+  # the typecheck on React 18.
+  react-18:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: React 18 (a fresh install; see the script)
+        run: node scripts/set-react.mjs 18
+      - run: npm run typecheck
+      - run: npm test -- src/react
+
+  # The top of the Angular peer range (PLAN-025 Step 4): the wrapper is built
+  # on Angular 21, and this job checks it on Angular 22 (with the TypeScript
+  # 6.0 it needs), installed outside the lockfile.
+  angular-22:
+    needs: core
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            packages/bitmark-editor-angular/package-lock.json
+      - uses: actions/download-artifact@v8
+        with:
+          name: bitmark-editor-dist
+          path: packages/bitmark-editor/dist
+      - run: npm run install:angular
+      - name: Angular 22 and TypeScript 6.0
+        working-directory: packages/bitmark-editor-angular
+        run: >-
+          npm install --no-save --no-audit --no-fund
+          @angular/common@22 @angular/compiler@22 @angular/core@22 @angular/forms@22
+          @angular/platform-browser@22 @angular/router@22 @angular/build@22 @angular/cli@22
+          @angular/compiler-cli@22 ng-packagr@22 typescript@~6.0.3
+      - run: npm run build:angular
+      - name: "Example (cosmic-shaped: zones, Monaco 0.46 AMD, injected parser)"
+        run: |
+          (cd packages/bitmark-editor-angular && npx playwright install --with-deps chromium)
+          npm run test:angular
+
   # The example apps (PLAN-026), installed from tarballs of what the two
   # jobs above built: what an outside app would get from npm.
   example-apps:

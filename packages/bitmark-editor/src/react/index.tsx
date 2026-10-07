@@ -137,7 +137,7 @@ export const BitmarkPane = (props: BitmarkPaneProps): ReactElement => {
   } = props;
   const session = useBitmarkSession();
   const ref = useRef<HTMLDivElement>(null);
-  const paneRef = useRef<Pane>();
+  const paneRef = useRef<Pane | undefined>(undefined);
   const onRenderRef = useRef(onRender);
   onRenderRef.current = onRender;
 
