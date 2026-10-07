@@ -24,7 +24,7 @@
     "@angular/build": "^21.2.25",
     "@angular/cli": "^21.2.25",
     "@angular/compiler-cli": "^21.2.0",
-    "typescript": "~5.9.2"
+    "typescript": "~7.0.2"
   },
   "description": "A zoneless Angular app on @gmb/bitmark-editor-angular, with Monaco from npm (PLAN-026).",
   "overrides": {
