@@ -10,6 +10,14 @@ updates:
       interval: weekly
     ignore:
       - dependency-name: "@gmb/bitmark-parser"
+      # TypeScript 7: typescript-eslint and typedoc don't support it yet
+      # (PLAN-025 Step 3). Lift this when they do.
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
+      # @types/node follows the oldest supported Node (engines: >=22), not
+      # the newest. Move it with engines.
+      - dependency-name: "@types/node"
+        update-types: [version-update:semver-major]
     groups:
       dev-minor-and-patch:
         dependency-type: development
@@ -62,6 +70,9 @@ updates:
       - dependency-name: "@angular/*"
         update-types: [version-update:semver-major]
       - dependency-name: "@angular-devkit/*"
+        update-types: [version-update:semver-major]
+      # The Angular app needs the TypeScript its Angular version supports.
+      - dependency-name: typescript
         update-types: [version-update:semver-major]
     groups:
       example-apps:
