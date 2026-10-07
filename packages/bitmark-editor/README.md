@@ -31,6 +31,11 @@ Mappings panes, for any framework.
 - **It doesn't**: use `/bundled`, which brings Monaco 0.57. If the page
   *does* have Monaco, `/bundled` warns and leaves it alone.
 
+Monaco vendors its own copy of DOMPurify, the HTML sanitiser for hovers and
+Markdown. `/bundled` replaces Monaco 0.57's copy (3.4.15) with the patched
+3.4.16. With the core or `/elements`, Monaco is yours, and so is keeping its
+DOMPurify current.
+
 ## Quick start: a host with Monaco
 
 ```ts

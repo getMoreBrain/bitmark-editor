@@ -10,9 +10,14 @@ the one that matches your app.
 | [`angular`](angular/) | A zoneless Angular 21 app: `provideBitmarkEditor`, and `bm-session` as a form control. Monaco loads on first use. |
 
 All three have a theme switcher (Auto, Light, Dark) that keeps the bitmark
-token colours and Monaco's own theme together. All three use Monaco 0.57 from npm, and load the parser from jsDelivr at the
-package's pinned version. For a page without a bundler or its own Monaco, see
-the core README's static-site quick start (`/bundled`).
+token colours and Monaco's own theme together. All three use Monaco 0.57 from
+npm, and load the parser from jsDelivr at the package's pinned version. For a
+page without a bundler or its own Monaco, see the core README's static-site
+quick start (`/bundled`).
+
+Monaco 0.57 vendors DOMPurify 3.4.15, which has a low-severity advisory.
+`/bundled` patches its copy. These apps show a host's own Monaco as it comes,
+so they keep the stock copy until a Monaco release updates it.
 
 ## Running them
 

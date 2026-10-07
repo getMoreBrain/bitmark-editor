@@ -17,6 +17,19 @@ const dist = path.join(root, 'dist');
 const src = (p) => path.join(root, 'src', p);
 const common = { bundle: true, logLevel: 'warning', legalComments: 'linked', sourcemap: true, target: 'es2022' };
 
+// Monaco vendors DOMPurify (esm/vs/base/browser/dompurify/dompurify.js), so an
+// npm override can't reach it. /bundled swaps in the patched release pinned in
+// devDependencies (PLAN-025 Step 1); drop this once Monaco vendors a fixed one.
+const patchedDompurify = {
+  name: 'patched-dompurify',
+  setup(b) {
+    const patched = fileURLToPath(import.meta.resolve('dompurify'));
+    b.onResolve({ filter: /\/dompurify\/dompurify\.js$/ }, (args) =>
+      args.importer.includes(`${path.sep}monaco-editor${path.sep}`) ? { path: patched } : undefined,
+    );
+  },
+};
+
 rmSync(dist, { recursive: true, force: true });
 
 // /esm: one bundle per entry, shared code in chunks; peers stay external.
@@ -55,6 +68,7 @@ await build({
   entryPoints: { monaco: src('bundled/monaco.ts') },
   outdir: path.join(dist, 'bundled'),
   format: 'esm',
+  plugins: [patchedDompurify],
   loader: { '.ttf': 'file' },
   assetNames: '[name]',
 });
@@ -68,6 +82,7 @@ await build({
   },
   outdir: path.join(dist, 'bundled'),
   format: 'iife',
+  plugins: [patchedDompurify],
 });
 await build({
   ...common,
