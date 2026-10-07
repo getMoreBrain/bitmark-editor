@@ -39,12 +39,12 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
-    "@eslint/js": "^9.28.0",
-    "@eslint/markdown": "^7.5.1",
+    "@eslint/js": "^10.0.1",
+    "@eslint/markdown": "^8.0.3",
     "@ncoderz/awa": "^1.10.3",
-    "eslint": "^9.28.0",
+    "eslint": "^10.12.0",
     "eslint-plugin-prettier": "^5.5.5",
-    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-simple-import-sort": "^14.0.0",
     "prettier": "3.9.9",
     "publint": "^0.3.25"
   },

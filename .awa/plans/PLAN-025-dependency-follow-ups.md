@@ -42,11 +42,11 @@ Findings as of 2026-10-07 (from `npm outdated` and `npm audit`, root and Angular
 
 ### 2. ESLint 10
 
-- [ ] Root and core: `eslint` ^10, `@eslint/js` ^10, `@eslint/markdown` ^8, `eslint-plugin-simple-import-sort` ^14. `typescript-eslint` 8.71 and `eslint-plugin-prettier` 5.5 already accept ESLint 10
-- [ ] Read the ESLint 10 migration guide against both configs. The checks: removed rules and options, the `js.configs.recommended` changes, the flat-config defaults (the `files` and `ignores` semantics), and that Node 20 support is dropped (we need `>=22` already)
-- [ ] simple-import-sort 13 and 14: check whether the default sort order changed. If so, apply `--fix` in its own commit, so the diff is only the reorder
-- [ ] `@eslint/markdown` 8: check that `language: 'markdown/gfm'` and the recommended rules still apply. Re-check that the `.claude` ignore is still needed
-- [ ] `npm run lint` is clean with `--max-warnings 0`
+- [x] Root and core: `eslint` ^10, `@eslint/js` ^10, `@eslint/markdown` ^8, `eslint-plugin-simple-import-sort` ^14. `typescript-eslint` 8.71 and `eslint-plugin-prettier` 5.5 already accept ESLint 10
+- [x] Read the ESLint 10 migration guide against both configs. The checks: removed rules and options, the `js.configs.recommended` changes, the flat-config defaults (the `files` and `ignores` semantics), and that Node 20 support is dropped (we need `>=22` already) — both configs work unchanged on 10.12. Each file now finds its nearest config, so `eslint .` at the root applies the core's own config inside `packages/bitmark-editor`, which is what the root's ignore intended anyway
+- [x] simple-import-sort 13 and 14: check whether the default sort order changed. If so, apply `--fix` in its own commit, so the diff is only the reorder — no reorder was needed, and a test file with unsorted imports still fails
+- [x] `@eslint/markdown` 8: check that `language: 'markdown/gfm'` and the recommended rules still apply. Re-check that the `.claude` ignore is still needed — a test file with two H1s and a fence without a language still fails both rules. The `.claude` ignore is still needed: its vendored skill files have 3 errors
+- [x] `npm run lint` is clean with `--max-warnings 0`
 
 ### 3. Toolchain majors
 
