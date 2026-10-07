@@ -11,6 +11,10 @@ A React 19 app on `@gmb/bitmark-editor/react`. See [`src/App.tsx`](src/App.tsx):
   `content-box`, the extra pixels can make a grid or flex container grow
   forever.
 
+- `theme` and `applyMonacoTheme` on `<BitmarkSession>` keep the token
+  colours and Monaco's own theme together. The theme switcher just changes
+  `theme`.
+
 The Monaco setup ([`src/monaco.ts`](src/monaco.ts)) is the same as the plain
 TypeScript example.
 

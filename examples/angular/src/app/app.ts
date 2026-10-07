@@ -1,7 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import type { SessionChange } from '@gmb/bitmark-editor';
+import type { BitmarkTheme, SessionChange } from '@gmb/bitmark-editor';
 import { BmPaneComponent, BmSessionComponent } from '@gmb/bitmark-editor-angular';
 
 const INITIAL = '[.article]\nHello **World**!\n\n[.cloze]\nThe capital of France is [_Paris].';
@@ -17,9 +17,32 @@ export class App {
   protected readonly content = new FormControl(INITIAL, { nonNullable: true });
   protected readonly value = toSignal(this.content.valueChanges, { initialValue: INITIAL });
   protected readonly status = signal('none yet');
+  protected readonly theme = signal<Extract<BitmarkTheme, string>>('auto');
+
+  constructor() {
+    // The token colours (bm-session's theme) and Monaco's own theme must
+    // match. Monaco's theme is page-wide and this app owns its Monaco, so the
+    // app sets it, following the OS for `auto`. The page follows too.
+    const media = matchMedia('(prefers-color-scheme: dark)');
+    const apply = () => {
+      const theme = this.theme();
+      const dark = theme === 'dark' || (theme === 'auto' && media.matches);
+      document.documentElement.style.colorScheme = theme === 'auto' ? 'light dark' : theme;
+      void import('./monaco')
+        .then((m) => m.loadMonaco())
+        .then((monaco) => monaco.editor.setTheme(dark ? 'vs-dark' : 'vs'));
+    };
+    effect(apply);
+    media.addEventListener('change', apply);
+    inject(DestroyRef).onDestroy(() => media.removeEventListener('change', apply));
+  }
 
   protected onChange({ bitmark, source }: SessionChange): void {
     this.status.set(`${bitmark.length} characters of bitmark, from the ${source?.type ?? 'app'} pane`);
+  }
+
+  protected setTheme(value: string): void {
+    this.theme.set(value as Extract<BitmarkTheme, string>);
   }
 
   protected reset(): void {

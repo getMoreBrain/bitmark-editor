@@ -95,6 +95,17 @@ AMD and an injected parser.
 - [x] Root lint ignores the `.angular` and `test-results` folders. The Angular dev server's cache, which includes Monaco, had made lint run for minutes
 - [x] `packageManager: npm@11.13.0` in every app and the harness, as in the root
 
+### Themes (2026-10-07)
+
+- [x] Hard-to-read text (reported by the user): the bitmark token colours defaulted to the dark palette, while each app's Monaco kept its light `vs` theme, giving bit types at about 2:1 contrast on white. Measured, then fixed. Each app now has a theme switcher (Auto, Light, Dark) that sets both:
+  - plain TS: `theme` with `applyMonacoTheme: true`, and `session.setTheme()`;
+  - React: `theme` and `applyMonacoTheme` props;
+  - Angular: `[theme]`, plus `monaco.editor.setTheme` from the app, because the wrapper can't pass `applyMonacoTheme` (PLAN-025).
+
+  The page follows the theme too, through `color-scheme`. The core README's quick start now says to match `theme` to the host's Monaco. The package defaults are a PLAN-025 decision
+- [x] The smoke test checks the themes: Auto with the OS on light, then dark (emulated live), Dark, then Light. In each, the pane's palette and Monaco's theme match, and a bit type has at least 3:1 contrast on the editor background
+- [x] Found by that check: the Angular app never loaded Monaco's CSS (Angular's builder emits the CSS that lazily loaded code imports, but doesn't attach it), so its editors were unstyled. `angular.json` now builds Monaco's prebuilt stylesheet as `monaco.css` (`inject: false`), and `loadMonaco()` attaches it before the first editor. The initial bundle stays at 55 kB; putting the stylesheet in the global styles had pushed it over the 500 kB budget. Checked in both the production build and the dev server
+
 ### CI and upkeep
 
 - [x] `ci.yml`: a job `example-apps`, after `core` and `angular`. It

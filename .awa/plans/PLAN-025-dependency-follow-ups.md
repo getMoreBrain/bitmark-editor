@@ -63,6 +63,9 @@ Findings as of 2026-10-07 (from `npm outdated` and `npm audit`, root and Angular
 
 ### 5. Small clean-ups
 
+- [ ] Theme defaults (found in PLAN-026): with no `theme`, the panes use the dark token palette, while a host's Monaco keeps its own theme, light `vs` by default. A host following the quick start gets dark-theme colours on a white editor (bit types at about 2:1 contrast). The README now says to match them. Decide whether the default should change too, for example to warn once when `theme` is unset and `applyMonacoTheme` is false. Changing the default palette to light would only move the mismatch to `vs-dark` hosts
+- [ ] Angular wrapper: no `applyMonacoTheme` (found in PLAN-026). Neither `provideBitmarkEditor` nor `bm-session` can pass it, so an Angular host that owns its Monaco has to call `monaco.editor.setTheme` itself (as `examples/angular` does). Add it to `BitmarkEditorConfig` and as a `bm-session` input
+
 - [ ] React adapter sizing (found in PLAN-026): `<BitmarkPane>` sets `height: 100%` on its `<div>`. A host `className` with a border or padding (`content-box`) then makes a grid or flex container grow forever. Set `boxSizing: 'border-box'` in the adapter's default style, with a unit test, and note it in the CHANGELOG
 
 - [ ] `.vscode/settings.json`: remove the leftovers from other projects. That means `pasteImage.*` (pointing at `packages/gatsby/static`), the `jest.*` settings and the Java paths

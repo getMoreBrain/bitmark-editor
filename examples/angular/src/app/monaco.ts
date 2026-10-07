@@ -1,6 +1,12 @@
-// The host's Monaco, loaded on first use (see app.config.ts). Angular's
-// builder bundles each `new Worker(new URL(…), { type: 'module' })` as a
-// worker. Give each language you include its own worker: the full
+// The host's Monaco, loaded on first use (see app.config.ts).
+//
+// Styles: Angular's builder doesn't attach the CSS that Monaco's lazily
+// loaded code imports, so Monaco's prebuilt stylesheet is built as
+// `monaco.css` (angular.json, `inject: false`) and attached here, before the
+// first editor. That keeps it out of the initial bundle.
+//
+// Workers: Angular's builder bundles each `new Worker(new URL(…), { type:
+// 'module' })`. Give each language you include its own worker: the full
 // `monaco-editor` import includes HTML, whose requests fail on the generic
 // editor worker.
 import * as monaco from 'monaco-editor';
@@ -13,4 +19,18 @@ self.MonacoEnvironment = {
   },
 };
 
-export { monaco };
+let styles: Promise<void> | undefined;
+
+/** Monaco, once its stylesheet has loaded. */
+export const loadMonaco = async (): Promise<typeof monaco> => {
+  styles ??= new Promise((resolve, reject) => {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'monaco.css';
+    link.onload = () => resolve();
+    link.onerror = () => reject(new Error('monaco.css failed to load'));
+    document.head.append(link);
+  });
+  await styles;
+  return monaco;
+};

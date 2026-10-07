@@ -6,6 +6,6 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     // Defaults for every bm-session. Monaco loads when the first session
     // starts; the parser loads from jsDelivr at the package's pinned version.
-    provideBitmarkEditor({ monaco: () => import('./monaco').then((m) => m.monaco) }),
+    provideBitmarkEditor({ monaco: () => import('./monaco').then((m) => m.loadMonaco()) }),
   ],
 };

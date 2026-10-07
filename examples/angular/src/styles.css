@@ -1,2 +1,4 @@
 *, *::before, *::after { box-sizing: border-box; }
+:root { color-scheme: light dark; }
 body { margin: 16px; font-family: system-ui, sans-serif; }
+header { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }

@@ -1,5 +1,14 @@
-<h1>bitmark editor: Angular</h1>
-<bm-session [formControl]="content" (change)="onChange($event)" (error)="status.set('Error: ' + $event.error.message)">
+<header>
+  <h1>bitmark editor: Angular</h1>
+  <label>Theme
+    <select [value]="theme()" (change)="setTheme($any($event.target).value)">
+      <option value="auto">Auto</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
+  </label>
+</header>
+<bm-session [formControl]="content" [theme]="theme()" (change)="onChange($event)" (error)="status.set('Error: ' + $event.error.message)">
   <div class="panes">
     <bm-pane type="bitmark" />
     <bm-pane type="json" />

@@ -1,5 +1,7 @@
 *, *::before, *::after { box-sizing: border-box; }
+:root { color-scheme: light dark; }
 body { margin: 16px; font-family: system-ui, sans-serif; }
+header { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 .panes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; height: 420px; }
 .panes > div { min-width: 0; border: 1px solid #8884; }
 @media (max-width: 800px) { .panes { grid-template-columns: 1fr; height: auto; } .panes > div { height: 280px; } }
