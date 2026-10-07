@@ -122,13 +122,13 @@ the repo from Bun to npm, and prepares both packages for publishing to npm.
 
 ### Phase 4 — Remove Playground wording from the package
 
-- [ ] `packages/bitmark-editor/README.md`: remove "bitmark playground repo"; link design notes to `.awa/plans/PLAN-022/023` in this repo; change the Development commands from `bun run …`/`bun install` to npm (D5)
-- [ ] `packages/bitmark-editor-angular/README.md`: `bun run build` → `npm run build`
-- [ ] Source comments that call the Playground the reference host (`src/elements/elements.ts`, `src/monaco/jsonSchema.ts`, `src/monaco/setup.ts`, `src/theme/tokens.ts`, `src/editor/textEditor.ts`, `src/session/types.ts`): reword them to describe the behaviour ("the full arrangement", "a host that…"), without changing code
-- [ ] `src/monaco/helpers.test.ts`: change the `/bitmark-playground/local-engine/...` URL fixtures to a neutral path (the test is about URL shape, not the Playground)
-- [ ] `docs/handoff-*.md` and `docs/upstream-parser-note.md`: update repo links. Keep these docs, since they are hand-offs to consumers
-- [ ] Add `docs/handoff-playground.md` (D7): how the Playground moves from the source aliases to the published package. Cover the `/react` adapter, injecting its own Monaco 0.52 and engine, `dedupe`, and what the Playground's tests mock
-- [ ] `grep -ri playground` over `packages/` (excluding `node_modules`/`dist`) returns only deliberate mentions (e.g. "used by the bitmark Playground")
+- [x] `packages/bitmark-editor/README.md`: remove "bitmark playground repo"; link design notes to `.awa/plans/PLAN-022/023` in this repo; change the Development commands from `bun run …`/`bun install` to npm (D5)
+- [x] `packages/bitmark-editor-angular/README.md`: `bun run build` → `npm run build`. It also says the project is outside the root workspace, and names the root `angular:*` scripts
+- [x] Source comments that call the Playground the reference host (`src/elements/elements.ts`, `src/monaco/jsonSchema.ts`, `src/monaco/setup.ts`, `src/theme/tokens.ts`, `src/editor/textEditor.ts`, `src/session/types.ts`): reword them to describe the behaviour ("the full arrangement", "a host that…"), without changing code
+- [x] `src/monaco/helpers.test.ts`: change the `/bitmark-playground/local-engine/...` URL fixtures to a neutral path (the test is about URL shape, not the Playground) — now `/app/local-engine/...`
+- [x] `docs/handoff-*.md` and `docs/upstream-parser-note.md`: update repo links. Keep these docs, since they are hand-offs to consumers — no changes needed: they use repo-relative paths, which are still valid here, and don't name the Playground repo
+- [x] Add `docs/handoff-playground.md` (D7): how the Playground moves from the source aliases to the published package. Cover the `/react` adapter, injecting its own Monaco 0.52 and engine, `dedupe`, and what the Playground's tests mock. All 31 names the Playground imports were checked against the public entry points (a typecheck through the package's own `exports`)
+- [x] `grep -ri playground` over `packages/` (excluding `node_modules`/`dist`) returns only deliberate mentions (e.g. "used by the bitmark Playground") — two remain: `helpers.test.ts` ("ported from the bitmark Playground's tests") and `docs/handoff-playground.md`. The stale typedoc output in `docs/api` (gitignored) was deleted and rebuilt, so its source links point here
 
 ### Phase 5 — CI
 

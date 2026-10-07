@@ -531,8 +531,8 @@ export const defineBitmarkElements = (): void => {
   }
 
   /**
-   * `<bitmark-editor>`: the playground arrangement in one tag — a session,
-   * the bitmark pane beside tabs over the chosen panes (default `json`).
+   * `<bitmark-editor>`: the full editor in one tag — a session, the
+   * bitmark pane beside tabs over the chosen panes (default `json`).
    * `panes="json,html,xml:xml-niso-iec,text"`.
    */
   class BitmarkEditorElement extends HTMLElement {

@@ -11,4 +11,8 @@ cd e2e && npx playwright test -c playwright.config.mjs
 ```
 
 The library depends on the core package through `file:../bitmark-editor`;
-build that first (`bun run build` in `packages/bitmark-editor`).
+build that first (`npm run build` at the repo root).
+
+This project is not part of the root npm workspace (it pins its own Monaco
+and TypeScript; PLAN-024 D5). From the repo root, `npm run angular:install`,
+`npm run angular:build` and `npm run angular:test` run the steps above.

@@ -1,6 +1,6 @@
 import type { SemanticTokenModifier, SemanticTokenType } from '@gmb/bitmark-parser';
 
-/** Monaco theme name used by every editor in the playground. */
+/** Monaco theme name used by every editor the package creates. */
 export const MONACO_THEME = 'vs-dark';
 
 export interface TokenStyle {

@@ -1,5 +1,5 @@
 // Pure conversions between the parser's LSP shapes and Monaco's (ported from
-// the playground's PLAN-016 / PLAN-017 tests onto the injected Monaco).
+// the bitmark Playground's tests onto the injected Monaco).
 import type { CompletionItem, Diagnostic, SemanticToken } from '@gmb/bitmark-parser';
 import { describe, expect, it } from 'vitest';
 
@@ -251,8 +251,8 @@ describe('schema URLs', () => {
     expect(schemaUrlFor(`${CDN}?_=123`)).toBe(
       'https://cdn.jsdelivr.net/npm/@gmb/bitmark-parser@7.0.0/schema/bitmark.schema.json',
     );
-    expect(schemaUrlFor('/bitmark-playground/local-engine/bitmark-parser.min.js?_=1')).toBe(
-      '/bitmark-playground/local-engine/schema.json',
+    expect(schemaUrlFor('/app/local-engine/bitmark-parser.min.js?_=1')).toBe(
+      '/app/local-engine/schema.json',
     );
   });
 

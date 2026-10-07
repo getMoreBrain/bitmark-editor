@@ -20,8 +20,8 @@ export const BITMARK_LANGUAGE_ID = 'bitmark';
 
 /**
  * Which engine answers for a model. A getter, so an attached editor can
- * change engines without re-registering (the playground's engine arrives
- * after its editors mount).
+ * change engines without re-registering (a host's engine may arrive after
+ * its editors mount).
  */
 const modelEngines = new WeakMap<TextModel, () => BitmarkEngine | undefined>();
 

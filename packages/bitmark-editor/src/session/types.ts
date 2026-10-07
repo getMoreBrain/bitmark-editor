@@ -48,7 +48,7 @@ export interface BitmarkSessionOptions {
   value?: string;
   /**
    * Wait for a pause in editing before converting (ms). Default 0: every
-   * edit converts, as in the playground. One schedule for the whole
+   * edit converts. One schedule for the whole
    * session, last edit wins (D12).
    */
   debounceMs?: number;
@@ -62,7 +62,7 @@ export interface BitmarkSessionOptions {
   schema?: unknown;
   /**
    * Join this scroll group instead of the session's own, so that a host's
-   * own editors and the session's panes link together (the playground).
+   * own editors and the session's panes link together.
    */
   scrollGroup?: ScrollSyncGroup;
   messages?: Partial<Omit<BitmarkEditorMessages, 'labels'>> & {

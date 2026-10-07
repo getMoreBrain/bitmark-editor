@@ -60,6 +60,7 @@ Findings as of 2026-10-07 (from `npm outdated` and `npm audit`, root and Angular
 ### 5. Small clean-ups
 
 - [ ] `.vscode/settings.json`: remove the leftovers from other projects. That means `pasteImage.*` (pointing at `packages/gatsby/static`), the `jest.*` settings and the Java paths
+- [ ] typedoc: `npm run docs` reports 22 warnings, from links between doc pages (e.g. `RawParserModule.convert`). They predate PLAN-024. Fix the TSDoc `{@link}` targets, or set `validation.invalidLink`, and consider `--treatWarningsAsErrors` in CI once it is clean
 - [ ] Angular project: pin Prettier exactly as in the root and core (3.9.9), or remove it if nothing in that project uses it
 - [ ] `npm outdated` in the root and the Angular project after each step above. Record what is still behind, and why, under Risks
 

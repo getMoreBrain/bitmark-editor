@@ -70,8 +70,7 @@ export const loadBitmarkJsonSchema = async (url: string): Promise<unknown | unde
 
 /**
  * Bind `schema` in Monaco's JSON service for the package's models (D5). A
- * host whose every JSON model is bitmark JSON (the playground) may widen
- * `fileMatch`. Returns false when this Monaco has no JSON language.
+ * host whose every JSON model is bitmark JSON may widen `fileMatch`. Returns false when this Monaco has no JSON language.
  */
 export const bindBitmarkJsonSchema = (
   monaco: Monaco,

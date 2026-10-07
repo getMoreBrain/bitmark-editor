@@ -3,8 +3,8 @@
 bitmark and JSON editors on Monaco, with optional HTML, XML, Text, Info and
 Mappings panes, for any framework.
 
-> Pre-release: 0.1.0, not yet published. Design: PLAN-022 / PLAN-023 in the
-> bitmark playground repo (`.awa/plans/`).
+> Pre-release: 0.1.0, not yet published. Design: PLAN-022 / PLAN-023 in this
+> repo (`.awa/plans/`).
 
 - **Session**: one bitmark document, the source of truth.
 - **Panes**: Monaco editors you mount anywhere. Editing any pane updates all
@@ -202,8 +202,8 @@ The names are `--bm-tok-<type>-color` (also `-weight`, `-style`,
 - `<bitmark-tabs>`: tabs over its child panes; only the active one is
   mounted.
 - `<bitmark-split direction="row|column|auto">`
-- `<bitmark-editor panes="json,html,xml:xml-niso-iec">`: the playground
-  arrangement in one tag.
+- `<bitmark-editor panes="json,html,xml:xml-niso-iec">`: the full editor in
+  one tag (the bitmark pane beside tabs over the chosen panes).
 
 Importing `/elements` in server-side rendering is harmless: the elements are
 defined only in a browser.
@@ -252,9 +252,10 @@ same-origin.
 ## Development
 
 ```bash
-bun run test        # vitest (jsdom), in this folder
-bun run typecheck
-bun run lint
-bun run build       # dist/esm, dist/types, dist/bundled
-cd examples && bun install && bun run test   # browser checks (Playwright)
+npm ci                 # at the repo root: the workspace (this package and its examples)
+npm test               # vitest (jsdom)
+npm run typecheck
+npm run lint
+npm run build          # dist/esm, dist/types, dist/bundled
+npm run examples:test  # browser checks (Playwright), after a build
 ```
