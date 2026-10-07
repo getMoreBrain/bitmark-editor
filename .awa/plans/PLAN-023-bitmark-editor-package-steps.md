@@ -30,12 +30,12 @@ takes an injected Monaco and parser (D2, D8). All 9 browser checks pass.
   - `narrow="static"` on a coarse pointer and narrow viewport loads nothing
     from the CDN;
   - a blocked CDN leaves the static example in place.
-- [x] Monaco 0.46 AMD (`window.monaco` from assets, as in cosmic), injected:
+- [x] Monaco 0.46 AMD (`window.monaco` from assets, as in the Angular host app), injected:
   every service works, and the host's own JSON model gets no bitmark schema
   (D5).
 - [x] `/bundled` beside a host Monaco: the guard warns, and the host's
   `MonacoEnvironment` is untouched (D8).
-- [x] Angular 21 shaped like cosmic: NgModule bootstrap,
+- [x] Angular 21 shaped like the Angular host app: NgModule bootstrap,
   `provideZoneChangeDetection`, Monaco 0.46 AMD from assets, and the parser
   bundled and initialised by the app (`bitmark-json`, `module_or_path`), then
   injected.
@@ -87,7 +87,7 @@ takes an injected Monaco and parser (D2, D8). All 9 browser checks pass.
 - [x] Token CSS variables and `setTheme` (D11): built in Phase 1 Step 5a
   (`applyBitmarkTheme`, unit-tested). The host `--syntax-*` mapping itself
   is the docs site's own CSS (Step 18).
-- [ ] Zoneless Angular: not tried (cosmic is zone-based). Phase 2 Step 13a.
+- [ ] Zoneless Angular: not tried (the Angular host app is zone-based). Phase 2 Step 13a.
 - [x] The current Monaco release is 0.57.0. `/bundled` now ships 0.57 (D4),
   and the static examples run on it. Monaco 0.55+ moved the JSON API to a
   top-level `monaco.json` (`languages.json` is only a deprecation stub) and
@@ -310,14 +310,14 @@ and to the package in Phase 2.
     Angular example lives in the Angular workspace
     (`packages/bitmark-editor-angular/projects/example`, both paths). CI
     builds and checks both.
-- [x] Step 15a — The Angular example is shaped like cosmic (D10):
+- [x] Step 15a — The Angular example is shaped like the Angular host app (D10):
   - Angular 21, NgModule bootstrap, `provideZoneChangeDetection`;
   - Monaco 0.46 AMD copied to assets and read as `window.monaco`;
   - `@gmb/bitmark-parser/browser` bundled and initialised by the app with
     `bitmark-json` and `module_or_path`, then injected;
   - a `ControlValueAccessor` form binding.
 
-  It is the reproducible CI test for cosmic's setup, which cosmic itself
+  It is the reproducible CI test for that app's setup, which the app itself
   cannot provide (it has no test runner).
 
   Done (Steps 13a, 15a): `packages/bitmark-editor-angular`, one Angular CLI
@@ -357,29 +357,27 @@ and to the package in Phase 2.
     package's own are. `@gmb/bitmark-editor-angular` is 13 kB.
   - The workflow YAML parses (js-yaml), but it has not run on GitHub
     yet.
-- [x] Step 17 — cosmic proof of concept, on a branch in `getMoreBrain/cosmic`.
+- [x] Step 17 — A proof of concept in the Angular host app, on a branch of it.
   It is the last step, after the `0.x` prerelease (Step 16); a local
   `npm pack` tarball is enough before that.
   - One `bm-session` with bitmark and JSON panes on one screen, behind a
-    feature flag, injecting cosmic's own Monaco and parser.
-  - Done when `npm run build:cosmic` passes and the editor works in the
+    feature flag, injecting the app's own Monaco and parser.
+  - Done when the app's production build passes and the editor works in the
     browser (highlighting, diagnostics, completion, hover, conversion both
-    ways, scroll sync), with cosmic's existing Monaco editors unaffected.
-  - Where the editor goes in cosmic's UI is product work for a separate plan.
-  - Done: cosmic branch `feat/bitmark-editor-poc` (gmb.web): `/editor-poc`,
-    matched only with flag `bitmark-editor-poc`; the 0.1.0 tarballs vendored
-    in `gmb.web/vendor/` (cosmic's CI reinstalls from scratch, so a path
-    outside the repo fails); the parser module from
-    `BitmarkConvertorService.rustParserModule()` (one shared init); Monaco
-    from ngx-monaco-editor-v2's AMD assets, loaded once; the parser's schema
-    as an asset. `build:cosmic` passes (initial bundle +0.16 kB, the editor is
-    lazy). Checked in headless Chromium on the production build: every
+    ways, scroll sync), with the app's existing Monaco editors unaffected.
+  - Where the editor goes in the app's UI is product work for a separate plan.
+  - Done: on a branch of the app, a route behind a feature flag; the 0.1.0
+    tarballs vendored in the app's repo (its CI reinstalls from scratch, so a
+    path outside the repo fails); the parser module the app already
+    initialises (one shared init); Monaco from ngx-monaco-editor-v2's AMD
+    assets, loaded once; the parser's schema as an asset. The production
+    build passes (initial bundle +0.16 kB, the editor is lazy). Checked in headless Chromium on the production build: every
     service, conversion both ways, the form control, scroll sync by bit; a
     host JSON model gets no bitmark markers; the flag gate. Not exercised: a
     logged-in reader beside the editor (no account).
   - Found: Monaco's theme is page-wide (D11), and the package's default
     `theme: 'dark'` on a host left on Monaco's default `vs` makes bold text
-    unreadable. cosmic sets `vs-dark`, as its reader does. Follow-up for the
+    unreadable. The app sets `vs-dark`, as its reader does. Follow-up for the
     package: warn, or pick the token theme from the host's Monaco theme.
 - [x] Step 18 — Docs site switch (D12), on a branch in the parser repo
   (`docs-site`), after the `0.x` prerelease:
@@ -517,8 +515,8 @@ and to the package in Phase 2.
     host URL, or injected by the host — never bundled by the playground";
   - a change-log line.
 - [x] Playground README: a pointer to the package.
-- [x] Hand-off briefs for the other repos: `docs/handoff-cosmic.md`
-  (Step 17) and `docs/handoff-docs-site.md` (Step 18).
+- [x] Hand-off briefs for the other repos: the Angular host app (Step 17)
+  and the docs site (Step 18), in `docs/` (since removed).
 
 ### Parser 7.9.0 and publishing (2026-10-06)
 
@@ -564,7 +562,7 @@ Two independent code reviews, then the full matrix again.
   propagate to all the others, and read-only and scroll-sync membership are
   per pane.
 - [x] Two sessions work independently on one page.
-- [x] The cosmic proof of concept (Step 17) builds and works in the
+- [x] The Angular host app's proof of concept (Step 17) builds and works in the
   browser.
 - [x] The docs site runs its "Try it" editor on the package (Step 18).
 - [x] The package README documents both engine paths and the host recipes.
