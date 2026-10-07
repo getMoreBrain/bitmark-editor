@@ -225,7 +225,7 @@ RESPONSIBILITIES
 
 CONSTRAINTS
 
-- `main` changes only through PRs with the `core` and `angular` checks green
+- `main` changes only through PRs, with the `core` and `angular` checks green; repository admins may merge a PR before its checks finish (ruleset bypass, pull requests only)
 - Only repository admins create release tags; only those tags can deploy to the `npm` environment
 
 ## Component Interactions
