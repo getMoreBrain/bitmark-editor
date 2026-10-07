@@ -28,12 +28,12 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - run: npm run docs
-      - run: npm run pages:build
+      - run: npm run build:docs
+      - run: npm run build:pages
       - name: Smoke check under the sub-path
         run: |
           npx playwright install --with-deps chromium
-          npm run pages:test
+          npm run test:pages
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:

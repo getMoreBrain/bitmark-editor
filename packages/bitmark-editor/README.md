@@ -40,6 +40,7 @@ import { createBitmarkSession, createBitmarkPane, createJsonPane, createHtmlPane
 const session = createBitmarkSession({
   monaco,                                   // your Monaco: its workers, its theme
   value: '[.article]\nHello **World**!',
+  theme: 'light',                           // match your Monaco's theme (see below)
   // engine omitted → the parser loads from jsDelivr at the pinned version
 });
 createBitmarkPane(document.getElementById('bitmark')!, session);
@@ -47,6 +48,16 @@ createJsonPane(document.getElementById('json')!, session);
 createHtmlPane(document.getElementById('html')!, session, { readOnly: true });
 session.on('change', ({ bitmark, source }) => save(bitmark));
 ```
+
+Match the token colours to your Monaco's theme. `theme` sets the bitmark
+token colours, and defaults to `dark`. Your Monaco keeps its own theme,
+which is page-wide and starts as light `vs`. Left alone, that gives
+dark-theme token colours on a white editor, which are hard to read. Either:
+- set `theme` to match the Monaco theme you use (`'light'` for `vs`,
+  `'dark'` for `vs-dark`); or
+- pass `applyMonacoTheme: true`, and the session sets Monaco's theme from
+  `theme` too (including `'auto'`, which follows the OS). Use this when the
+  page's Monaco is yours to theme.
 
 Your Monaco needs the JSON language (for schema validation) and the suggest
 and hover contributions (for completion and hover). If one is missing, that
@@ -266,5 +277,5 @@ npm test               # vitest (jsdom)
 npm run typecheck
 npm run lint
 npm run build          # dist/esm, dist/types, dist/bundled
-npm run examples:test  # browser checks (Playwright), after a build
+npm run test:browser  # browser checks (Playwright), after a build
 ```

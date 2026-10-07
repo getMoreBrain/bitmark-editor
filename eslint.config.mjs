@@ -19,6 +19,9 @@ const config = [
       '**/dist',
       '**/docs',
       '**/coverage',
+      // Build caches and test output (the Angular dev server caches Monaco here).
+      '**/.angular',
+      '**/test-results',
       '.github',
       '.awa',
       '.claude',
@@ -49,8 +52,8 @@ const config = [
     },
   },
   {
-    // Repo scripts run on Node.
-    files: ['scripts/**/*.mjs'],
+    // Repo scripts and the example apps' test harness run on Node.
+    files: ['scripts/**/*.mjs', 'examples/*.mjs'],
     languageOptions: {
       globals: {
         console: 'readonly',

@@ -70,13 +70,13 @@ writeFileSync(
 copyDir(bundled, path.join(out, 'bundled'));
 const api = path.join(pkg, 'docs/api');
 if (existsSync(api)) copyDir(api, path.join(out, 'api'));
-else if (process.argv.includes('--require-api')) throw new Error('docs/api not built: run `npm run docs` first');
+else if (process.argv.includes('--require-api')) throw new Error('docs/api not built: run `npm run build:docs` first');
 else {
-  console.warn('docs/api not built: the site gets a placeholder API page (run `npm run docs` for the real one)');
+  console.warn('docs/api not built: the site gets a placeholder API page (run `npm run build:docs` for the real one)');
   mkdirSync(path.join(out, 'api'), { recursive: true });
   writeFileSync(
     path.join(out, 'api/index.html'),
-    '<!doctype html><meta charset="utf-8"><title>API reference</title><p>Not built here: run <code>npm run docs</code>.</p>\n',
+    '<!doctype html><meta charset="utf-8"><title>API reference</title><p>Not built here: run <code>npm run build:docs</code>.</p>\n',
   );
 }
 

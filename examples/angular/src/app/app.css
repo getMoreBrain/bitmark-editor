@@ -1,0 +1,3 @@
+.panes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; height: 420px; }
+.panes > bm-pane { display: block; min-width: 0; border: 1px solid #8884; }
+@media (max-width: 800px) { .panes { grid-template-columns: 1fr; height: auto; } .panes > bm-pane { height: 280px; } }
