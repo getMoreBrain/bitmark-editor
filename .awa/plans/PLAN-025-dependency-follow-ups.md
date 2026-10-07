@@ -36,42 +36,63 @@ Findings as of 2026-10-07 (from `npm outdated` and `npm audit`, root and Angular
 
 ### 1. Security (first)
 
-- [ ] DOMPurify in `/bundled`: Monaco 0.57.0 pins `dompurify` 3.4.15, and `dist/bundled/monaco.js` ships it. Add a root `overrides` entry, `"dompurify": "3.4.16"`. npm only applies `overrides` at the workspace root. Rebuild, and confirm with `npm ls dompurify` and a grep of `dist/bundled/monaco.js`. Then run the examples' browser checks (hovers and the Markdown that Monaco renders). Remove the override once a Monaco release carries the fix
-- [ ] Note in the package README (Monaco section) that `/esm` hosts bring their own Monaco, and with it their own DOMPurify. The advisory reaches hosts only through `/bundled`
-- [ ] Angular dev tooling: `@angular/cli` 21.2.25 pulls `@modelcontextprotocol/sdk` 1.30.0 (GHSA-6qxp-vccf-f47h, OAuth credentials sent to an attacker-chosen server). It is dev only, in the CLI's MCP server, and is not in the published package. Add `overrides` for `@modelcontextprotocol/sdk` in `packages/bitmark-editor-angular/package.json` with the first fixed version, or take the 21.2 patch that ships it. Do not take `npm audit fix --force`, which moves to Angular 22 (see Step 4)
+- [x] DOMPurify in `/bundled`: Monaco 0.57.0 pins `dompurify` 3.4.15, and `dist/bundled/monaco.js` ships it. Add a root `overrides` entry, `"dompurify": "3.4.16"`. npm only applies `overrides` at the workspace root. Rebuild, and confirm with `npm ls dompurify` and a grep of `dist/bundled/monaco.js`. Then run the examples' browser checks (hovers and the Markdown that Monaco renders). Remove the override once a Monaco release carries the fix — done differently. An override can't work: Monaco vendors DOMPurify into its ESM build (`esm/vs/base/browser/dompurify/dompurify.js`) and never imports the npm package. A root override also isn't recognised for a workspace member's dependencies (npm installs it, then calls it "invalid"). Instead, the core's build swaps the vendored file for the patched release, a pinned dev dependency (`dompurify` 3.4.16), with an esbuild plugin on the Monaco and worker builds. Checked: `dist/bundled` holds 3.4.16 and no 3.4.15, and the browser checks pass. `npm audit` in the root still lists 3.4.15, because Monaco's `package.json` declares it, but that copy is never bundled. Drop the plugin once a Monaco release vendors a fixed version
+- [x] Note in the package README (Monaco section) that `/esm` hosts bring their own Monaco, and with it their own DOMPurify. The advisory reaches hosts only through `/bundled` — the README's "Which build?" section says `/bundled` patches it, and that otherwise Monaco's DOMPurify is the host's to keep current. The example apps keep the stock copy, and their README says so
+- [x] Angular dev tooling: `@angular/cli` 21.2.25 pulls `@modelcontextprotocol/sdk` 1.30.0 (GHSA-6qxp-vccf-f47h, OAuth credentials sent to an attacker-chosen server). It is dev only, in the CLI's MCP server, and is not in the published package. Add `overrides` for `@modelcontextprotocol/sdk` in `packages/bitmark-editor-angular/package.json` with the first fixed version, or take the 21.2 patch that ships it. Do not take `npm audit fix --force`, which moves to Angular 22 (see Step 4) — CLI 21.2.25 is the latest 21.x and pins the SDK to exactly 1.30.0, so both Angular projects (the wrapper and `examples/angular`, standalone npm projects where overrides work) override it to 1.32.1. `npm audit` is clean in the wrapper's project, and the library still builds
 
 ### 2. ESLint 10
 
-- [ ] Root and core: `eslint` ^10, `@eslint/js` ^10, `@eslint/markdown` ^8, `eslint-plugin-simple-import-sort` ^14. `typescript-eslint` 8.71 and `eslint-plugin-prettier` 5.5 already accept ESLint 10
-- [ ] Read the ESLint 10 migration guide against both configs. The checks: removed rules and options, the `js.configs.recommended` changes, the flat-config defaults (the `files` and `ignores` semantics), and that Node 20 support is dropped (we need `>=22` already)
-- [ ] simple-import-sort 13 and 14: check whether the default sort order changed. If so, apply `--fix` in its own commit, so the diff is only the reorder
-- [ ] `@eslint/markdown` 8: check that `language: 'markdown/gfm'` and the recommended rules still apply. Re-check that the `.claude` ignore is still needed
-- [ ] `npm run lint` is clean with `--max-warnings 0`
+- [x] Root and core: `eslint` ^10, `@eslint/js` ^10, `@eslint/markdown` ^8, `eslint-plugin-simple-import-sort` ^14. `typescript-eslint` 8.71 and `eslint-plugin-prettier` 5.5 already accept ESLint 10
+- [x] Read the ESLint 10 migration guide against both configs. The checks: removed rules and options, the `js.configs.recommended` changes, the flat-config defaults (the `files` and `ignores` semantics), and that Node 20 support is dropped (we need `>=22` already) — both configs work unchanged on 10.12. Each file now finds its nearest config, so `eslint .` at the root applies the core's own config inside `packages/bitmark-editor`, which is what the root's ignore intended anyway
+- [x] simple-import-sort 13 and 14: check whether the default sort order changed. If so, apply `--fix` in its own commit, so the diff is only the reorder — no reorder was needed, and a test file with unsorted imports still fails
+- [x] `@eslint/markdown` 8: check that `language: 'markdown/gfm'` and the recommended rules still apply. Re-check that the `.claude` ignore is still needed — a test file with two H1s and a fence without a language still fails both rules. The `.claude` ignore is still needed: its vendored skill files have 3 errors
+- [x] `npm run lint` is clean with `--max-warnings 0`
 
 ### 3. Toolchain majors
 
-- [ ] Vitest 5 with jsdom 30 (core): upgrade together, and run the 181 unit tests. Check `vitest.config.ts` for removed options
-- [ ] esbuild 0.28 (core build, examples): rebuild and compare `dist/` sizes with the README table (`bundled.js` 13 KB, `monaco.js` 808 KB br). Run the examples' browser checks, including the `/esm` consumer check (`examples/esm/check.mjs`)
-- [ ] `@types/node` ^22 in the core, to match `engines.node >=22`
-- [ ] TypeScript 7 (the native compiler): first a trial branch. Check `tsc --noEmit`, the declaration emit (`tsconfig.build.json`, `emitDeclarationOnly`), `typedoc` (which needs a version that supports TS 7) and `typescript-eslint` support. If declarations or typedoc are not ready, stay on 5.9 and write down the blocker here. The Angular wrapper stays on the TypeScript that its Angular version supports
+- [x] Vitest 5 with jsdom 30 (core): upgrade together, and run the 181 unit tests. Check `vitest.config.ts` for removed options — Vitest 5.0.3 and jsdom 30.1.2: all 181 pass, and the config needs no changes
+- [x] esbuild 0.28 (core build, examples): rebuild and compare `dist/` sizes with the README table (`bundled.js` 13 KB, `monaco.js` 808 KB br). Run the examples' browser checks, including the `/esm` consumer check (`examples/esm/check.mjs`) — 0.28.2: `/bundled` sizes are identical and `dist/esm` grew 17 bytes. The `/esm` check and the 10 browser checks pass. The README's size table had drifted before this (`bundled.js` 13 → 15 KB br, Monaco 808 → 809 KB); updated
+- [x] `@types/node` ^22 in the core, to match `engines.node >=22`
+- [x] TypeScript 7 (the native compiler): first a trial branch. Check `tsc --noEmit`, the declaration emit (`tsconfig.build.json`, `emitDeclarationOnly`), `typedoc` (which needs a version that supports TS 7) and `typescript-eslint` support. If declarations or typedoc are not ready, stay on 5.9 and write down the blocker here. The Angular wrapper stays on the TypeScript that its Angular version supports — trial result (2026-10-07):
+  - The code is ready. TypeScript 7.0.2 typechecks the core cleanly, and its declarations differ from 5.9's only in style: single quotes, and `cancel(): void` emitted as `cancel: () => void`.
+  - The tooling blocks it. typescript-eslint 8.71 supports TypeScript below 6.1, and typedoc 0.28 up to 6.0. TypeScript 7's package no longer exports the compiler API both of them use, only `version` and `unstable/*`.
+  - So the core stays on 5.9. Revisit when typescript-eslint and typedoc support 7. TypeScript 6.0 is supported by both, but is only worth taking as a step towards 7
 
 ### 4. Peer ranges that tests don't cover yet
 
-- [ ] Angular 22: the wrapper's peer range (`>=21.0.0 <23`) already claims 22, but CI builds and tests only 21. Add a CI matrix job that installs Angular 22 in the Angular project (outside its lockfile), then builds the library and the example and runs the e2e test. Keep the library on 21 as its build baseline, so that output built against 21 still works for 21 consumers
-- [ ] React 19: the core's peer range (`react >=18`) claims 19, but the dev copy and tests use 18.3. Partly covered since PLAN-026: the React example app runs React 19 and its smoke test passes. The adapter's own unit tests still run on 18 only. Add a test run of the `/react` adapter tests against React 19 (a Vitest project or a CI matrix entry with `react@19`/`react-dom@19`/`@types/react@19`)
-- [ ] Monaco: the peer range is `>=0.46.0 <1`. The Angular e2e test covers 0.46 and the examples cover 0.57. Write down that both ends are tested (README, compatibility section)
+- [x] Angular 22: the wrapper's peer range (`>=21.0.0 <23`) already claims 22, but CI builds and tests only 21. Add a CI matrix job that installs Angular 22 in the Angular project (outside its lockfile), then builds the library and the example and runs the e2e test. Keep the library on 21 as its build baseline, so that output built against 21 still works for 21 consumers — CI job `angular-22`: after `npm ci`, it installs Angular 22, ng-packagr 22 and TypeScript 6.0 (Angular 22 needs `>=6.0 <6.1`) with `--no-save`, then builds the library and the example and runs the e2e test. All of that passed in a scratch copy first, zones and Monaco 0.46 AMD included
+- [x] React 19: the core's peer range (`react >=18`) claims 19, but the dev copy and tests use 18.3. Partly covered since PLAN-026: the React example app runs React 19 and its smoke test passes. The adapter's own unit tests still run on 18 only. Add a test run of the `/react` adapter tests against React 19 (a Vitest project or a CI matrix entry with `react@19`/`react-dom@19`/`@types/react@19`) — done the other way round. The core now develops on React 19 (current, with stricter types), and a CI job `react-18` checks the bottom of the range: the adapter's tests and the typecheck on React 18. Found and fixed:
+  - The adapter's source didn't compile against React 19's types: `useRef<Pane>()` needs an initial value. It is now `useRef<Pane | undefined>(undefined)`, which compiles against both 18 and 19. Hosts were never affected, since the published declarations don't include it.
+  - npm can't switch React in place in a workspace: the lockfile keeps the old copy for `@testing-library/react`, and two Reacts in one test fail. Two Vitest projects with aliased React copies don't work either: the aliased `react-dom` 19 needs `react` 19 by name. So `scripts/set-react.mjs <18|19>` sets the versions, drops React's lockfile entries and reinstalls. CI uses it for 18; 19 is committed
+- [x] Monaco: the peer range is `>=0.46.0 <1`. The Angular e2e test covers 0.46 and the examples cover 0.57. Write down that both ends are tested (README, compatibility section) — the core README's "Tested versions" table covers all four peers
 
 ### 5. Small clean-ups
 
-- [ ] Theme defaults (found in PLAN-026): with no `theme`, the panes use the dark token palette, while a host's Monaco keeps its own theme, light `vs` by default. A host following the quick start gets dark-theme colours on a white editor (bit types at about 2:1 contrast). The README now says to match them. Decide whether the default should change too, for example to warn once when `theme` is unset and `applyMonacoTheme` is false. Changing the default palette to light would only move the mismatch to `vs-dark` hosts
-- [ ] Angular wrapper: no `applyMonacoTheme` (found in PLAN-026). Neither `provideBitmarkEditor` nor `bm-session` can pass it, so an Angular host that owns its Monaco has to call `monaco.editor.setTheme` itself (as `examples/angular` does). Add it to `BitmarkEditorConfig` and as a `bm-session` input
+- [x] Theme defaults (found in PLAN-026): with no `theme`, the panes use the dark token palette, while a host's Monaco keeps its own theme, light `vs` by default. A host following the quick start gets dark-theme colours on a white editor (bit types at about 2:1 contrast). The README now says to match them. Decide whether the default should change too, for example to warn once when `theme` is unset and `applyMonacoTheme` is false. Changing the default palette to light would only move the mismatch to `vs-dark` hosts — done (2026-10-07):
+  - A session with no `theme` that leaves Monaco's theme to the host warns once per page (`log.warnOnce`), saying how to match them.
+  - Found while doing it: `applyMonacoTheme: true` with no `theme` didn't touch Monaco at all, so `/bundled` without a `theme` attribute had the same mismatch. Monaco now gets the panes' default (`DEFAULT_THEME`, dark). An elements test that asserted the old behaviour was updated.
+  - Unit tests for both. The warning test was checked by disabling the warning, which fails it
+- [x] Angular wrapper: no `applyMonacoTheme` (found in PLAN-026). Neither `provideBitmarkEditor` nor `bm-session` can pass it, so an Angular host that owns its Monaco has to call `monaco.editor.setTheme` itself (as `examples/angular` does). Add it to `BitmarkEditorConfig` and as a `bm-session` input — done, and documented in the wrapper's README and CHANGELOG. The Angular example uses it (`provideBitmarkEditor({ …, applyMonacoTheme: true })`) instead of setting Monaco's theme itself; its theme checks pass on the packed wrapper
 
-- [ ] React adapter sizing (found in PLAN-026): `<BitmarkPane>` sets `height: 100%` on its `<div>`. A host `className` with a border or padding (`content-box`) then makes a grid or flex container grow forever. Set `boxSizing: 'border-box'` in the adapter's default style, with a unit test, and note it in the CHANGELOG
+- [x] React adapter sizing (found in PLAN-026): `<BitmarkPane>` sets `height: 100%` on its `<div>`. A host `className` with a border or padding (`content-box`) then makes a grid or flex container grow forever. Set `boxSizing: 'border-box'` in the adapter's default style, with a unit test, and note it in the CHANGELOG — done; the host's own `style` still wins
 
-- [ ] `.vscode/settings.json`: remove the leftovers from other projects. That means `pasteImage.*` (pointing at `packages/gatsby/static`), the `jest.*` settings and the Java paths
-- [ ] typedoc: `npm run docs` reports 22 warnings, from links between doc pages (e.g. `RawParserModule.convert`). They predate PLAN-024. Fix the TSDoc `{@link}` targets, or set `validation.invalidLink`, and consider `--treatWarningsAsErrors` in CI once it is clean
-- [ ] Angular project: pin Prettier exactly as in the root and core (3.9.9), or remove it if nothing in that project uses it
-- [ ] `npm outdated` in the root and the Angular project after each step above. Record what is still behind, and why, under Risks
+- [x] `.vscode/settings.json`: remove the leftovers from other projects. That means `pasteImage.*` (pointing at `packages/gatsby/static`), the `jest.*` settings and the Java paths
+- [x] typedoc: `npm run docs` reports 22 warnings, from links between doc pages (e.g. `RawParserModule.convert`). They predate PLAN-024. Fix the TSDoc `{@link}` targets, or set `validation.invalidLink`, and consider `--treatWarningsAsErrors` in CI once it is clean — 22 → 9:
+  - `intentionallyNotExported` for 4 internal types;
+  - `externalSymbolLinkMappings` sends the parser's and Monaco's types to their docs.
+
+  The 9 left all come from comments that typedoc copies from the parser and Monaco (`RawParserModule` reuses `typeof Parser.*`): 3 links to the parser's unexported `UnsupportedFeatureError`, 1 malformed Monaco link, and 5 member-link notices. They can't be fixed here without dropping the parser's types, and turning off link validation would hide our own broken links. So warnings don't fail CI. The `UnsupportedFeatureError` export is now an ask in `docs/upstream-parser-note.md`
+- [x] Angular project: pin Prettier exactly as in the root and core (3.9.9), or remove it if nothing in that project uses it — pinned to 3.9.9: the project's own `.prettierrc` (with the Angular template parser) uses it
+- [x] `npm outdated` in the root and the Angular project after each step above. Record what is still behind, and why, under Risks — see "Still behind" below
+
+## Still behind (2026-10-07)
+
+- TypeScript 7: blocked by typescript-eslint and typedoc (Step 3).
+- `@types/node` 26: the types follow the oldest supported Node (`>=22`), not the newest.
+- Angular 22 in the wrapper and `examples/angular`: they stay on 21, the build baseline, so their output suits Angular 21 users. CI's `angular-22` job tests 22.
+- Monaco 0.46 in the wrapper's project: pinned to match cosmic.
+- Vitest 4 and jsdom 28 in the wrapper's project: they come with the Angular 21 tooling.
+- `npm audit`, root: low, `dompurify` 3.4.15 declared by Monaco's `package.json`. It is never bundled (Step 1). The example apps ship Monaco's vendored copy as it comes (`examples/README.md`). The wrapper's project is clean.
 
 ## Risks
 
@@ -87,15 +108,15 @@ Findings as of 2026-10-07 (from `npm outdated` and `npm audit`, root and Angular
 
 ## Completion Criteria
 
-- [ ] `npm audit` is clean in the root and in the Angular project, or each remaining finding is listed here with the reason it is accepted
-- [ ] ESLint 10 runs in the root and the core, and lint is clean
-- [ ] CI covers both ends of each peer range: Angular 21 and 22, React 18 and 19, Monaco 0.46 and 0.57
-- [ ] The toolchain majors are either taken, or deferred with a reason written here
+- [x] `npm audit` is clean in the root and in the Angular project, or each remaining finding is listed here with the reason it is accepted
+- [x] ESLint 10 runs in the root and the core, and lint is clean
+- [ ] CI covers both ends of each peer range: Angular 21 and 22, React 18 and 19, Monaco 0.46 and 0.57 — the jobs exist (`angular`, `angular-22`, `react-18`, the core, the examples) and pass locally, but haven't run on GitHub yet
+- [x] The toolchain majors are either taken, or deferred with a reason written here
 
 ## Open Questions
 
 - [x] Should a scheduled job (like the parser bump) open dependency PRs, or is Dependabot (PLAN-024 Phase 5) enough? — Dependabot is enough. The parser keeps its own workflow, because the default version is also a source constant
-- [ ] TypeScript 7: is it worth taking now, or should we wait for typedoc and Angular to support it?
+- [x] TypeScript 7: is it worth taking now, or should we wait for typedoc and Angular to support it? — wait: the code is ready, the tooling isn't (Step 3)
 
 ## References
 

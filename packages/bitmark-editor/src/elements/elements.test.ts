@@ -164,7 +164,8 @@ describe('<bitmark-session> and <bitmark-pane> (PLAN-022 D3, D9)', () => {
     expect(hostMonaco.setTheme).not.toHaveBeenCalled();
     other.remove();
 
-    // A theme first given after the start still reaches the package's Monaco.
+    // No theme: the package's Monaco gets the panes' default (dark), not a
+    // light Monaco under dark tokens. A theme given later still reaches it.
     const late = createFakeMonaco();
     setMonacoLoader(async () => late.monaco, { own: true });
     const third = document.createElement('div');
@@ -173,7 +174,7 @@ describe('<bitmark-session> and <bitmark-pane> (PLAN-022 D3, D9)', () => {
     lateSession.engine = engine;
     document.body.append(third);
     await vi.waitFor(() => expect(lateSession.dataset.state).toBe('ready'));
-    expect(late.setTheme).not.toHaveBeenCalled();
+    expect(late.setTheme).toHaveBeenLastCalledWith('vs-dark');
     lateSession.setAttribute('theme', 'light');
     expect(late.setTheme).toHaveBeenLastCalledWith('vs');
     third.remove();

@@ -31,6 +31,11 @@ Mappings panes, for any framework.
 - **It doesn't**: use `/bundled`, which brings Monaco 0.57. If the page
   *does* have Monaco, `/bundled` warns and leaves it alone.
 
+Monaco vendors its own copy of DOMPurify, the HTML sanitiser for hovers and
+Markdown. `/bundled` replaces Monaco 0.57's copy (3.4.15) with the patched
+3.4.16. With the core or `/elements`, Monaco is yours, and so is keeping its
+DOMPurify current.
+
 ## Quick start: a host with Monaco
 
 ```ts
@@ -250,6 +255,17 @@ purpose, call `session.setBitmark()`.
 See `@gmb/bitmark-editor-angular`: `bm-session` (a form control),
 `bm-pane`, `bm-tabs`, `bm-split`, and `provideBitmarkEditor`.
 
+## Tested versions
+
+CI tests both ends of each peer range on every change:
+
+| Peer | Range | Tested |
+|---|---|---|
+| `monaco-editor` | `>=0.46 <1` | 0.46 (the Angular example, AMD) and 0.57 (`/bundled`, the example apps) |
+| `react` | `>=18` | 18 and 19 (the React adapter's tests and typecheck; the React example app on 19) |
+| `@angular/core` | `>=21 <23` | 21 and 22 (`@gmb/bitmark-editor-angular`, built and tested on both) |
+| `@gmb/bitmark-parser` | `>=7.7 <8` | the pinned default, 7.9 (bumped weekly within the major) |
+
 ## Content Security Policy
 
 - `script-src` needs the CDN origin (or self-hosting), plus
@@ -264,8 +280,8 @@ same-origin.
 
 | File | Size | Loaded |
 |---|---|---|
-| `bundled.js` | 13 KB | on import |
-| `monaco.js` + `monaco.css` + `codicon.ttf` | 808 + 22 + 66 KB | when the first session starts |
+| `bundled.js` | 15 KB | on import |
+| `monaco.js` + `monaco.css` + `codicon.ttf` | 809 + 22 + 66 KB | when the first session starts |
 | `editor.worker.js`, `json.worker.js` | 74, 104 KB | on first use |
 | parser + `bitmark-json` wasm (+ `full`) | 13 + 222 (+ 346) KB | when the first session starts |
 
