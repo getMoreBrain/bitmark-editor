@@ -264,7 +264,7 @@ CI tests both ends of each peer range on every change:
 | `monaco-editor` | `>=0.46 <1` | 0.46 (the Angular example, AMD) and 0.57 (`/bundled`, the example apps) |
 | `react` | `>=18` | 18 and 19 (the React adapter's tests and typecheck; the React example app on 19) |
 | `@angular/core` | `>=21 <23` | 21 and 22 (`@gmb/bitmark-editor-angular`, built and tested on both) |
-| `@gmb/bitmark-parser` | `>=7.7 <8` | the pinned default, 7.9 (bumped weekly within the major) |
+| `@gmb/bitmark-parser` | `>=7.7 <8` | the pinned default, 7.9 (`npm run bump:parser` moves it within the major) |
 
 ## Content Security Policy
 

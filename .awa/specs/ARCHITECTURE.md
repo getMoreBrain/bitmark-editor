@@ -35,7 +35,7 @@ Playground (React).
 - `typedoc 0` — the API reference
 - `npm 11` — workspaces, scripts and publishing (trusted publishing)
 - `Node 24` — development and CI
-- `GitHub Actions` — CI, Pages, releases, parser bumps
+- `GitHub Actions` — CI, Pages, releases
 
 ## High-Level Architecture
 
@@ -102,13 +102,13 @@ packages/bitmark-editor/src/theme/        # Themes and token styles
 packages/bitmark-editor/src/elements/     # Custom elements (/elements)
 packages/bitmark-editor/src/react/        # React adapter (/react)
 packages/bitmark-editor/src/bundled/      # The CDN build with Monaco inside (/bundled)
-packages/bitmark-editor/scripts/          # The build and the parser bump
+packages/bitmark-editor/scripts/          # The build and the parser bump (`npm run bump:parser`)
 packages/bitmark-editor/examples/         # Static-site and /esm examples, the Pages site (pages/), browser checks (npm workspace)
 packages/bitmark-editor/docs/             # Hand-offs to host apps; typedoc output (docs/api, not committed)
 packages/bitmark-editor-angular/          # Angular CLI project: the wrapper library and a cosmic-shaped example (standalone npm project)
 examples/                                 # Example apps (vanilla-ts, react, angular), each its own npm project on packed tarballs, and their smoke tests
 scripts/                                  # Repo scripts: the release helper, the example apps' pack/install/build/test
-.github/workflows/                        # CI, Pages, Release, parser bump
+.github/workflows/                        # CI, Pages, Release
 .awa/                                     # Architecture and plans
 ```
 
@@ -127,7 +127,7 @@ RESPONSIBILITIES
 
 CONSTRAINTS
 
-- The default parser version is one exact version, bumped by a weekly PR within the peer range's major
+- The default parser version is one exact version, bumped by hand (`npm run bump:parser`) within the peer range's major
 - A load failure shows in the panes and reaches the host as an `error` event; a failed stage 2 leaves stage 1 working
 
 ### Monaco Services
@@ -219,7 +219,7 @@ RESPONSIBILITIES
 - Build the example apps (plain TypeScript, React, Angular) from tarballs of the current build, as an outside app would install them, and smoke-test each one
 - Deploy the demos and the API reference to GitHub Pages from `main`
 - Publish both packages from a `v<version>` tag by npm trusted publishing, then create the GitHub Release
-- Open weekly PRs for the default parser version (a workflow) and other dependencies (Dependabot)
+- Open weekly dependency PRs (Dependabot); the default parser version is bumped by hand
 
 CONSTRAINTS
 
@@ -317,3 +317,4 @@ STATUS: Alpha — both packages are at 0.1.0, built and tested, and not yet publ
 - 1.3.0 (2026-10-06): The editors extracted into `@gmb/bitmark-editor` and `@gmb/bitmark-editor-angular` (PLAN-022, PLAN-023)
 - 2.0.0 (2026-10-07): This repository holds only the editor packages (PLAN-024). The Playground app, its state and UI layers, and its Vite build are gone; npm workspaces replace Bun; CI, GitHub Pages and the tag-triggered release are added. Plans before PLAN-022 stay in the Playground repo
 - 2.1.0 (2026-10-07): Example apps for plain TypeScript, React and Angular, built from packed tarballs and smoke-tested in CI (PLAN-026)
+- 2.1.1 (2026-10-07): The weekly parser-bump workflow is removed; the parser is bumped by hand (`npm run bump:parser`)

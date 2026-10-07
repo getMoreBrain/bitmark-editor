@@ -1,6 +1,6 @@
-# Weekly dependency PRs (PLAN-024 Phase 5). The default parser version has
-# its own workflow (bitmark-editor-parser-bump.yml), so Dependabot leaves
-# @gmb/bitmark-parser alone.
+# Weekly dependency PRs (PLAN-024 Phase 5). Dependabot leaves
+# @gmb/bitmark-parser alone: the default parser version is also a source
+# constant, which it wouldn't update. Bump it with `npm run bump:parser`.
 version: 2
 updates:
   - package-ecosystem: npm

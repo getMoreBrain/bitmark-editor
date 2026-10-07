@@ -218,7 +218,7 @@ the repo from Bun to npm, and prepares both packages for publishing to npm.
 
 - PLAN-023 finished (status in-progress: check its remaining items before Phase 7)
 - A member of the `@gmb` npm org with publish rights and 2FA, for the bootstrap publish and the trusted-publisher setup
-- `BITMARK_EDITOR_BOT_TOKEN` secret recreated in the new repo (parser bump PRs). Not set yet (checked 2026-10-07). Without it, a bump PR runs no CI, and the `main` ruleset blocks it until someone runs the CI workflow on its branch by hand
+- `BITMARK_EDITOR_BOT_TOKEN` secret recreated in the new repo (parser bump PRs). Not set yet (checked 2026-10-07). Without it, a bump PR runs no CI, and the `main` ruleset blocks it until someone runs the CI workflow on its branch by hand — no longer needed (2026-10-07): the parser-bump workflow was removed, and the parser is bumped by hand (`npm run bump:parser`)
 - Repo admin: Pages enabled (Actions source), the `npm` environment, branch protection on `main`
 - Playground follow-up (other repo, D7): freeze `packages/` there now. After `0.1.0` is published:
   - depend on `@gmb/bitmark-editor@^0.1.0` instead of `workspace:*`
