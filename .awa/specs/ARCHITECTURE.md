@@ -108,7 +108,7 @@ packages/bitmark-editor/examples/         # Static-site and /esm examples, brows
 packages/bitmark-editor/docs/             # Hand-offs to host apps; typedoc output (docs/api, not committed)
 packages/bitmark-editor-angular/          # Angular CLI project: the wrapper library and a cosmic-shaped example (standalone npm project)
 examples/                                 # Example apps (vanilla-ts, react, angular), each its own npm project on packed tarballs, and their smoke tests
-docs-site/                                # The docs site: guides, live demos, the API reference (Eleventy, Pagefind; npm workspace; GitHub Pages)
+docs-site/                                # The docs site: guides, live demos, the API reference (Eleventy, Pagefind; npm workspace; built and tested, not yet deployed)
 scripts/                                  # Repo scripts: the release helper, the example apps' pack/install/build/test
 .github/workflows/                        # CI, Pages, Release
 .awa/                                     # Architecture and plans
@@ -219,7 +219,8 @@ RESPONSIBILITIES
 - Build the core with esbuild (`/esm`, `/bundled`) and tsc (declarations); build the Angular library with ng-packagr
 - CI on every PR: lint, typecheck, unit tests, builds, package checks (publint, attw, `npm pack`), API docs, browser checks of the examples, the docs site and the Angular example
 - Build the example apps (plain TypeScript, React, Angular) from tarballs of the current build, as an outside app would install them, and smoke-test each one
-- Deploy the docs site (guides, live demos on `/bundled`, the API reference) to GitHub Pages from `main`, after a smoke test of every internal link, the demos, search and the theme toggle. Until the guides are public (`guidesPublic` in `docs-site/src/_data/site.js`), the root redirects to the API reference, the overview is at `/overview/`, every guide page is marked `noindex`, and the API reference's home page leaves out the README's links into the guides
+- Deploy only the API reference (typedoc) to GitHub Pages from `main`, at the site's root, until the guides are ready. Until then the READMEs keep every link into the docs site inside an HTML comment (`<!-- docs-site-links … -->`), hidden on GitHub, npm and the API reference
+- Build the docs site (guides, live demos on `/bundled`, the API reference) and smoke-test every internal link, the demos, search and the theme toggle in CI, so it stays ready to deploy. While `guidesPublic` (`docs-site/src/_data/site.js`) is false, its root redirects to the API reference, the overview is at `/overview/`, and every guide page is marked `noindex`
 - Publish both packages from a `v<version>` tag by npm trusted publishing, then create the GitHub Release
 - Open weekly dependency PRs (Dependabot); the default parser version is bumped by hand
 
@@ -322,3 +323,4 @@ STATUS: Alpha — both packages are at 0.1.0, built and tested, and not yet publ
 - 2.1.1 (2026-10-07): The weekly parser-bump workflow is removed; the parser is bumped by hand (`npm run bump:parser`)
 - 2.2.0 (2026-10-07): The docs site (Eleventy, Pagefind) replaces the Pages landing page; the long-form docs move from the READMEs to it (PLAN-027)
 - 2.2.1 (2026-10-07): The guides are hidden until they are ready: the site's root redirects to the API reference, and the guide pages are `noindex` (PLAN-027)
+- 2.2.2 (2026-10-07): GitHub Pages serves only the API reference, at its root; the docs site is built and tested in CI but not deployed, and the READMEs' links into it are hidden in comments
