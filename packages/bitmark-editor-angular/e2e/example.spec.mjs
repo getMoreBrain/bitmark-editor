@@ -1,5 +1,5 @@
-// The Angular example, shaped like cosmic (PLAN-023 Step 15a): the CI test
-// for cosmic's setup, which cosmic itself has none of.
+// The NgModule example (PLAN-023 Step 15a): the CI test for a host with
+// zones, an AMD Monaco 0.46 and its own parser.
 import { expect, test } from '@playwright/test';
 
 const paneValue = (page, type) =>

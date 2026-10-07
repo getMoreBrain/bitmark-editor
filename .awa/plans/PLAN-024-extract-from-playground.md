@@ -40,7 +40,7 @@ the repo from Bun to npm, and prepares both packages for publishing to npm.
     `packages/bitmark-editor/examples`, with one root `package-lock.json`.
   - `packages/bitmark-editor-angular` stays a standalone npm project with its
     own `package-lock.json` and `file:../bitmark-editor`. It pins Monaco 0.46
-    and TypeScript 5.9 to match cosmic, and `angular.json` copies assets from its
+    and TypeScript 5.9 to match the Angular host app, and `angular.json` copies assets from its
     own `node_modules`. Hoisting from a shared workspace would break both.
 - D6 — Git history starts in this repo with a snapshot commit of the copy
   (Phase 0). The Playground's history is not imported. The repo is public,
@@ -143,7 +143,7 @@ the repo from Bun to npm, and prepares both packages for publishing to npm.
   - Angular job: `cache: npm` with `cache-dependency-path` on both lockfiles. It runs a root `npm ci` too, for publint and attw. The root's Playwright browser install serves its e2e test, because both lockfiles pin Playwright 1.63.0
 - [x] `bitmark-editor-parser-bump.yml`: remove `setup-bun`; `bun install` → `npm install` (it updates `package-lock.json`); update the comments; keep `BITMARK_EDITOR_BOT_TOKEN` — `npm install --package-lock-only --ignore-scripts`, since the PR only needs the lockfile. The comments now say a merged bump ships with the next release tag (releases are tag-triggered, Phase 7), not automatically
 - [x] Remove the README badge for the Playground deploy workflow — replaced by the CI badge; the rest of the root README is rewritten in Phase 8
-- [x] Add `.github/dependabot.yml` for `github-actions` and `npm` (root and Angular directories), grouped and weekly. Ignore `@gmb/bitmark-parser`, because the parser-bump workflow owns it. The Angular directory also ignores `monaco-editor` (pinned to 0.46 to match cosmic), and Angular, ng-packagr and TypeScript majors (planned in PLAN-025)
+- [x] Add `.github/dependabot.yml` for `github-actions` and `npm` (root and Angular directories), grouped and weekly. Ignore `@gmb/bitmark-parser`, because the parser-bump workflow owns it. The Angular directory also ignores `monaco-editor` (pinned to 0.46 to match the Angular host app), and Angular, ng-packagr and TypeScript majors (planned in PLAN-025)
 - [x] Branch protection on `main`: require the CI jobs to pass and require PRs. This is a manual step for a repo admin — done with `gh` as a repository ruleset named `main` (id 24618038). It requires a PR (0 approvals, so a sole maintainer and the bot PRs can merge), requires the `core` and `angular` checks with branches up to date, and blocks force pushes and deletion. Nobody could bypass it at first. Later (2026-10-07, at the user's request), repository admins may bypass it in pull-request mode only: they can merge a PR without waiting for its checks, and direct pushes stay blocked
 
 ### Phase 6 — GitHub Pages (examples + API docs)

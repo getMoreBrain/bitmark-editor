@@ -68,7 +68,7 @@ jobs:
       - run: npm run build:angular
       - name: Package contents, publint, attw
         run: npm run check:package:angular
-      - name: "Example (cosmic-shaped: zones, Monaco 0.46 AMD, injected parser)"
+      - name: "NgModule example (zones, Monaco 0.46 AMD, injected parser)"
         # The root and the Angular project pin the same Playwright (1.63.0),
         # so the root's browser install serves both.
         run: |
@@ -123,7 +123,7 @@ jobs:
           @angular/platform-browser@22 @angular/router@22 @angular/build@22 @angular/cli@22
           @angular/compiler-cli@22 ng-packagr@22 typescript@~6.0.3
       - run: npm run build:angular
-      - name: "Example (cosmic-shaped: zones, Monaco 0.46 AMD, injected parser)"
+      - name: "NgModule example (zones, Monaco 0.46 AMD, injected parser)"
         run: |
           (cd packages/bitmark-editor-angular && npx playwright install --with-deps chromium)
           npm run test:angular

@@ -90,7 +90,7 @@ Findings as of 2026-10-07 (from `npm outdated` and `npm audit`, root and Angular
 - TypeScript 7: blocked by typescript-eslint and typedoc (Step 3).
 - `@types/node` 26: the types follow the oldest supported Node (`>=22`), not the newest.
 - Angular 22 in the wrapper and `examples/angular`: they stay on 21, the build baseline, so their output suits Angular 21 users. CI's `angular-22` job tests 22.
-- Monaco 0.46 in the wrapper's project: pinned to match cosmic.
+- Monaco 0.46 in the wrapper's project: pinned to match the Angular host app.
 - Vitest 4 and jsdom 28 in the wrapper's project: they come with the Angular 21 tooling.
 - `npm audit`, root: low, `dompurify` 3.4.15 declared by Monaco's `package.json`. It is never bundled (Step 1). The example apps ship Monaco's vendored copy as it comes (`examples/README.md`). The wrapper's project is clean.
 

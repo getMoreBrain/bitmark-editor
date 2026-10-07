@@ -84,6 +84,6 @@ costs nothing.
 - **The example app** in `examples/angular`: zoneless, standalone components,
   Monaco 0.57 from npm loaded on first use.
 - **The wrapper's own example** in the Angular project
-  (`projects/example`), shaped like the cosmic app: NgModule bootstrap, zone
+  (`projects/example`): NgModule bootstrap, zone
   change detection, Monaco 0.46 loaded as AMD (`window.monaco`), and the
   parser bundled and initialised by the app.

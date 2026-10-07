@@ -13,7 +13,7 @@ would publish, so packaging mistakes show up before a release.
 
 The package's own `packages/bitmark-editor/examples/` stay: they test the
 static-site and `/esm` paths against the build output. The Angular project's
-cosmic-shaped example stays too: it covers Angular with zones, Monaco 0.46
+NgModule example stays too: it covers Angular with zones, Monaco 0.46
 AMD and an injected parser.
 
 ## Decisions (agreed 2026-10-07)
@@ -27,7 +27,7 @@ AMD and an injected parser.
   testing the tarballs.
 - D3 — Plain TypeScript: a Vite vanilla-ts app on the core (`/esm`), with
   Monaco 0.57 injected and its workers set up the usual Vite way.
-- D4 — Angular: modern defaults, the opposite of the cosmic example. That
+- D4 — Angular: modern defaults, the opposite of the NgModule example. That
   means a fresh `ng new` app: standalone components, zoneless, Monaco 0.57
   from npm as ESM, and the parser loaded by the package.
 - D5 — React: a Vite React app on `/react`, with Monaco 0.57 injected. It
