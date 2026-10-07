@@ -1,0 +1,38 @@
+{
+  "name": "@gmb/bitmark-editor-workspace",
+  "private": true,
+  "description": "Workspace for @gmb/bitmark-editor and @gmb/bitmark-editor-angular",
+  "author": "Get More Brain Ltd",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/getMoreBrain/bitmark-editor.git"
+  },
+  "workspaces": [
+    "packages/bitmark-editor"
+  ],
+  "scripts": {
+    "build": "npm run build -w @gmb/bitmark-editor",
+    "build:angular": "cd packages/bitmark-editor-angular && npx ng build bitmark-editor-angular",
+    "typecheck": "npm run typecheck -w @gmb/bitmark-editor",
+    "check:package": "npm pack --dry-run -w @gmb/bitmark-editor && publint packages/bitmark-editor && attw --pack packages/bitmark-editor --profile esm-only",
+    "check:package:angular": "cd packages/bitmark-editor-angular/dist/bitmark-editor-angular && npm pack --dry-run && publint . && attw --pack . --profile esm-only",
+    "install:angular": "npm ci --prefix packages/bitmark-editor-angular"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@eslint/js": "^10.0.1",
+    "@eslint/markdown": "^8.0.3",
+    "@ncoderz/awa": "^1.10.3",
+    "eslint": "^10.12.0",
+    "eslint-plugin-prettier": "^5.5.5",
+    "eslint-plugin-simple-import-sort": "^14.0.0",
+    "globals": "^17.13.0",
+    "prettier": "3.9.9",
+    "publint": "^0.3.25"
+  },
+  "packageManager": "npm@11.13.0",
+  "engines": {
+    "node": ">=22"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "packageManager": "npm"
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "bitmark-editor-angular": {
+      "projectType": "library",
+      "root": "projects/bitmark-editor-angular",
+      "sourceRoot": "projects/bitmark-editor-angular/src",
+      "prefix": "bm",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/bitmark-editor-angular/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/bitmark-editor-angular/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
+    }
+  }
+}
