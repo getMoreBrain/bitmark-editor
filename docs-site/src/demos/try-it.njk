@@ -8,7 +8,7 @@ lead: The full editor in one tag, with every view. Edit the bitmark, or any view
     <span><code>&lt;bitmark-editor panes="json,html,xml,text,info,mappings"&gt;</code></span>
     <span>/bundled · parser {{ site.parserVersion }}</span>
   </div>
-  <bitmark-editor class="demo-stage demo-tall" theme="auto" panes="json,html,xml,text,info,mappings" value="[.article]
+  <bitmark-editor id="try-it" class="demo-stage demo-tall" theme="auto" panes="json,html,xml,text,info,mappings" value="[.article]
 # A short example
 Hello **World**! This is ==highlighted==|highlight| text.
 
@@ -39,4 +39,10 @@ Which planet is the largest?
   <a href="/guides/elements/">Custom elements</a>.
 </p>
 
+<script type="module">
+  // The generated views don't need Monaco's sticky scroll. Set before the
+  // elements are defined; they take the property over when they upgrade.
+  const noStickyScroll = { stickyScroll: { enabled: false } };
+  document.getElementById('try-it').paneEditorOptions = { json: noStickyScroll, html: noStickyScroll };
+</script>
 <script type="module" src="/bundled/bundled.js"></script>

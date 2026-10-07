@@ -12,6 +12,9 @@
   "excludePrivate": true,
   "excludeInternal": true,
   "readme": "README.md",
+  "plugin": [
+    "./scripts/typedoc-readme-title.mjs"
+  ],
   "exclude": [
     "**/*.test.ts",
     "**/*.test.tsx",

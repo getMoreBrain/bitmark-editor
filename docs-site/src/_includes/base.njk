@@ -4,7 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="site-base" content="{{ '/' | htmlBaseUrl }}" />
-    <title>{% if title and page.url != '/' %}{{ title }} · {% endif %}{{ site.title }}</title>
+    {% if not site.guidesPublic %}<meta name="robots" content="noindex, nofollow" />{% endif %}
+    <title>{% if title and page.url != site.home %}{{ title }} · {% endif %}{{ site.title }}</title>
     <meta name="description" content="{{ description or site.description }}" />
     <link rel="icon" type="image/png" href="/assets/images/bm_fav.png" />
     <script>

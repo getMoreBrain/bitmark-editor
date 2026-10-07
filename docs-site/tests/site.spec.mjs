@@ -1,13 +1,26 @@
 // The docs site, built and served under /bitmark-editor/ (PLAN-027).
 import { expect, test } from '@playwright/test';
 
+import site from '../src/_data/site.js';
+
 const ORIGIN = 'http://localhost:4631';
 const BASE = '/bitmark-editor/';
+/** The overview, relative to BASE: the root once the guides are public (site.js). */
+const HOME = site.home.slice(1);
 
 /** A pane's editor text, by its position in the page's first session. */
 const paneText = (page, type) =>
   page.evaluate(
     (t) => document.querySelector(`bitmark-pane[type="${t}"]`)?.pane?.textEditor.getValue() ?? '',
+    type,
+  );
+
+/** Whether a pane's Monaco editor has sticky scroll on (Monaco's default). */
+const stickyScroll = (page, type) =>
+  page.evaluate(
+    (t) =>
+      document.querySelector(`bitmark-pane[type="${t}"]`)?.pane?.textEditor.editor.getRawOptions()
+        .stickyScroll?.enabled ?? true,
     type,
   );
 
@@ -19,8 +32,8 @@ const collectErrors = (page) => {
 };
 
 test('every internal link, script, stylesheet and image resolves', async ({ request }) => {
-  const pages = new Set([BASE]);
-  const queue = [BASE];
+  const pages = new Set([BASE, BASE + HOME]);
+  const queue = [...pages];
   const assets = new Set();
   const broken = [];
   while (queue.length) {
@@ -62,12 +75,13 @@ test('every internal link, script, stylesheet and image resolves', async ({ requ
 
 test('home: the live editor converts, under the sub-path', async ({ page }) => {
   const errors = collectErrors(page);
-  await page.goto('');
+  await page.goto(HOME);
   await expect(page.locator('bitmark-session')).toHaveAttribute('data-state', 'ready', {
     timeout: 30_000,
   });
   await expect(page.locator('.bm-tok-bitType').first()).toBeVisible();
   await expect.poll(() => paneText(page, 'json')).toContain('"type": "cloze"');
+  expect(await stickyScroll(page, 'json')).toBe(false);
   expect(errors).toEqual([]);
 });
 
@@ -85,6 +99,8 @@ test('try it: the full editor completes, converts and shows the other views', as
   // The HTML view, once the full parser is in.
   await page.getByRole('tab', { name: 'html' }).click();
   await expect.poll(() => paneText(page, 'html'), { timeout: 30_000 }).toContain('<bitmark-bit');
+  expect(await stickyScroll(page, 'html')).toBe(false);
+  expect(await stickyScroll(page, 'bitmark')).toBe(true);
   // Monaco creates some editor features only once the page is idle: give
   // them time, so a missing service shows up here, not on a reader's page.
   await page.waitForTimeout(3000);
@@ -103,11 +119,12 @@ test('injected parser: the page’s parser, then its full variant', async ({ pag
   await page.locator('#load-full').click();
   await expect(page.locator('#injected-status')).toHaveText('ready: full', { timeout: 30_000 });
   await expect.poll(() => paneText(page, 'html'), { timeout: 10_000 }).toContain('Injected parser');
+  expect(await stickyScroll(page, 'html')).toBe(false);
   expect(errors).toEqual([]);
 });
 
 test('search finds a guide', async ({ page }) => {
-  await page.goto('');
+  await page.goto(HOME);
   await page.locator('pagefind-modal-trigger').click();
   await page.keyboard.type('applyMonacoTheme');
   const result = page.locator('pagefind-modal a[href*="/guides/theming/"]').first();
@@ -118,7 +135,7 @@ test('the theme toggle cycles, is remembered, and the demos and Monaco follow', 
   page,
 }) => {
   await page.emulateMedia({ colorScheme: 'light' });
-  await page.goto('');
+  await page.goto(HOME);
   await expect(page.locator('bitmark-session')).toHaveAttribute('data-state', 'ready', {
     timeout: 30_000,
   });
@@ -136,4 +153,20 @@ test('the theme toggle cycles, is remembered, and the demos and Monaco follow', 
   await toggle.click();
   await expect(html).not.toHaveAttribute('data-theme', /./);
   await expect(page.locator('bitmark-session')).toHaveAttribute('theme', 'auto');
+});
+
+test('until the guides are public, the root sends readers to the API reference', async ({
+  page,
+}) => {
+  test.skip(site.guidesPublic, 'the guides are public');
+  await page.goto('');
+  await expect(page).toHaveURL(`${ORIGIN}${BASE}api/`);
+  await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+  // Its home page (the core README) links to no guide while they are hidden.
+  const siteLinks = await page
+    .locator('a[href*="getmorebrain.github.io/bitmark-editor/"]')
+    .evaluateAll((links) => links.map((l) => l.getAttribute('href')));
+  expect(siteLinks.filter((href) => !href.includes('/bitmark-editor/api/'))).toEqual([]);
+  await page.goto('guides/react/');
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
 });

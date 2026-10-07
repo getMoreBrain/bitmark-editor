@@ -12,8 +12,16 @@ const parserVersion = /DEFAULT_PARSER_VERSION = '([^']+)'/.exec(
   readFileSync(path.join(core, 'src/engine/loadBitmarkEngine.ts'), 'utf8'),
 )?.[1];
 
+// The guides aren't public yet: the site's root redirects to the API
+// reference, the overview moves to /overview/, and every guide page asks
+// search engines not to index it. Set to true to publish them.
+const guidesPublic = false;
+
 export default {
   title: 'bitmark editor',
+  guidesPublic,
+  /** The overview's URL: the root once the guides are public. */
+  home: guidesPublic ? '/' : '/overview/',
   description: pkg.description,
   version: pkg.version,
   parserVersion,

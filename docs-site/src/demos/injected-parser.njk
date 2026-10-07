@@ -14,7 +14,7 @@ Injected parser">
 Injected parser</code></pre>
     <div class="demo-panes">
       <bitmark-pane type="bitmark" label="bitmark"></bitmark-pane>
-      <bitmark-pane type="html" label="HTML"></bitmark-pane>
+      <bitmark-pane type="html" label="HTML" id="injected-html"></bitmark-pane>
     </div>
   </bitmark-session>
 </div>
@@ -51,6 +51,8 @@ session.session.engine.setFeature('full');
   const parser = await import('https://cdn.jsdelivr.net/npm/@gmb/bitmark-parser@{{ site.parserVersion }}/dist/browser/bitmark-parser.min.js');
   await parser.init({ feature: 'bitmark-json' });
   session.engine = { module: parser, feature: 'bitmark-json' };
+  // The HTML view doesn't need Monaco's sticky scroll.
+  document.getElementById('injected-html').editorOptions = { stickyScroll: { enabled: false } };
   session.addEventListener('ready', () => (status.textContent = 'ready: bitmark-json'));
   button.addEventListener('click', async () => {
     button.disabled = true;

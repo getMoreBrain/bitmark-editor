@@ -1,6 +1,7 @@
 import type { Feature } from '../engine/types.js';
 import { log } from '../log.js';
 import type { Monaco } from '../monaco/types.js';
+import type { PaneOptions } from '../panes/createPane.js';
 import {
   createBitmarkPane,
   createHtmlPane,
@@ -79,6 +80,8 @@ const afterDisconnect = (el: Element, fn: () => void) =>
 
 export type LazyMode = 'none' | 'idle' | 'click' | 'focus' | 'visible';
 export type NarrowMode = 'edit' | 'readonly' | 'static';
+/** Monaco options for one pane, as the pane factories take them. */
+export type PaneEditorOptions = NonNullable<PaneOptions['editorOptions']>;
 
 /**
  * Define the elements (idempotent). Kept in a function so that importing
@@ -295,6 +298,7 @@ export const defineBitmarkElements = (): void => {
     ];
     #pane: BitmarkPane | undefined;
     #sessionEl: BitmarkSessionElement | undefined;
+    #editorOptions: PaneEditorOptions | undefined;
     #listening = false;
     #onReady = (e: Event) => {
       const target = e.target as BitmarkSessionElement;
@@ -311,8 +315,23 @@ export const defineBitmarkElements = (): void => {
       return this.#pane;
     }
 
+    /** Monaco options for this pane's editor (a property: an object, not an attribute). */
+    get editorOptions(): PaneEditorOptions | undefined {
+      return this.#editorOptions;
+    }
+    set editorOptions(options: PaneEditorOptions | undefined) {
+      if (options === this.#editorOptions) return;
+      this.#editorOptions = options;
+      // Monaco takes construction options once: a mounted pane is made again.
+      if (this.#pane) {
+        this.#unmount();
+        this.#mount();
+      }
+    }
+
     connectedCallback() {
       injectElementsCss();
+      upgradeProperties(this, ['editorOptions']);
       this.#mount();
       if (!this.#listening) {
         // Late binding: the session may start (or appear) after this pane.
@@ -364,6 +383,7 @@ export const defineBitmarkElements = (): void => {
             ? undefined
             : this.getAttribute('scroll-sync') !== 'off',
         label: this.getAttribute('label') ?? undefined,
+        editorOptions: this.#editorOptions,
       };
       const create = {
         bitmark: () => createBitmarkPane(this, session, options),
@@ -553,6 +573,7 @@ export const defineBitmarkElements = (): void => {
     #tabs: HTMLElement | undefined;
     /** Properties set before the parts exist; handed over when they are built. */
     #props: { monaco?: Monaco; engine?: EngineSource; value?: string } = {};
+    #paneEditorOptions: Partial<Record<PaneType, PaneEditorOptions>> = {};
 
     get sessionElement(): BitmarkSessionElement | undefined {
       return this.#session;
@@ -578,10 +599,25 @@ export const defineBitmarkElements = (): void => {
       if (this.#session) this.#session.value = v;
       else this.#props.value = v;
     }
+    /** Monaco options for the panes this element builds, by pane type: `{ json: { … } }`. */
+    get paneEditorOptions(): Partial<Record<PaneType, PaneEditorOptions>> {
+      return this.#paneEditorOptions;
+    }
+    set paneEditorOptions(options: Partial<Record<PaneType, PaneEditorOptions>> | undefined) {
+      this.#paneEditorOptions = options ?? {};
+      this.#session
+        ?.querySelectorAll<BitmarkPaneElement>('bitmark-pane')
+        .forEach((pane) => this.#applyEditorOptions(pane));
+    }
+
+    #applyEditorOptions(pane: BitmarkPaneElement) {
+      pane.editorOptions =
+        this.#paneEditorOptions[(pane.getAttribute('type') ?? 'bitmark') as PaneType];
+    }
 
     connectedCallback() {
       injectElementsCss();
-      upgradeProperties(this, ['monaco', 'engine', 'value']);
+      upgradeProperties(this, ['monaco', 'engine', 'value', 'paneEditorOptions']);
       // Defined before the page finished parsing: wait for the children (the
       // static content) to exist before taking them in.
       if (document.readyState === 'loading') {
@@ -611,10 +647,11 @@ export const defineBitmarkElements = (): void => {
         .map((p) => p.trim())
         .filter(Boolean)) {
         const [type, arg] = spec.split(':');
-        const pane = document.createElement('bitmark-pane');
+        const pane = document.createElement('bitmark-pane') as BitmarkPaneElement;
         pane.setAttribute('type', type!);
         if (type === 'xml') pane.setAttribute('mapping', arg ?? 'xml-niso-iec');
         if (type === 'json' && arg) pane.setAttribute('mode', arg);
+        this.#applyEditorOptions(pane);
         tabs.append(pane);
       }
     }
@@ -631,8 +668,9 @@ export const defineBitmarkElements = (): void => {
       if (this.#props.value !== undefined) session.value = this.#props.value;
       session.style.height = '100%';
       const split = document.createElement('bitmark-split');
-      const bitmark = document.createElement('bitmark-pane');
+      const bitmark = document.createElement('bitmark-pane') as BitmarkPaneElement;
       bitmark.setAttribute('type', 'bitmark');
+      this.#applyEditorOptions(bitmark);
       this.#tabs = document.createElement('bitmark-tabs');
       split.append(bitmark, this.#tabs);
       // Static content the host put inside stays as the pre-load view (D12).
@@ -665,4 +703,12 @@ export interface BitmarkSessionElementApi extends HTMLElement {
 }
 export interface BitmarkPaneElementApi extends HTMLElement {
   readonly pane: BitmarkPane | undefined;
+  editorOptions: PaneEditorOptions | undefined;
+}
+export interface BitmarkEditorElementApi extends HTMLElement {
+  readonly sessionElement: BitmarkSessionElementApi | undefined;
+  monaco: Monaco | undefined;
+  engine: EngineSource | undefined;
+  value: string;
+  paneEditorOptions: Partial<Record<PaneType, PaneEditorOptions>>;
 }

@@ -11,9 +11,11 @@ export {
   setMonacoLoader,
 } from './defaults.js';
 export type {
+  BitmarkEditorElementApi,
   BitmarkPaneElementApi,
   BitmarkSessionElementApi,
   LazyMode,
   NarrowMode,
+  PaneEditorOptions,
 } from './elements.js';
 export { defineBitmarkElements, ELEMENTS_CSS, isNarrowTouch } from './elements.js';

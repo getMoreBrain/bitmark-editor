@@ -114,6 +114,7 @@ AMD and an injected parser.
 ### Sticky scroll (2026-10-07)
 
 - [x] Monaco's sticky scroll (nested scopes pinned at the top) is off in the example apps' JSON and HTML panes, at the user's request: `editorOptions: { stickyScroll: { enabled: false } }`. The Angular wrapper's `bm-pane` had no `editorOptions` input, unlike the core and React, so it gained one, merged over the wrapper's own overflow-widget defaults (the host's options win). The smoke test scrolls the JSON pane into its nested objects and expects no sticky lines. It failed against builds made before the change, and passes after
+- [x] The docs site's live demos too (home, Try it, injected parser). They run on the custom elements, which took no Monaco options, so `<bitmark-pane>` gained an `editorOptions` property (taken over on upgrade; a change makes the editor again) and `<bitmark-editor>` a `paneEditorOptions` property, by pane type, for the panes it builds. Element tests cover both; the site's tests check that the JSON and HTML editors have sticky scroll off and the bitmark editor keeps it
 
 ### CI and upkeep
 

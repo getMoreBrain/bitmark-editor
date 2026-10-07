@@ -1,9 +1,11 @@
 // The sidebar, in reading order ("Previous" and "Next" follow it).
+import site from './site.js';
+
 export default [
   {
     title: 'Introduction',
     items: [
-      { title: 'Overview', url: '/' },
+      { title: 'Overview', url: site.home },
       { title: 'Getting started', url: '/getting-started/' },
     ],
   },

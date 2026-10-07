@@ -94,6 +94,18 @@ look finished, without becoming hard to copy from.
 
   Fix in `src/bundled/monaco.ts`: import `monaco-editor/internal/common/workers` first, statically. The code was already in the bundle, so the size is unchanged (809 KB br). Tests: the site's Try it test now waits for the idle phase (it failed every time on the old build), and the core's static `/bundled` test adds a pane late and waits (it failed on the old build, and passes on the fix)
 
+## Guides hidden until ready (2026-10-07)
+
+- [x] At the user's request, only the API reference is public for now; the guides get more work first. One flag, `guidesPublic` in `docs-site/src/_data/site.js` (false), controls it. While false:
+  - the root is a redirect page to `api/` (meta refresh and a link, `noindex`);
+  - the overview moves from the root to `/overview/` (the header logo and the sidebar follow `site.home`);
+  - every page on the site's own layout carries `noindex, nofollow`; the API reference (typedoc) does not.
+
+  - the API reference's home page (the core README) leaves out its links into the guides. The README marks them with `<!-- docs-site-links -->` … `<!-- /docs-site-links -->` (invisible on npm and GitHub), and the site build strips them from its copy of `api/index.html`; the build fails if the markers are gone. Without this, the API home linked 17 times into the hidden guides, and its top link went to the root, which redirects back to it.
+
+  Nothing else changes: the guides and demos are still built, deployed and tested at their URLs. Setting the flag to true restores the root overview. A site test checks the redirect, the `noindex` marks and that the API home links to no guide (it fails on the unstripped page). The tests read the flag, and pass with it either way
+- [x] The API reference's index page showed the package name twice: typedoc's page title, then the README's own heading. A small typedoc plugin (`packages/bitmark-editor/scripts/typedoc-readme-title.mjs`) drops the README's first heading on that page only; the README keeps it on npm and GitHub
+
 ## Risks
 
 - The site's internal links and the API reference move together under one prefix. The link-crawl test covers broken links.
