@@ -36,6 +36,7 @@
     "start:example:vanilla-ts": "npm --prefix examples/vanilla-ts run dev --",
     "start:example:react": "npm --prefix examples/react run dev --",
     "start:example:angular": "npm --prefix examples/angular start --",
+    "bump:parser": "node packages/bitmark-editor/scripts/bump-parser.mjs && npm install --no-audit --no-fund",
     "release:version": "node scripts/release.mjs version",
     "release:check": "node scripts/release.mjs check"
   },

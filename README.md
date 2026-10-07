@@ -94,8 +94,8 @@ npm run start:example:vanilla-ts   # or :react, :angular — dev servers
 CI ([`ci.yml`](.github/workflows/ci.yml)) runs all of these on every PR.
 `main` needs a PR, with the `core` and `angular` checks green.
 
-The default parser version is pinned in the core. A weekly workflow opens a
-PR when a newer `@gmb/bitmark-parser` is out within the supported major.
+The default parser version is pinned in the core. `npm run bump:parser`
+moves it to the newest `@gmb/bitmark-parser` within the supported major.
 
 ## Releasing
 

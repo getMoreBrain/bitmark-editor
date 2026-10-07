@@ -115,7 +115,7 @@ Findings as of 2026-10-07 (from `npm outdated` and `npm audit`, root and Angular
 
 ## Open Questions
 
-- [x] Should a scheduled job (like the parser bump) open dependency PRs, or is Dependabot (PLAN-024 Phase 5) enough? — Dependabot is enough. The parser keeps its own workflow, because the default version is also a source constant
+- [x] Should a scheduled job (like the parser bump) open dependency PRs, or is Dependabot (PLAN-024 Phase 5) enough? — Dependabot is enough. The parser keeps its own workflow, because the default version is also a source constant. (Later the same day the workflow was removed as unnecessary: `npm run bump:parser` does the same by hand, and Dependabot still leaves the parser alone)
 - [x] TypeScript 7: is it worth taking now, or should we wait for typedoc and Angular to support it? — wait: the code is ready, the tooling isn't (Step 3)
 
 ## References
