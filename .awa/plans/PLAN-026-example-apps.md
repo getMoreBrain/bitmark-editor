@@ -106,6 +106,10 @@ AMD and an injected parser.
 - [x] The smoke test checks the themes: Auto with the OS on light, then dark (emulated live), Dark, then Light. In each, the pane's palette and Monaco's theme match, and a bit type has at least 3:1 contrast on the editor background
 - [x] Found by that check: the Angular app never loaded Monaco's CSS (Angular's builder emits the CSS that lazily loaded code imports, but doesn't attach it), so its editors were unstyled. `angular.json` now builds Monaco's prebuilt stylesheet as `monaco.css` (`inject: false`), and `loadMonaco()` attaches it before the first editor. The initial bundle stays at 55 kB; putting the stylesheet in the global styles had pushed it over the 500 kB budget. Checked in both the production build and the dev server
 
+### First run on main (2026-10-07)
+
+- [x] `example-apps` failed on `main`: `npm ci` gave `EINTEGRITY`. The committed lockfile's hash for a pack is never the current pack's. Locally the npm cache had hidden this by quietly serving the old pack, and on the PR runs the job was skipped, because `core` had failed first. Fix in `scripts/example-apps.mjs`: `npm ci` runs with the packs' integrity hashes removed from the lockfile (restored after), then the packs are installed by path with `--no-save`. Checked both ways with a changed pack, via a probe line in the build: with an empty npm cache (as in CI: no `EINTEGRITY`) and with a warm one (no stale pack). In both cases all three apps got the current pack, and the lockfiles were left unchanged
+
 ### CI and upkeep
 
 - [x] `ci.yml`: a job `example-apps`, after `core` and `angular`. It

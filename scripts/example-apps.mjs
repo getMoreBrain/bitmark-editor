@@ -7,12 +7,16 @@
 //   node scripts/example-apps.mjs build    build each app for production
 //   node scripts/example-apps.mjs test     smoke-test the production builds
 //
-// Install runs `npm ci`, then installs the packs by path with --no-save.
-// npm ci on its own would install a cached copy: the lockfile pins an older
-// pack's integrity hash, and npm reuses that tarball from its cache without
-// a warning.
+// Install: each pack's integrity hash changes with every build, so the
+// committed lockfile's hash is always out of date. With it, `npm ci` fails
+// (EINTEGRITY) on a clean machine, and on a machine whose npm cache has an
+// older pack it silently installs that one. So install runs `npm ci` with the
+// packs' hashes taken out of the lockfile (restored after), then installs
+// the packs by path with --no-save, which always reads the current files
+// (npm ci alone can still pick a cached pack). Everything else stays pinned
+// by the lockfile.
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, renameSync, rmSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -38,6 +42,22 @@ const run = (args, cwd, encoding) => {
   return execFileSync('npm', args, { cwd, stdio: encoding ? 'pipe' : 'inherit', encoding });
 };
 
+/** `npm ci` in `cwd`, with the `file:` tarballs' integrity hashes left out of its lockfile. */
+const ciWithCurrentPacks = (cwd) => {
+  const lockFile = path.join(cwd, 'package-lock.json');
+  const original = readFileSync(lockFile, 'utf8');
+  const lock = JSON.parse(original);
+  for (const entry of Object.values(lock.packages)) {
+    if (entry.resolved?.startsWith('file:')) delete entry.integrity;
+  }
+  writeFileSync(lockFile, `${JSON.stringify(lock, null, 2)}\n`);
+  try {
+    run(['ci'], cwd);
+  } finally {
+    writeFileSync(lockFile, original);
+  }
+};
+
 const commands = {
   pack: () => {
     rmSync(packs, { recursive: true, force: true });
@@ -57,7 +77,7 @@ const commands = {
     run(['ci'], examples);
     for (const app of APPS) {
       const cwd = path.join(examples, app.name);
-      run(['ci'], cwd);
+      ciWithCurrentPacks(cwd);
       run(['install', '--no-save', ...app.packs.map((p) => `../.packs/${p}`)], cwd);
     }
   },

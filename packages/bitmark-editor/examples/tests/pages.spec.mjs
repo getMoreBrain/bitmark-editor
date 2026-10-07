@@ -30,11 +30,12 @@ test('try it: the bundled editor and the CDN parser work from the sub-path', asy
   await expect(page.locator('.suggest-widget.visible').first()).toBeVisible({ timeout: 10_000 });
   await page.keyboard.press('Escape');
   await page.evaluate(() => document.querySelector('bitmark-pane[type="json"]').pane.textEditor.model.setValue('[{"bit": {"type": 42}}]'));
+  // The schema comes from jsDelivr, as on the live site: give a slow CDN time.
   await expect
     .poll(() => page.evaluate(() => {
       const m = document.querySelector('bitmark-pane[type="json"]').pane.textEditor.model;
       return window.__bundle.loadBundledMonaco().then((monaco) => monaco.editor.getModelMarkers({ resource: m.uri }).length);
-    }), { timeout: 10_000 })
+    }), { timeout: 30_000 })
     .toBeGreaterThan(0);
   expect(errors).toEqual([]);
 });
