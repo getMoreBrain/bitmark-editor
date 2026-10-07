@@ -65,7 +65,9 @@ with this setup, including Monaco's workers and styles for Angular's builder.
 
 - `bm-pane` inputs: `type` (`bitmark`, `json`, `html`, `xml`, `text`, `info`,
   `mappings`), `mode`, `mapping`, `label`, `readonly`, `scrollSync`,
-  `inactive`. It fills its box, so size the outermost one.
+  `editorOptions` (passed to Monaco, for example
+  `{ stickyScroll: { enabled: false } }`), `inactive`. It fills its box, so
+  size the outermost one.
 - `bm-tabs`: tabs over its panes (`[(active)]`, `tabLabels`); only the active
   pane is mounted.
 - `bm-split`: panes side by side (`direction`: `row` or `column`).

@@ -12,8 +12,8 @@
   <bm-session [formControl]="content" [theme]="theme()" (change)="onChange($event)" (error)="status.set('Error: ' + $event.error.message)">
     <div class="panes">
       <section class="pane-card"><h2>bitmark</h2><bm-pane class="pane" type="bitmark" /></section>
-      <section class="pane-card"><h2>JSON</h2><bm-pane class="pane" type="json" /></section>
-      <section class="pane-card"><h2>HTML · read-only</h2><bm-pane class="pane" type="html" [readonly]="true" /></section>
+      <section class="pane-card"><h2>JSON</h2><bm-pane class="pane" type="json" [editorOptions]="noStickyScroll" /></section>
+      <section class="pane-card"><h2>HTML · read-only</h2><bm-pane class="pane" type="html" [readonly]="true" [editorOptions]="noStickyScroll" /></section>
     </div>
   </bm-session>
   <footer class="status-bar">
