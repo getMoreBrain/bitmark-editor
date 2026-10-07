@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildKnots, mapScrollTop, ScrollGeometry } from './mapScrollTop';
+import { buildKnots, mapScrollTop, ScrollGeometry } from './mapScrollTop.js';
 
 const geo = (bitTops: number[], maxScrollTop: number): ScrollGeometry => ({
   bitTops,

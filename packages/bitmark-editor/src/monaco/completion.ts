@@ -1,7 +1,7 @@
 import type { CompletionItem, CompletionList, Position } from '@gmb/bitmark-parser';
 import type * as MonacoApi from 'monaco-editor';
 
-import type { Monaco } from './types';
+import type { Monaco } from './types.js';
 
 /**
  * Characters that should open the suggestion list. `[` opens a tag or a bit

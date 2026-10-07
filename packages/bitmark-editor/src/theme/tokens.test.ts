@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildBitmarkHighlightCss, TOKEN_STYLES, tokenClassName } from './tokens';
+import { buildBitmarkHighlightCss, TOKEN_STYLES, tokenClassName } from './tokens.js';
 
 describe('tokenClassName', () => {
   it('uses the type class alone when no modifier changes the look', () => {

@@ -3,7 +3,7 @@
 import type { CompletionItem, Diagnostic, SemanticToken } from '@gmb/bitmark-parser';
 import { describe, expect, it } from 'vitest';
 
-import { createFakeMonaco, FakeRange } from '../testing/fakeMonaco';
+import { createFakeMonaco, FakeRange } from '../testing/fakeMonaco.js';
 import {
   COMPLETE_OPTIONS,
   COMPLETION_TRIGGER_CHARACTERS,
@@ -12,11 +12,11 @@ import {
   replacedSuffixLength,
   toMonacoSuggestion,
   triggerCharacterOf,
-} from './completion';
-import { buildBitmarkMarkers, markerSeverity } from './diagnostics';
-import { buildBitmarkDecorations } from './highlighter';
-import { schemaUrlFor, schemaUrlForVersion } from './jsonSchema';
-import { toMonacoHover } from './setup';
+} from './completion.js';
+import { buildBitmarkMarkers, markerSeverity } from './diagnostics.js';
+import { buildBitmarkDecorations } from './highlighter.js';
+import { schemaUrlFor, schemaUrlForVersion } from './jsonSchema.js';
+import { toMonacoHover } from './setup.js';
 
 const { monaco } = createFakeMonaco();
 const K = monaco.languages.CompletionItemKind;

@@ -6,19 +6,19 @@ import {
   loadBitmarkModule,
   parserCdnUrl,
   SUPERSEDED,
-} from '../engine';
-import { log } from '../log';
+} from '../engine/index.js';
+import { log } from '../log.js';
 import {
   bindBitmarkJsonSchema,
   loadBitmarkJsonSchema,
   schemaUrlFor,
   schemaUrlForVersion,
-} from '../monaco/jsonSchema';
-import { debounce } from '../monaco/modelJob';
-import { setupBitmarkMonaco } from '../monaco/setup';
-import { createScrollSyncGroup } from '../scroll/scrollSyncGroup';
-import { applyBitmarkTheme, BitmarkTheme } from '../theme/applyTheme';
-import { resolveMessages } from './messages';
+} from '../monaco/jsonSchema.js';
+import { debounce } from '../monaco/modelJob.js';
+import { setupBitmarkMonaco } from '../monaco/setup.js';
+import { createScrollSyncGroup } from '../scroll/scrollSyncGroup.js';
+import { applyBitmarkTheme, BitmarkTheme } from '../theme/applyTheme.js';
+import { resolveMessages } from './messages.js';
 import type {
   BitmarkPane,
   BitmarkSession,
@@ -29,7 +29,7 @@ import type {
   PaneControl,
   SessionEvents,
   SessionInternals,
-} from './types';
+} from './types.js';
 
 const isEngine = (s: EngineSource): s is BitmarkEngine =>
   typeof (s as BitmarkEngine).bitmarkToJsonText === 'function';

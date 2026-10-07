@@ -1,7 +1,7 @@
 import type { ConvertOptions, Feature } from '@gmb/bitmark-parser';
 
-import { jsonWithBitStarts } from '../json/jsonText';
-import { BitmarkEngine, BitmarkEngineError, RawParserModule } from './types';
+import { jsonWithBitStarts } from '../json/jsonText.js';
+import { BitmarkEngine, BitmarkEngineError, RawParserModule } from './types.js';
 
 // The string-based API (`convert`, `info`) reports failures by returning an
 // `error: …`-prefixed string rather than throwing.

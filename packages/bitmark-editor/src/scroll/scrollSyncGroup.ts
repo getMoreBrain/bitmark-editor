@@ -1,6 +1,6 @@
 import type * as MonacoApi from 'monaco-editor';
 
-import { mapScrollTop, ScrollGeometry } from './mapScrollTop';
+import { mapScrollTop, ScrollGeometry } from './mapScrollTop.js';
 
 /** The part of a Monaco editor the group uses. */
 export type ScrollSyncEditor = Pick<

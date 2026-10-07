@@ -1,19 +1,19 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { BitmarkEngine } from '../engine/types';
-import { createFakeEditor, createFakeModel, createFakeMonaco } from '../testing/fakeMonaco';
-import { attachBitmarkEditor } from './attach';
+import type { BitmarkEngine } from '../engine/types.js';
+import { createFakeEditor, createFakeModel, createFakeMonaco } from '../testing/fakeMonaco.js';
+import { attachBitmarkEditor } from './attach.js';
 import {
   bindBitmarkJsonSchema,
   BITMARK_MODEL_FILE_MATCH,
   loadBitmarkJsonSchema,
-} from './jsonSchema';
+} from './jsonSchema.js';
 import {
   bindModelEngine,
   BITMARK_LANGUAGE_CONFIGURATION,
   BITMARK_LANGUAGE_ID,
   setupBitmarkMonaco,
-} from './setup';
+} from './setup.js';
 
 /** Tokens: `[.` then the rest of the first line as a bit type. */
 const tokensFor = (input: string) => ({

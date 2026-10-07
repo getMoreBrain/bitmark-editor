@@ -1,8 +1,8 @@
 import * as parser from '@gmb/bitmark-parser';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { createBitmarkEngine } from '../engine/createBitmarkEngine';
-import type { BitmarkEngine, RawParserModule } from '../engine/types';
+import { createBitmarkEngine } from '../engine/createBitmarkEngine.js';
+import type { BitmarkEngine, RawParserModule } from '../engine/types.js';
 import {
   createBitmarkPane,
   createHtmlPane,
@@ -11,10 +11,10 @@ import {
   createMappingsPane,
   createTextPane,
   createXmlPane,
-} from '../panes';
-import { createFakeMonaco, FakeModel } from '../testing/fakeMonaco';
-import { createBitmarkSession } from './session';
-import type { BitmarkPane, BitmarkSession } from './types';
+} from '../panes/index.js';
+import { createFakeMonaco, FakeModel } from '../testing/fakeMonaco.js';
+import { createBitmarkSession } from './session.js';
+import type { BitmarkPane, BitmarkSession } from './types.js';
 
 const DOC = '[.article]\nHello **World**!';
 
@@ -472,7 +472,7 @@ describe('host integration options (PLAN-023 Step 14)', () => {
   });
 
   it('joins the host’s scroll group when given one', async () => {
-    const { createScrollSyncGroup } = await import('../scroll/scrollSyncGroup');
+    const { createScrollSyncGroup } = await import('../scroll/scrollSyncGroup.js');
     const group = createScrollSyncGroup();
     const { session, el } = setup({ scrollGroup: group });
     createJsonPane(el(), session);

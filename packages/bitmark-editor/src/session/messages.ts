@@ -1,4 +1,4 @@
-import type { BitmarkEditorMessages, BitmarkSessionOptions } from './types';
+import type { BitmarkEditorMessages, BitmarkSessionOptions } from './types.js';
 
 export const DEFAULT_MESSAGES: BitmarkEditorMessages = {
   loading: 'Loading…',

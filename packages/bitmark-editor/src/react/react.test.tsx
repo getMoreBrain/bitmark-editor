@@ -2,11 +2,11 @@ import * as parser from '@gmb/bitmark-parser';
 import { act, render } from '@testing-library/react';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { createBitmarkEngine } from '../engine/createBitmarkEngine';
-import type { BitmarkEngine, RawParserModule } from '../engine/types';
-import type { BitmarkPane as Pane } from '../session/types';
-import { createFakeMonaco, FakeModel } from '../testing/fakeMonaco';
-import { BitmarkPane, BitmarkSession } from './index';
+import { createBitmarkEngine } from '../engine/createBitmarkEngine.js';
+import type { BitmarkEngine, RawParserModule } from '../engine/types.js';
+import type { BitmarkPane as Pane } from '../session/types.js';
+import { createFakeMonaco, FakeModel } from '../testing/fakeMonaco.js';
+import { BitmarkPane, BitmarkSession } from './index.js';
 
 let engine: BitmarkEngine;
 beforeAll(async () => {

@@ -1,7 +1,7 @@
 // Test doubles for the injected Monaco (PLAN-022 D8). Only what src/lib uses.
 import { vi } from 'vitest';
 
-import type { CodeEditor, Monaco, TextModel } from '../monaco/types';
+import type { CodeEditor, Monaco, TextModel } from '../monaco/types.js';
 
 export class FakeRange {
   constructor(

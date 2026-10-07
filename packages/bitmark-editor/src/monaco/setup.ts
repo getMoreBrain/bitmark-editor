@@ -1,9 +1,9 @@
 import type { Hover } from '@gmb/bitmark-parser';
 import type * as MonacoApi from 'monaco-editor';
 
-import type { BitmarkEngine } from '../engine/types';
-import { log } from '../log';
-import { buildBitmarkHighlightCss } from '../theme/tokens';
+import type { BitmarkEngine } from '../engine/types.js';
+import { log } from '../log.js';
+import { buildBitmarkHighlightCss } from '../theme/tokens.js';
 import {
   BitmarkSuggestion,
   COMPLETE_OPTIONS,
@@ -11,9 +11,9 @@ import {
   CompletionQuery,
   toMonacoCompletionList,
   triggerCharacterOf,
-} from './completion';
-import { jsonDefaultsOf } from './jsonSchema';
-import type { Monaco, TextModel } from './types';
+} from './completion.js';
+import { jsonDefaultsOf } from './jsonSchema.js';
+import type { Monaco, TextModel } from './types.js';
 
 /** Monaco language id for bitmark markup. */
 export const BITMARK_LANGUAGE_ID = 'bitmark';

@@ -1,7 +1,7 @@
 import type * as MonacoApi from 'monaco-editor';
 
-import { BITMARK_MODEL_SCHEME } from '../monaco/jsonSchema';
-import type { Monaco, TextModel } from '../monaco/types';
+import { BITMARK_MODEL_SCHEME } from '../monaco/jsonSchema.js';
+import type { Monaco, TextModel } from '../monaco/types.js';
 
 /**
  * Passes on only a value that differs from the last one the editor held

@@ -4,9 +4,9 @@ export type {
   BitmarkTheme,
   CustomTheme,
   ThemeBase,
-} from './applyTheme';
-export { applyBitmarkTheme } from './applyTheme';
-export type { Palette, TokenKey, TokenStyle } from './tokens';
+} from './applyTheme.js';
+export { applyBitmarkTheme } from './applyTheme.js';
+export type { Palette, TokenKey, TokenStyle } from './tokens.js';
 export {
   buildBitmarkHighlightCss,
   DARK_PALETTE,
@@ -18,4 +18,4 @@ export {
   TOKEN_STYLES,
   tokenClassName,
   tokenVar,
-} from './tokens';
+} from './tokens.js';

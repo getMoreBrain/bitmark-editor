@@ -1,9 +1,9 @@
 import type { OutputMode } from '@gmb/bitmark-parser';
 
-import type { BitmarkEngine } from '../engine/types';
-import { BITMARK_LANGUAGE_ID } from '../monaco/setup';
-import type { BitmarkPane, BitmarkSession } from '../session/types';
-import { createPane, PaneOptions, PaneSpec } from './createPane';
+import type { BitmarkEngine } from '../engine/types.js';
+import { BITMARK_LANGUAGE_ID } from '../monaco/setup.js';
+import type { BitmarkPane, BitmarkSession } from '../session/types.js';
+import { createPane, PaneOptions, PaneSpec } from './createPane.js';
 
 /** The bitmark pane: the document itself, with the editor services (D1). */
 export const createBitmarkPane = (

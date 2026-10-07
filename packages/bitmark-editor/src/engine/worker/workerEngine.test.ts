@@ -5,11 +5,11 @@ import path from 'node:path';
 import * as parser from '@gmb/bitmark-parser';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { createBitmarkEngine } from '../createBitmarkEngine';
-import { BitmarkEngine, BitmarkEngineError, Feature, RawParserModule } from '../types';
-import { createBitmarkWorkerEngine } from './createBitmarkWorkerEngine';
-import { EnginePort } from './protocol';
-import { serveBitmarkEngine } from './serveBitmarkEngine';
+import { createBitmarkEngine } from '../createBitmarkEngine.js';
+import { BitmarkEngine, BitmarkEngineError, Feature, RawParserModule } from '../types.js';
+import { createBitmarkWorkerEngine } from './createBitmarkWorkerEngine.js';
+import { EnginePort } from './protocol.js';
+import { serveBitmarkEngine } from './serveBitmarkEngine.js';
 
 const book = fs.readFileSync(
   path.resolve(__dirname, '../../../test/fixtures/bitmark/book.bitmark'),

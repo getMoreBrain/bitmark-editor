@@ -11,8 +11,8 @@ import {
   useState,
 } from 'react';
 
-import type { BitmarkEngine } from '../engine/types';
-import type { Monaco } from '../monaco/types';
+import type { BitmarkEngine } from '../engine/types.js';
+import type { Monaco } from '../monaco/types.js';
 import {
   createBitmarkPane,
   createHtmlPane,
@@ -21,9 +21,9 @@ import {
   createMappingsPane,
   createTextPane,
   createXmlPane,
-} from '../panes/panes';
-import { createEchoGuard } from '../session/echoGuard';
-import { createBitmarkSession } from '../session/session';
+} from '../panes/panes.js';
+import { createEchoGuard } from '../session/echoGuard.js';
+import { createBitmarkSession } from '../session/session.js';
 import type {
   BitmarkPane as Pane,
   BitmarkSession as Session,
@@ -31,8 +31,8 @@ import type {
   PaneType,
   SessionChange,
   SessionError,
-} from '../session/types';
-import type { BitmarkTheme } from '../theme/applyTheme';
+} from '../session/types.js';
+import type { BitmarkTheme } from '../theme/applyTheme.js';
 
 const SessionContext = createContext<Session | undefined>(undefined);
 

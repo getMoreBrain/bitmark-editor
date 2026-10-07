@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { createLatestRunner, SUPERSEDED } from './latest';
+import { createLatestRunner, SUPERSEDED } from './latest.js';
 
 /** A run whose completion the test controls. */
 const controlled = () => {

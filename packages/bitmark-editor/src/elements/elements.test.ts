@@ -1,11 +1,15 @@
 import * as parser from '@gmb/bitmark-parser';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { createBitmarkEngine } from '../engine/createBitmarkEngine';
-import type { BitmarkEngine, RawParserModule } from '../engine/types';
-import { createFakeMonaco, FakeModel } from '../testing/fakeMonaco';
-import { setMonacoLoader } from './defaults';
-import { BitmarkPaneElementApi, BitmarkSessionElementApi, defineBitmarkElements } from './elements';
+import { createBitmarkEngine } from '../engine/createBitmarkEngine.js';
+import type { BitmarkEngine, RawParserModule } from '../engine/types.js';
+import { createFakeMonaco, FakeModel } from '../testing/fakeMonaco.js';
+import { setMonacoLoader } from './defaults.js';
+import {
+  BitmarkPaneElementApi,
+  BitmarkSessionElementApi,
+  defineBitmarkElements,
+} from './elements.js';
 
 let engine: BitmarkEngine;
 beforeAll(async () => {

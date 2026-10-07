@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { createFakeMonaco, FakeModel } from '../testing/fakeMonaco';
-import { createChangeFilter, createTextEditor, replaceAllKeepingUndo } from './textEditor';
+import { createFakeMonaco, FakeModel } from '../testing/fakeMonaco.js';
+import { createChangeFilter, createTextEditor, replaceAllKeepingUndo } from './textEditor.js';
 
 describe('createChangeFilter', () => {
   it('passes a changed value once, then drops repeats of it', () => {

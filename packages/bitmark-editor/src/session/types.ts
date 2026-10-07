@@ -1,8 +1,13 @@
-import type { TextEditor } from '../editor/textEditor';
-import type { BitmarkEngine, Feature, LoadBitmarkEngineOptions, RawParserModule } from '../engine';
-import type { Monaco } from '../monaco/types';
-import type { ScrollSyncGroup } from '../scroll/scrollSyncGroup';
-import type { BitmarkTheme } from '../theme/applyTheme';
+import type { TextEditor } from '../editor/textEditor.js';
+import type {
+  BitmarkEngine,
+  Feature,
+  LoadBitmarkEngineOptions,
+  RawParserModule,
+} from '../engine/index.js';
+import type { Monaco } from '../monaco/types.js';
+import type { ScrollSyncGroup } from '../scroll/scrollSyncGroup.js';
+import type { BitmarkTheme } from '../theme/applyTheme.js';
 
 /** Where an edit came from, for the mapping report (a host's own editor, say). */
 export type EditOrigin = Omit<LastEdit, 'count'>;

@@ -1,5 +1,5 @@
-import { createLatestRunner, SUPERSEDED } from '../engine/latest';
-import type { CodeEditor, IDisposable, TextModel } from './types';
+import { createLatestRunner, SUPERSEDED } from '../engine/latest.js';
+import type { CodeEditor, IDisposable, TextModel } from './types.js';
 
 /** A trailing-edge debounce with `cancel`; `ms <= 0` runs on the next microtask. */
 export const debounce = (fn: () => void, ms: number) => {

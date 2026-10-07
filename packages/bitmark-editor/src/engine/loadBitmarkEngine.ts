@@ -1,7 +1,7 @@
 import type { Feature } from '@gmb/bitmark-parser';
 
-import { createBitmarkEngine } from './createBitmarkEngine';
-import { BitmarkEngine, RawParserModule } from './types';
+import { createBitmarkEngine } from './createBitmarkEngine.js';
+import { BitmarkEngine, RawParserModule } from './types.js';
 
 /**
  * The parser version loaded when the host names none (PLAN-022 D13): one

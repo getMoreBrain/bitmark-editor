@@ -1,5 +1,5 @@
-import type { Monaco } from '../monaco/types';
-import { THEME_CLASS, TokenKey, TokenStyle, tokenVar } from './tokens';
+import type { Monaco } from '../monaco/types.js';
+import { THEME_CLASS, TokenKey, TokenStyle, tokenVar } from './tokens.js';
 
 export type ThemeBase = 'dark' | 'light';
 

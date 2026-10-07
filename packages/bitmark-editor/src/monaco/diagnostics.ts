@@ -1,10 +1,10 @@
 import type { Diagnostic } from '@gmb/bitmark-parser';
 import type * as MonacoApi from 'monaco-editor';
 
-import type { BitmarkEngine } from '../engine/types';
-import { log } from '../log';
-import { attachModelJob } from './modelJob';
-import type { CodeEditor, IDisposable, Monaco, TextModel } from './types';
+import type { BitmarkEngine } from '../engine/types.js';
+import { log } from '../log.js';
+import { attachModelJob } from './modelJob.js';
+import type { CodeEditor, IDisposable, Monaco, TextModel } from './types.js';
 
 /** Marker owner — every marker this module sets is replaced as a group. */
 export const BITMARK_MARKER_OWNER = 'bitmark';

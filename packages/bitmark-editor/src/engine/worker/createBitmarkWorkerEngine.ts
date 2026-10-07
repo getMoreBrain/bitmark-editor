@@ -1,6 +1,6 @@
-import { parserCdnUrl } from '../loadBitmarkEngine';
-import { BitmarkEngine, BitmarkEngineError, EngineCapabilities, Feature } from '../types';
-import { EngineMethod, EnginePort, FromWorker, ResultMessage } from './protocol';
+import { parserCdnUrl } from '../loadBitmarkEngine.js';
+import { BitmarkEngine, BitmarkEngineError, EngineCapabilities, Feature } from '../types.js';
+import { EngineMethod, EnginePort, FromWorker, ResultMessage } from './protocol.js';
 
 /**
  * Methods on the fast lane: what the editor needs on every keystroke and

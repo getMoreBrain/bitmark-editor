@@ -1,8 +1,8 @@
 import type * as MonacoApi from 'monaco-editor';
 
-import { createLatestRunner, SUPERSEDED } from '../engine/latest';
-import type { BitmarkEngine } from '../engine/types';
-import { log } from '../log';
+import { createLatestRunner, SUPERSEDED } from '../engine/latest.js';
+import type { BitmarkEngine } from '../engine/types.js';
+import { log } from '../log.js';
 
 /** The bit starts of a pane that shows bitmark, kept current as it changes. */
 export interface SplitBitStarts extends MonacoApi.IDisposable {

@@ -1,14 +1,14 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { createBitmarkEngine } from './createBitmarkEngine';
+import { createBitmarkEngine } from './createBitmarkEngine.js';
 import {
   DEFAULT_PARSER_VERSION,
   loadBitmarkEngine,
   loadBitmarkModule,
   parserCdnUrl,
   resetLoadedModules,
-} from './loadBitmarkEngine';
-import { BitmarkEngineError, RawParserModule } from './types';
+} from './loadBitmarkEngine.js';
+import { BitmarkEngineError, RawParserModule } from './types.js';
 
 const BITS = [{ bit: { type: 'article', body: 'Hello' } }, { bit: { type: 'note', body: 'x' } }];
 

@@ -1,6 +1,6 @@
-import { DEFAULT_PARSER_VERSION } from '../engine/loadBitmarkEngine';
-import { log } from '../log';
-import type { Monaco } from './types';
+import { DEFAULT_PARSER_VERSION } from '../engine/loadBitmarkEngine.js';
+import { log } from '../log.js';
+import type { Monaco } from './types.js';
 
 /**
  * Every model the package creates lives under this URI scheme, so the

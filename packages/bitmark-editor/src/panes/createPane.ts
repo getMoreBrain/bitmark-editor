@@ -1,23 +1,23 @@
 import type * as MonacoApi from 'monaco-editor';
 
-import { createTextEditor } from '../editor/textEditor';
-import { createLatestRunner, SUPERSEDED } from '../engine/latest';
-import type { BitmarkEngine } from '../engine/types';
-import { attachBitmarkEditor, BitmarkEditorServices } from '../monaco/attach';
-import { BITMARK_LANGUAGE_ID } from '../monaco/setup';
-import { attachBitMarkers, BitMarkers } from '../scroll/bitMarkers';
-import type { ScrollSyncMember } from '../scroll/scrollSyncGroup';
-import { createSplitBitStarts, SplitBitStarts } from '../scroll/splitBitStarts';
-import type { SessionInternals } from '../session/types';
+import { createTextEditor } from '../editor/textEditor.js';
+import { createLatestRunner, SUPERSEDED } from '../engine/latest.js';
+import type { BitmarkEngine } from '../engine/types.js';
+import { attachBitmarkEditor, BitmarkEditorServices } from '../monaco/attach.js';
+import { BITMARK_LANGUAGE_ID } from '../monaco/setup.js';
+import { attachBitMarkers, BitMarkers } from '../scroll/bitMarkers.js';
+import type { ScrollSyncMember } from '../scroll/scrollSyncGroup.js';
+import { createSplitBitStarts, SplitBitStarts } from '../scroll/splitBitStarts.js';
+import type { SessionInternals } from '../session/types.js';
 import type {
   BitmarkPane,
   BitmarkSession,
   PaneControl,
   PaneType,
   ToBitmarkResult,
-} from '../session/types';
-import { AppliedTheme, applyBitmarkTheme } from '../theme/applyTheme';
-import { injectPaneCss } from './styles';
+} from '../session/types.js';
+import { AppliedTheme, applyBitmarkTheme } from '../theme/applyTheme.js';
+import { injectPaneCss } from './styles.js';
 
 /** What one pane type does (the per-type part of a pane). */
 export interface PaneSpec {

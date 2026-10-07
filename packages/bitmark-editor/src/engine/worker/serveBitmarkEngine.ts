@@ -1,4 +1,4 @@
-import type { BitmarkEngine, Feature } from '../types';
+import type { BitmarkEngine, Feature } from '../types.js';
 import {
   CallRequest,
   ENGINE_METHODS,
@@ -6,7 +6,7 @@ import {
   FromWorker,
   serializeError,
   ToWorker,
-} from './protocol';
+} from './protocol.js';
 
 /**
  * Serve an engine over `port`: the worker side. On `init` it loads the

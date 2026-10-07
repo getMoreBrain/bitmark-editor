@@ -1,4 +1,4 @@
-import type { CodeEditor, IDisposable, Monaco } from '../monaco/types';
+import type { CodeEditor, IDisposable, Monaco } from '../monaco/types.js';
 
 /** An output pane's bit starts, pinned in its editor so they follow every edit. */
 export interface BitMarkers extends IDisposable {
