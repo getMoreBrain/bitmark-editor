@@ -1,0 +1,14 @@
+<nav class="sidebar" id="sidebar" aria-label="Documentation">
+  {% for section in nav %}
+    <div class="sidebar-section">
+      <h2 class="sidebar-heading">{{ section.title }}</h2>
+      <ul>
+        {% for item in section.items %}
+          <li>
+            <a href="{{ item.url }}"{% if item.url == page.url %} aria-current="page"{% endif %}>{{ item.title }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endfor %}
+</nav>

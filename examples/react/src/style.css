@@ -1,7 +1,143 @@
-*, *::before, *::after { box-sizing: border-box; }
-:root { color-scheme: light dark; }
-body { margin: 16px; font-family: system-ui, sans-serif; }
-header { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-.panes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; height: 420px; }
-.panes > div { min-width: 0; border: 1px solid #8884; }
-@media (max-width: 800px) { .panes { grid-template-columns: 1fr; height: auto; } .panes > div { height: 280px; } }
+/* The example's look: the docs site's tokens, lightly. light-dark() follows
+   the color-scheme the theme switcher sets on <html> (`light dark` = the OS). */
+:root {
+  color-scheme: light dark;
+  --brand: light-dark(#27187e, #a79bf5);
+  --on-brand: light-dark(#ffffff, #1a1147);
+  --bg: light-dark(#f8fafc, #0b1120);
+  --surface: light-dark(#ffffff, #0f172a);
+  --text: light-dark(#1e293b, #f1f5f9);
+  --muted: light-dark(#64748b, #94a3b8);
+  --border: light-dark(#e2e8f0, #334155);
+  --radius: 10px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.5 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.app-header h1 b {
+  color: var(--brand);
+}
+
+.app-header label {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+select,
+button {
+  font: inherit;
+  font-size: 14px;
+  border-radius: 6px;
+}
+
+select {
+  margin-left: 6px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+button {
+  padding: 6px 14px;
+  border: 1px solid var(--brand);
+  background: var(--brand);
+  color: var(--on-brand);
+  cursor: pointer;
+}
+
+main {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.panes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  height: 460px;
+}
+
+.pane-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+}
+
+.pane-card h2 {
+  margin: 0;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pane {
+  display: block;
+  flex: 1;
+  min-height: 0;
+}
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.status-bar output {
+  color: var(--text);
+}
+
+.status-bar button {
+  margin-left: auto;
+}
+
+@media (max-width: 900px) {
+  .panes {
+    grid-template-columns: minmax(0, 1fr);
+    height: auto;
+  }
+
+  .pane-card {
+    height: 300px;
+  }
+}

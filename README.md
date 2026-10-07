@@ -8,8 +8,9 @@ bitmark and JSON editors on Monaco, with optional HTML, XML, Text, Info and
 Mappings panes, for any framework. Editing any pane updates the others,
 through the bitmark parser.
 
-**[Try it](https://getmorebrain.github.io/bitmark-editor/try-it.html)** ·
-[Demos and API reference](https://getmorebrain.github.io/bitmark-editor/)
+**[Documentation and live demos](https://getmorebrain.github.io/bitmark-editor/)** ·
+[Try it](https://getmorebrain.github.io/bitmark-editor/demos/try-it/) ·
+[API reference](https://getmorebrain.github.io/bitmark-editor/api/)
 
 > Pre-release: 0.1.0 is not yet published.
 
@@ -20,16 +21,15 @@ through the bitmark parser.
 | [`@gmb/bitmark-editor`](packages/bitmark-editor/README.md) | The core (engine, session, panes, themes, scroll linking), custom elements, a React adapter, and a CDN-ready `/bundled` build with its own Monaco. |
 | [`@gmb/bitmark-editor-angular`](packages/bitmark-editor-angular/projects/bitmark-editor-angular/README.md) | Angular components: `bm-session`, `bm-pane`, `bm-tabs`, `bm-split`, with forms support. |
 
-Start with the [core README](packages/bitmark-editor/README.md). It says
-which build to use, with quick starts for a host that already has Monaco and
-for a static site without a bundler.
+Start with the [docs site](https://getmorebrain.github.io/bitmark-editor/getting-started/):
+which build to use, guides for each kind of host, and the API reference.
 
 Three small example apps, in [`examples/`](examples/), show the minimal
 setup for each kind of host: [plain TypeScript](examples/vanilla-ts/),
 [React](examples/react/) and [Angular](examples/angular/). CI installs them
 from tarballs of the current build and smoke-tests each one.
 
-Guides for specific hosts are in [`packages/bitmark-editor/docs/`](packages/bitmark-editor/docs/):
+Hand-off notes for specific host apps are in [`packages/bitmark-editor/docs/`](packages/bitmark-editor/docs/):
 
 - [`handoff-cosmic.md`](packages/bitmark-editor/docs/handoff-cosmic.md): an
   Angular app with its own AMD Monaco and parser;
@@ -44,13 +44,15 @@ Guides for specific hosts are in [`packages/bitmark-editor/docs/`](packages/bitm
 packages/bitmark-editor/            @gmb/bitmark-editor (npm workspace)
   src/                              engine/, monaco/, session/, panes/, scroll/, theme/,
                                     editor/, elements/, react/, bundled/
-  examples/                         static-site and /esm examples, the GitHub Pages
-                                    site (pages/), browser checks (npm workspace)
+  examples/                         static-site and /esm examples, with browser checks
+                                    (npm workspace)
   docs/                             hand-offs to host apps
 packages/bitmark-editor-angular/    Angular CLI project: the library and a cosmic-shaped
                                     example (standalone npm project)
 examples/                           example apps: vanilla-ts, react, angular (each its own
                                     npm project, installed from packed tarballs)
+docs-site/                          the docs site (Eleventy, Pagefind; npm workspace),
+                                    published to GitHub Pages
 scripts/                           release.mjs (one version for both packages),
                                     example-apps.mjs (pack, install, build, test the apps)
 .awa/                               architecture and plans
@@ -64,25 +66,29 @@ and its own TypeScript to match cosmic, and builds against the core's `dist`.
 Node 24 (`.nvmrc`) and npm. The devcontainer sets both up.
 
 ```bash
-npm ci                    # the workspace: the core and its examples
+npm ci                     # the workspace: the core, its examples, the docs site
 npm run lint
 npm run typecheck
-npm test                  # unit tests (Vitest, jsdom)
-npm run build             # dist/esm, dist/types, dist/bundled
-npm run test:browser     # browser checks, including the Pages site (Playwright)
-npm run check:package        # what npm would publish, publint, attw
-npm run build:docs              # API reference (typedoc) → packages/bitmark-editor/docs/api
+npm test                   # unit tests (Vitest, jsdom)
+npm run build              # dist/esm, dist/types, dist/bundled
+npm run test:browser       # the core's browser checks (Playwright)
+npm run check:package      # what npm would publish, publint, attw
+npm run build:docs         # API reference (typedoc) → packages/bitmark-editor/docs/api
 
-npm run install:angular   # the Angular project's own install
-npm run build:angular     # needs the core built (npm run build)
-npm run test:angular      # e2e: Monaco 0.46 AMD, injected parser
+npm run build:site         # the docs site (needs build and build:docs) → docs-site/_site
+npm run test:site          # its smoke tests, under /bitmark-editor/
+npm run start:site         # its dev server: http://localhost:8080
+
+npm run install:angular    # the Angular project's own install
+npm run build:angular      # needs the core built (npm run build)
+npm run test:angular       # e2e: Monaco 0.46 AMD, injected parser
 npm run check:package:angular
 
-npm run pack:examples       # after both builds; see examples/README.md
+npm run pack:examples      # after both builds; see examples/README.md
 npm run install:examples
 npm run build:examples
 npm run test:examples
-npm run start:example:vanilla-ts  # or :react, :angular — dev servers
+npm run start:example:vanilla-ts   # or :react, :angular — dev servers
 ```
 
 CI ([`ci.yml`](.github/workflows/ci.yml)) runs all of these on every PR.

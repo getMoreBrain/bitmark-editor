@@ -10,13 +10,14 @@ const INITIAL = '[.article]\nHello **World**!\n\n[.cloze]\nThe capital of France
   selector: 'app-root',
   imports: [ReactiveFormsModule, BmSessionComponent, BmPaneComponent],
   templateUrl: './app.html',
-  styleUrl: './app.css',
 })
 export class App {
   /** The document, as a form control: bm-session is a ControlValueAccessor. */
   protected readonly content = new FormControl(INITIAL, { nonNullable: true });
   protected readonly value = toSignal(this.content.valueChanges, { initialValue: INITIAL });
   protected readonly status = signal('none yet');
+  /** Monaco's sticky scroll (nested scopes pinned at the top), off in the generated views. */
+  protected readonly noStickyScroll = { stickyScroll: { enabled: false } };
   protected readonly theme = signal<Extract<BitmarkTheme, string>>('auto');
 
   constructor() {

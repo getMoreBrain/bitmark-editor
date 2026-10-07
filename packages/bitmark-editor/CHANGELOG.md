@@ -2,6 +2,10 @@
 
 ## 0.1.0 (unreleased)
 
+- `/bundled`: Monaco's editor features are registered before Monaco starts.
+  Before, they loaded with the JSON language, after Monaco had taken its
+  services, so an editor created later (a tab, a pane added at runtime)
+  threw "depends on UNKNOWN service ICodeLensCache" once the page was idle.
 - A session without a `theme` warns once per page when Monaco's theme is the
   host's (the dark token palette would meet a light Monaco). With
   `applyMonacoTheme`, Monaco gets the panes' default (dark) theme.

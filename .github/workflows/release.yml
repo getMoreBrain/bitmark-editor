@@ -49,6 +49,8 @@ jobs:
       - run: npm run build:docs
       - run: npx playwright install --with-deps chromium
       - run: npm run test:browser
+      - run: npm run build:site
+      - run: npm run test:site
       - run: npm run install:angular
       - run: npm run build:angular
       - run: npm run check:package:angular

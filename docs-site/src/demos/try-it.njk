@@ -1,0 +1,42 @@
+---
+wide: true
+title: Try it
+lead: The full editor in one tag, with every view. Edit the bitmark, or any view that edits back (JSON, HTML, XML).
+---
+<div class="demo">
+  <div class="demo-bar">
+    <span><code>&lt;bitmark-editor panes="json,html,xml,text,info,mappings"&gt;</code></span>
+    <span>/bundled · parser {{ site.parserVersion }}</span>
+  </div>
+  <bitmark-editor class="demo-stage demo-tall" theme="auto" panes="json,html,xml,text,info,mappings" value="[.article]
+# A short example
+Hello **World**! This is ==highlighted==|highlight| text.
+
+[.cloze]
+The capital of France is [_Paris].
+
+[.multiple-choice-1]
+Which planet is the largest?
+[-Mars]
+[+Jupiter]
+[-Venus]"></bitmark-editor>
+</div>
+
+<p>
+  Things to try: type <code>[.</code> on a new line for bit types (Enter inserts the bit's template); hover a bit
+  type; break the bitmark to see an error; edit the JSON and watch the bitmark follow. The views keep the same bit
+  in view as you scroll.
+</p>
+
+<h2>The markup</h2>
+{% highlight "html" %}
+<bitmark-editor theme="auto" panes="json,html,xml,text,info,mappings" value="…" style="height: 520px"></bitmark-editor>
+<script type="module" src="{{ site.cdn }}"></script>
+{% endhighlight %}
+
+<p>
+  For your own layout, use <code>&lt;bitmark-session&gt;</code> and its panes instead:
+  <a href="/guides/elements/">Custom elements</a>.
+</p>
+
+<script type="module" src="/bundled/bundled.js"></script>

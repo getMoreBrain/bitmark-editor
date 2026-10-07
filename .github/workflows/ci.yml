@@ -33,10 +33,13 @@ jobs:
         run: npm run check:package
       - name: API docs build
         run: npm run build:docs
-      - name: Examples and the Pages site (Monaco 0.57, /esm consumer)
+      - name: Docs site build (Eleventy, Pagefind)
+        run: npm run build:site
+      - name: Browser checks (Monaco 0.57, /esm consumer) and the docs site
         run: |
           npx playwright install --with-deps chromium
           npm run test:browser
+          npm run test:site
       - uses: actions/upload-artifact@v7
         with:
           name: bitmark-editor-dist

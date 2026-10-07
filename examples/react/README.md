@@ -5,11 +5,10 @@ A React 19 app on `@gmb/bitmark-editor/react`. See [`src/App.tsx`](src/App.tsx):
 - `<BitmarkSession monaco={monaco} value={bitmark} onChange={…}>` holds one
   document. Feeding your own state back as `value` is safe: the session
   recognises its own edits.
-- `<BitmarkPane type="…">` mounts a pane in a `<div>` you size. It sets
-  `height: 100%` on that `<div>`, so give the pane's container a definite
-  height. Use `box-sizing: border-box` if you add a border or padding: with
-  `content-box`, the extra pixels can make a grid or flex container grow
-  forever.
+- `<BitmarkPane type="…">` mounts a pane in a `<div>` you size. That `<div>`
+  has `height: 100%` (and `box-sizing: border-box`) by default. Here each
+  pane sits in a flex card under its label, so the app passes
+  `style={{ height: 'auto' }}` and lets the card size it.
 
 - `theme` and `applyMonacoTheme` on `<BitmarkSession>` keep the token
   colours and Monaco's own theme together. The theme switcher just changes

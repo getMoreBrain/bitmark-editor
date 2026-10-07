@@ -1,0 +1,76 @@
+---
+layout: home.njk
+title: Overview
+---
+<section class="hero">
+  <h1>bitmark and JSON editors, for any web app</h1>
+  <p class="lead">
+    Monaco editors for bitmark, with the JSON, HTML, XML, Text, Info and Mappings views beside them. Edit any pane
+    and the others follow, through the bitmark parser. Use them from plain JavaScript, a static page, React or
+    Angular.
+  </p>
+  <div class="buttons">
+    <a class="button button-primary" href="/getting-started/">Get started</a>
+    <a class="button" href="/demos/try-it/">Try the full editor</a>
+    <a class="button" href="/api/">API reference</a>
+  </div>
+</section>
+
+<div class="demo">
+  <div class="demo-bar">
+    <span>Edit either side: the other one follows.</span>
+    <span>bitmark ⇄ JSON</span>
+  </div>
+  <bitmark-session class="demo-stage" lazy="idle" narrow="static" theme="auto" value="[.article]
+Hello **World**!
+
+[.cloze]
+The capital of France is [_Paris].">
+    <pre data-bitmark-static><code>[.article]
+Hello **World**!
+
+[.cloze]
+The capital of France is [_Paris].</code></pre>
+    <div class="demo-panes">
+      <bitmark-pane type="bitmark" label="bitmark"></bitmark-pane>
+      <bitmark-pane type="json" label="JSON"></bitmark-pane>
+    </div>
+  </bitmark-session>
+</div>
+
+<div class="cards">
+  <div class="card">
+    <h3>Panes you place anywhere</h3>
+    <p>One document per session, shown in any number of panes: bitmark, JSON, HTML, XML, Text, Info and Mappings.</p>
+  </div>
+  <div class="card">
+    <h3>Any framework</h3>
+    <p>A plain TypeScript core, custom elements, a React adapter and Angular components.</p>
+  </div>
+  <div class="card">
+    <h3>Your Monaco, or ours</h3>
+    <p>Pass the Monaco your app already has, or load <code>/bundled</code>, which brings its own.</p>
+  </div>
+  <div class="card">
+    <h3>The real parser</h3>
+    <p>Highlighting, errors, completion and hover come from <code>@gmb/bitmark-parser</code>, injected or loaded.</p>
+  </div>
+</div>
+
+<div class="prose">
+  <h2>Install</h2>
+  <p>With a bundler (React, Angular, Vite, webpack…):</p>
+{% highlight "sh" %}
+npm install @gmb/bitmark-editor monaco-editor
+{% endhighlight %}
+  <p>On a static page, from the CDN:</p>
+{% highlight "html" %}
+<script type="module" src="{{ site.cdn }}"></script>
+{% endhighlight %}
+  <p>
+    Then pick your setup in <a href="/getting-started/">Getting started</a>, or open a
+    <a href="/demos/example-apps/">complete example app</a>.
+  </p>
+</div>
+
+<script type="module" src="/bundled/bundled.js"></script>
