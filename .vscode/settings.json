@@ -12,7 +12,7 @@
     "watchFile": "useFsEventsOnParentDirectory",
     "watchDirectory": "useFsEvents"
   },
-  "npm.packageManager": "bun",
+  "npm.packageManager": "npm",
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
   // "eslint.nodePath": "node_modules",
   "eslint.alwaysShowStatus": true,
@@ -29,7 +29,6 @@
     // "**/docs": true
   },
   // "prettier.prettierPath": "node_modules/prettier/index.js"
-  // "jest.jestCommandLine": "bun test"
   "jest.runMode": "on-demand",
   "mise.configureExtensionsUseSymLinks": true,
   "debug.javascript.defaultRuntimeExecutable": {
@@ -39,7 +38,7 @@
   "java.jdt.ls.java.home": "${workspaceFolder}/.vscode/mise-tools/java",
   "java.import.gradle.java.home": "${workspaceFolder}/.vscode/mise-tools/java",
   "chat.tools.terminal.autoApprove": {
-    "bun": true,
+    "npm run": true,
     "npx vitest": true
   }
 }

@@ -17,29 +17,19 @@
 .env.test.local
 .env.production.local
 .playwright-mcp
-bundle-stats.html
 
 
 # DEPENDENCIES
 /node_modules
 
 # BUILD
-/build
-/artifacts
 /dist
-package.tgz
-/packages/*/bundles
+*.tgz
 /packages/*/dist/*
-/vscode-case-study
-.history
 tsconfig.tsbuildinfo
-bundle-stats.html
 
 # TESTING
-/coverage
-/test/**/results
-/test/**/coverage
-test.txt
+coverage/
 test-report.html
 junit.xml
 

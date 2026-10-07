@@ -13,7 +13,8 @@ sudo chown -R vscode:vscode /home/vscode 2>/dev/null || true
 sudo chown -R vscode:vscode ${CONTAINER_WORKSPACE_FOLDER} 2>/dev/null || true
 
 mise install
-mise exec -- bun install
+mise exec -- npm ci
+mise exec -- npm run angular:install
 
 # Headless Chromium for browser tests: the system libraries (apt, via sudo)
 # and the Playwright browser build, into PLAYWRIGHT_BROWSERS_PATH.

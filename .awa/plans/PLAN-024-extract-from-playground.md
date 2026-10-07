@@ -89,18 +89,19 @@ the repo from Bun to npm, and prepares both packages for publishing to npm.
 
 ### Phase 2 — Root becomes a private workspace
 
-- [ ] Rewrite the root `package.json`:
+- [x] Rewrite the root `package.json`:
   - name `@gmb/bitmark-editor-workspace`, `"private": true`, no version or deps used by the app
   - `workspaces`: `packages/bitmark-editor`, `packages/bitmark-editor/examples` (D5)
-  - scripts that delegate with `npm run <script> -w <workspace>`: `build`, `test`, `lint`, `typecheck`, `docs`, `examples:test`. Angular scripts use `npm --prefix packages/bitmark-editor-angular`: `angular:install` (`ci`), `angular:build`, `angular:test`
-  - devDependencies: only the shared tooling (eslint, prettier, typescript, `@ncoderz/awa`, so that `npx awa` works)
+  - scripts that delegate with `npm run <script> -w <workspace>`: `build`, `test`, `lint`, `typecheck`, `docs`, `examples:test`. Angular scripts: `angular:install` (`npm ci --prefix`), `angular:build` and `angular:test` (`cd` into the Angular project, so `ng` and Playwright resolve their configs as in CI)
+  - devDependencies: only the shared tooling (eslint, the markdown plugin, prettier, `@ncoderz/awa`, so that `npx awa` works). No TypeScript: nothing at the root is TypeScript any more
+  - Prettier pinned exactly (`3.9.9`) at the root and in the core: a fresh resolution picked up 3.9.9, which reformats one union in `src/engine/latest.ts` (applied)
   - remove `preinstall: npx only-allow bun`; add `"packageManager": "npm@11.13.0"` (an exact version, as in the Angular workspace; a range is not valid there) and `engines.node >=22` (Node 20 reached end of life in April 2026)
-- [ ] Root `tsconfig.json`: remove the app `paths`/`include`. Either delete it, or keep a solution-style file that references the package `tsconfig`s
-- [ ] Root `eslint.config.mjs`: lint repo-level files only and leave package source to the package's own config, or delete it if nothing is left to lint
-- [ ] Root `.prettierignore`/`.gitignore`: remove `build/`, `bundle-stats.html`, `/vscode-case-study` and the app's other entries; add the Angular `e2e/results` (`/packages/*/dist/*` already covers the Angular dist)
-- [ ] `npm install` from clean; commit the new root `package-lock.json`. Check that `examples` resolves `@gmb/bitmark-editor` and its own `@playwright/test`/`esbuild` from the workspace
-- [ ] `.devcontainer/`, `.vscode/launch.json`, `.mise.toml`: remove the app-specific items (port 3010 launch config, the app's start task)
-- [ ] Remove Bun from the tooling (D5):
+- [x] Root `tsconfig.json`: remove the app `paths`/`include`. Either delete it, or keep a solution-style file that references the package `tsconfig`s — deleted
+- [x] Root `eslint.config.mjs`: lint repo-level files only and leave package source to the package's own config, or delete it if nothing is left to lint — kept for the root `.js`/`.mjs` and Markdown files; the TypeScript block is gone, and `.claude` (vendored skills) is ignored like `.github` and `.awa`
+- [x] Root `.prettierignore`/`.gitignore`: remove `build/`, `bundle-stats.html`, `/vscode-case-study` and the app's other entries; add the Angular `e2e/results` (`/packages/*/dist/*` already covers the Angular dist) — the Angular project's own `.gitignore` already ignores `e2e/results`
+- [x] `npm install` from clean; commit the new root `package-lock.json`. Check that `examples` resolves `@gmb/bitmark-editor` and its own `@playwright/test`/`esbuild` from the workspace — checked: lint, typecheck, 181 unit tests, build, the 7 examples browser checks, and the Angular build and e2e all pass
+- [x] `.devcontainer/`, `.vscode/launch.json`, `.mise.toml`: remove the app-specific items (port 3010 launch config, the app's start task) — none were left
+- [x] Remove Bun from the tooling (D5):
   - `.mise.toml`: remove `bun`; keep `node`. Add a `.nvmrc` with the same Node version, so `setup-node` (`node-version-file: .nvmrc`) and mise agree
   - `.devcontainer/scripts/post-create.sh`: `mise exec -- bun install` → `npm ci`, then `npm run angular:install`
   - `.vscode/settings.json` / `launch.json`: any Bun runtime or task → npm
