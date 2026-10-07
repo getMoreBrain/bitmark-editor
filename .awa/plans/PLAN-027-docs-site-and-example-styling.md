@@ -101,7 +101,9 @@ look finished, without becoming hard to copy from.
   - the overview moves from the root to `/overview/` (the header logo and the sidebar follow `site.home`);
   - every page on the site's own layout carries `noindex, nofollow`; the API reference (typedoc) does not.
 
-  Nothing else changes: the guides and demos are still built, deployed and tested at their URLs. Setting the flag to true restores the root overview. A site test checks the redirect and the `noindex` marks
+  - the API reference's home page (the core README) leaves out its links into the guides. The README marks them with `<!-- docs-site-links -->` … `<!-- /docs-site-links -->` (invisible on npm and GitHub), and the site build strips them from its copy of `api/index.html`; the build fails if the markers are gone. Without this, the API home linked 17 times into the hidden guides, and its top link went to the root, which redirects back to it.
+
+  Nothing else changes: the guides and demos are still built, deployed and tested at their URLs. Setting the flag to true restores the root overview. A site test checks the redirect, the `noindex` marks and that the API home links to no guide (it fails on the unstripped page). The tests read the flag, and pass with it either way
 - [x] The API reference's index page showed the package name twice: typedoc's page title, then the README's own heading. A small typedoc plugin (`packages/bitmark-editor/scripts/typedoc-readme-title.mjs`) drops the README's first heading on that page only; the README keeps it on npm and GitHub
 
 ## Risks

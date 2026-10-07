@@ -1,10 +1,12 @@
 // The docs site, built and served under /bitmark-editor/ (PLAN-027).
 import { expect, test } from '@playwright/test';
 
+import site from '../src/_data/site.js';
+
 const ORIGIN = 'http://localhost:4631';
 const BASE = '/bitmark-editor/';
 /** The overview, relative to BASE: the root once the guides are public (site.js). */
-const HOME = 'overview/';
+const HOME = site.home.slice(1);
 
 /** A pane's editor text, by its position in the page's first session. */
 const paneText = (page, type) =>
@@ -31,7 +33,7 @@ const collectErrors = (page) => {
 
 test('every internal link, script, stylesheet and image resolves', async ({ request }) => {
   const pages = new Set([BASE, BASE + HOME]);
-  const queue = [BASE, BASE + HOME];
+  const queue = [...pages];
   const assets = new Set();
   const broken = [];
   while (queue.length) {
@@ -156,9 +158,15 @@ test('the theme toggle cycles, is remembered, and the demos and Monaco follow', 
 test('until the guides are public, the root sends readers to the API reference', async ({
   page,
 }) => {
+  test.skip(site.guidesPublic, 'the guides are public');
   await page.goto('');
   await expect(page).toHaveURL(`${ORIGIN}${BASE}api/`);
   await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+  // Its home page (the core README) links to no guide while they are hidden.
+  const siteLinks = await page
+    .locator('a[href*="getmorebrain.github.io/bitmark-editor/"]')
+    .evaluateAll((links) => links.map((l) => l.getAttribute('href')));
+  expect(siteLinks.filter((href) => !href.includes('/bitmark-editor/api/'))).toEqual([]);
   await page.goto('guides/react/');
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
 });

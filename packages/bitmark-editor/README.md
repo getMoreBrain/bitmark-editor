@@ -4,7 +4,9 @@ bitmark and JSON editors on Monaco, with optional HTML, XML, Text, Info and
 Mappings panes, for any framework. Editing any pane updates the others,
 through the bitmark parser.
 
+<!-- docs-site-links: links into the guides; the API reference leaves them out while the guides are hidden (docs-site/src/_data/site.js) -->
 **Documentation, guides and live demos: https://getmorebrain.github.io/bitmark-editor/**
+<!-- /docs-site-links -->
 
 > Pre-release: 0.1.0, not yet published.
 
@@ -25,7 +27,11 @@ npm install @gmb/bitmark-editor monaco-editor
 
 Your page already has Monaco: use the core, `/elements`, React or Angular,
 and pass your Monaco in. It doesn't: use `/bundled`, which brings Monaco
-0.57. [Which build?](https://getmorebrain.github.io/bitmark-editor/getting-started/)
+0.57.
+
+<!-- docs-site-links -->
+[Which build?](https://getmorebrain.github.io/bitmark-editor/getting-started/)
+<!-- /docs-site-links -->
 
 ## Quick start: a host with Monaco
 
@@ -46,8 +52,11 @@ session.on('change', ({ bitmark }) => save(bitmark));
 `theme` sets the bitmark token colours (default `dark`); your Monaco keeps
 its own, page-wide theme (light `vs` unless you set one). Match the two, or
 pass `applyMonacoTheme: true`.
+
+<!-- docs-site-links -->
 [More](https://getmorebrain.github.io/bitmark-editor/guides/host-with-monaco/),
 including Monaco's workers.
+<!-- /docs-site-links -->
 
 ## Quick start: a static site (no bundler)
 
@@ -60,11 +69,14 @@ including Monaco's workers.
 <script type="module" src="https://cdn.jsdelivr.net/npm/@gmb/bitmark-editor@0.1.0/dist/bundled/bundled.js"></script>
 ```
 
+<!-- docs-site-links -->
 [More](https://getmorebrain.github.io/bitmark-editor/guides/static-site/):
 loading, self-hosting, caching.
+<!-- /docs-site-links -->
 
 ## Documentation
 
+<!-- docs-site-links -->
 - Guides: [static site](https://getmorebrain.github.io/bitmark-editor/guides/static-site/),
   [a host with Monaco](https://getmorebrain.github.io/bitmark-editor/guides/host-with-monaco/),
   [React](https://getmorebrain.github.io/bitmark-editor/guides/react/),
@@ -81,6 +93,7 @@ loading, self-hosting, caching.
 - [API reference](https://getmorebrain.github.io/bitmark-editor/api/),
   [tested versions](https://getmorebrain.github.io/bitmark-editor/reference/tested-versions/),
   [sizes](https://getmorebrain.github.io/bitmark-editor/reference/sizes/)
+<!-- /docs-site-links -->
 
 Development and releases: the [repository](https://github.com/getMoreBrain/bitmark-editor).
 

@@ -219,7 +219,7 @@ RESPONSIBILITIES
 - Build the core with esbuild (`/esm`, `/bundled`) and tsc (declarations); build the Angular library with ng-packagr
 - CI on every PR: lint, typecheck, unit tests, builds, package checks (publint, attw, `npm pack`), API docs, browser checks of the examples, the docs site and the Angular example
 - Build the example apps (plain TypeScript, React, Angular) from tarballs of the current build, as an outside app would install them, and smoke-test each one
-- Deploy the docs site (guides, live demos on `/bundled`, the API reference) to GitHub Pages from `main`, after a smoke test of every internal link, the demos, search and the theme toggle. Until the guides are public (`guidesPublic` in `docs-site/src/_data/site.js`), the root redirects to the API reference, the overview is at `/overview/`, and every guide page is marked `noindex`
+- Deploy the docs site (guides, live demos on `/bundled`, the API reference) to GitHub Pages from `main`, after a smoke test of every internal link, the demos, search and the theme toggle. Until the guides are public (`guidesPublic` in `docs-site/src/_data/site.js`), the root redirects to the API reference, the overview is at `/overview/`, every guide page is marked `noindex`, and the API reference's home page leaves out the README's links into the guides
 - Publish both packages from a `v<version>` tag by npm trusted publishing, then create the GitHub Release
 - Open weekly dependency PRs (Dependabot); the default parser version is bumped by hand
 
