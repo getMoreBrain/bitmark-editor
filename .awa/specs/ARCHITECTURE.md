@@ -289,11 +289,11 @@ sequenceDiagram
 - Relative imports in the core MUST name their file (`.js`); the core typechecks with NodeNext so that its published types work for every TypeScript module resolution
 - Hosts use only the package's `exports` entry points; each release passes publint and attw
 - Both packages MUST share one version, and the Angular peer range for the core MUST be `^<version>`
-- Releases MUST go through the tag-triggered workflow, never a local `npm publish` (the one-time first publish excepted, see RELEASING.md)
+- Releases MUST go through the tag-triggered workflow, never a local `npm publish`
 
 ## Release Status
 
-STATUS: Alpha — both packages are at 0.1.0, built and tested, and not yet published. The first publish (`0.1.0-rc.0`) is manual and enables trusted publishing; releases after it go through the tag-triggered workflow.
+STATUS: Alpha — both packages are at 0.1.0-rc.0, built and tested. Both names are reserved on npm with trusted publishing set up; the first release goes through the tag-triggered workflow.
 
 ## Developer Commands
 
