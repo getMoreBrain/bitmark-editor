@@ -162,11 +162,14 @@ test('until the guides are public, the root sends readers to the API reference',
   await page.goto('');
   await expect(page).toHaveURL(`${ORIGIN}${BASE}api/`);
   await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
-  // Its home page (the core README) links to no guide while they are hidden.
+  // Its home page (the core README) links to no guide while they are hidden:
+  // only to the API reference, which is the deployed site's root.
   const siteLinks = await page
     .locator('a[href*="getmorebrain.github.io/bitmark-editor/"]')
     .evaluateAll((links) => links.map((l) => l.getAttribute('href')));
-  expect(siteLinks.filter((href) => !href.includes('/bitmark-editor/api/'))).toEqual([]);
+  expect(
+    siteLinks.filter((href) => href !== 'https://getmorebrain.github.io/bitmark-editor/'),
+  ).toEqual([]);
   await page.goto('guides/react/');
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
 });

@@ -1,13 +1,12 @@
-// The docs site (PLAN-027): Eleventy 3, served under /bitmark-editor/ on
-// GitHub Pages. Modelled on the bitmark-parser docs site; no shared code.
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import path from 'node:path';
+// The docs site (PLAN-027): Eleventy 3, built for /bitmark-editor/ on
+// GitHub Pages, where it is not yet deployed (Pages serves only the API
+// reference). Modelled on the bitmark-parser docs site; no shared code.
+import { existsSync } from 'node:fs';
 
 import { HtmlBasePlugin, RenderPlugin } from '@11ty/eleventy';
 import syntaxHighlight from '@11ty/eleventy-plugin-syntaxhighlight';
 
 import nav from './src/_data/nav.js';
-import site from './src/_data/site.js';
 
 /** The sidebar's pages in order, for "Previous" and "Next". */
 const sequence = nav.flatMap((section) => section.items).filter((item) => !item.external);
@@ -33,23 +32,6 @@ export default function (config) {
   // core package. Build them first: npm run build && npm run build:docs.
   config.addPassthroughCopy({ '../packages/bitmark-editor/dist/bundled': 'bundled' });
   config.addPassthroughCopy({ '../packages/bitmark-editor/docs/api': 'api' });
-  // While the guides are hidden (site.js), the API reference's home page (the
-  // core README) leaves out its links into them: the README marks them with
-  // <!-- docs-site-links --> … <!-- /docs-site-links -->. Build only: the dev
-  // server serves the API reference straight from the core package.
-  if (!site.guidesPublic) {
-    config.on('eleventy.after', ({ dir }) => {
-      const file = path.join(dir.output, 'api/index.html');
-      const html = readFileSync(file, 'utf8');
-      const stripped = html.replace(
-        /<!-- docs-site-links[^>]*-->.*?<!-- \/docs-site-links -->/gs,
-        '',
-      );
-      if (stripped === html) throw new Error(`${file}: no docs-site-links markers to strip`);
-      writeFileSync(file, stripped);
-    });
-  }
-
   config.addFilter('neighbours', (url) => {
     const i = sequence.findIndex((item) => item.url === url);
     return i === -1 ? {} : { previous: sequence[i - 1], next: sequence[i + 1] };
