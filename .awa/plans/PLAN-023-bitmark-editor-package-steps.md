@@ -394,8 +394,8 @@ and to the package in Phase 2.
 
   Done when the docs site's own `npm test` and e2e pass (updated for Monaco)
   and every bit page still degrades to the static example when the CDN is
-  blocked. The parser repo has its own plan process, so this step is a
-  hand-off brief there, not an in-repo plan.
+  blocked. The parser repo has its own plan process, so this step is
+  tracked there, not in an in-repo plan.
   - Done: parser repo branch `docs-site/bitmark-editor`, its PLAN-227. Not
     yet on npm, so the package is vendored in `docs-site/vendor/` and its
     `/bundled` build self-hosted under `assets/bitmark-editor/<version>/`
@@ -499,8 +499,7 @@ and to the package in Phase 2.
   documented in its README.
   - Publishing the docs beside the README (e.g. on Pages) waits for the
     first release.
-- [x] The upstream note to the parser repo (D16): written,
-  `packages/bitmark-editor/docs/upstream-parser-note.md`, not sent. Two of
+- [x] The upstream note to the parser repo (D16): written, not sent. Two of
   the three asks are already met by parser 7.7.0+.
 
 - [x] Package README: install, the two builds, the two engine paths (D2),
@@ -515,8 +514,6 @@ and to the package in Phase 2.
     host URL, or injected by the host — never bundled by the playground";
   - a change-log line.
 - [x] Playground README: a pointer to the package.
-- [x] Hand-off briefs for the other repos: the Angular host app (Step 17)
-  and the docs site (Step 18), in `docs/` (since removed).
 
 ### Parser 7.9.0 and publishing (2026-10-06)
 

@@ -47,8 +47,7 @@ the repo from Bun to npm, and prepares both packages for publishing to npm.
   and both packages are open source under ISC.
 - D7 — Once `0.1.0` is published, the Playground uses `@gmb/bitmark-editor`
   from npm and deletes its `packages/` copy. That work happens in the
-  Playground repo. This repo's part: publish a version the Playground can use,
-  and keep the hand-off notes current.
+  Playground repo. This repo's part: publish a version the Playground can use.
 
 ## Inventory
 
@@ -126,9 +125,7 @@ the repo from Bun to npm, and prepares both packages for publishing to npm.
 - [x] `packages/bitmark-editor-angular/README.md`: `bun run build` → `npm run build`. It also says the project is outside the root workspace, and names the root `angular:*` scripts
 - [x] Source comments that call the Playground the reference host (`src/elements/elements.ts`, `src/monaco/jsonSchema.ts`, `src/monaco/setup.ts`, `src/theme/tokens.ts`, `src/editor/textEditor.ts`, `src/session/types.ts`): reword them to describe the behaviour ("the full arrangement", "a host that…"), without changing code
 - [x] `src/monaco/helpers.test.ts`: change the `/bitmark-playground/local-engine/...` URL fixtures to a neutral path (the test is about URL shape, not the Playground) — now `/app/local-engine/...`
-- [x] `docs/handoff-*.md` and `docs/upstream-parser-note.md`: update repo links. Keep these docs, since they are hand-offs to consumers — no changes needed: they use repo-relative paths, which are still valid here, and don't name the Playground repo
-- [x] Add `docs/handoff-playground.md` (D7): how the Playground moves from the source aliases to the published package. Cover the `/react` adapter, injecting its own Monaco 0.52 and engine, `dedupe`, and what the Playground's tests mock. All 31 names the Playground imports were checked against the public entry points (a typecheck through the package's own `exports`)
-- [x] `grep -ri playground` over `packages/` (excluding `node_modules`/`dist`) returns only deliberate mentions (e.g. "used by the bitmark Playground") — two remain: `helpers.test.ts` ("ported from the bitmark Playground's tests") and `docs/handoff-playground.md`. The stale typedoc output in `docs/api` (gitignored) was deleted and rebuilt, so its source links point here
+- [x] `grep -ri playground` over `packages/` (excluding `node_modules`/`dist`) returns only deliberate mentions (e.g. "used by the bitmark Playground") — one remains: `helpers.test.ts` ("ported from the bitmark Playground's tests"). The stale typedoc output in `docs/api` (gitignored) was deleted and rebuilt, so its source links point here
 
 ### Phase 5 — CI
 
@@ -193,7 +190,7 @@ the repo from Bun to npm, and prepares both packages for publishing to npm.
 - [x] From a clean clone: `npm ci`, then the root scripts `lint`, `typecheck`, `test`, `build` all pass — in CI on the extraction PR (a clean checkout)
 - [x] `examples` browser checks pass (`npm run examples:test`)
 - [x] Angular: `npm run angular:install`, `ng build bitmark-editor-angular`, `ng build example`, the e2e checks pass
-- [x] `grep -rI bun` (excluding `node_modules`, `dist`, `.awa/plans`) finds no Bun commands; only words like "bundled" remain — apart from awa's generic package-manager list and `docs/handoff-playground.md`, whose commands are the Playground's own (it still uses Bun)
+- [x] `grep -rI bun` (excluding `node_modules`, `dist`, `.awa/plans`) finds no Bun commands; only words like "bundled" remain — apart from awa's generic package-manager list
 - [ ] A rebuilt devcontainer comes up with `npm ci` and no Bun
 - [x] Consumer smoke test: in a scratch Vite app outside the repo, `npm install ./packages/bitmark-editor/<pack>.tgz` with `monaco-editor` and `@gmb/bitmark-parser`. Then `@gmb/bitmark-editor`, `/elements`, `/react` and `/bundled` all import and render — done in a scratch Vite 6 app on Monaco 0.57, built from the README's host quick start:
   - all four entries typecheck under both `bundler` and `NodeNext`, and the app builds;
@@ -234,7 +231,7 @@ the repo from Bun to npm, and prepares both packages for publishing to npm.
 - [x] `npm pack --dry-run` for both packages contains only the intended files, with the correct repo metadata
 - [ ] After the manual bootstrap, a pre-release tag publishes both packages under `next` through trusted publishing, and an outside app consumes them
 - [x] `publint` and `attw` pass for both packages
-- [ ] `docs/handoff-playground.md` exists, and the Playground follow-up is raised as an issue in `getMoreBrain/bitmark-playground` (D7)
+- [ ] The Playground follow-up is raised as an issue in `getMoreBrain/bitmark-playground` (D7)
 - [x] `ARCHITECTURE.md` and the READMEs describe the packages, not the Playground. `awa check` passes
 
 ## Open Questions
