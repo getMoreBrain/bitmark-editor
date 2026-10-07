@@ -103,7 +103,8 @@ jobs:
       - name: Publish
         run: |
           for name in @gmb/bitmark-editor @gmb/bitmark-editor-angular; do
-            file="release/$(echo "${name#@}" | tr / -)-$VERSION.tgz"
+            # ./ makes npm read a file: a bare release/x.tgz is GitHub shorthand.
+            file="./release/$(echo "${name#@}" | tr / -)-$VERSION.tgz"
             if npm view "$name@$VERSION" version >/dev/null 2>&1; then
               echo "$name@$VERSION is already on npm: skipped"
             else
