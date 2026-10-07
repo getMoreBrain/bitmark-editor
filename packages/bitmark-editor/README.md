@@ -10,8 +10,6 @@ parser, or the ones your app already has, injected.
 **Documentation, guides and live demos: https://getmorebrain.github.io/bitmark-editor/**
 -->
 
-> Pre-release: 0.1.0, not yet published.
-
 ## Install
 
 ```sh
@@ -183,7 +181,7 @@ elements and the built-in Monaco:
   <bitmark-pane type="bitmark" style="height: 300px"></bitmark-pane>
   <bitmark-pane type="json" style="height: 300px"></bitmark-pane>
 </bitmark-session>
-<script type="module" src="https://cdn.jsdelivr.net/npm/@gmb/bitmark-editor@0.1.0-rc.0/dist/bundled/bundled.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@gmb/bitmark-editor@0.1.0/dist/bundled/bundled.js"></script>
 ```
 
 `lazy="idle"` loads Monaco and the parser once the page has rendered. Until
@@ -203,7 +201,7 @@ load `/elements`, which has no Monaco inside:
   require.config({ paths: { vs: '/monaco/min/vs' } });
   const monaco = await new Promise((resolve) => require(['vs/editor/editor.main'], () => resolve(window.monaco)));
   document.querySelector('bitmark-session').monaco = monaco;
-  await import('https://cdn.jsdelivr.net/npm/@gmb/bitmark-editor@0.1.0-rc.0/dist/esm/elements/index.js');
+  await import('https://cdn.jsdelivr.net/npm/@gmb/bitmark-editor@0.1.0/dist/esm/elements/index.js');
 </script>
 ```
 
@@ -217,7 +215,7 @@ then load the elements (`/bundled` here, or `/elements` with your Monaco):
   const parser = await import('https://cdn.jsdelivr.net/npm/@gmb/bitmark-parser@7.9.0/dist/browser/bitmark-parser.min.js');
   await parser.init({ feature: 'full' });
   document.querySelector('bitmark-session').engine = { module: parser, feature: 'full' };
-  await import('https://cdn.jsdelivr.net/npm/@gmb/bitmark-editor@0.1.0-rc.0/dist/bundled/bundled.js');
+  await import('https://cdn.jsdelivr.net/npm/@gmb/bitmark-editor@0.1.0/dist/bundled/bundled.js');
 </script>
 ```
 

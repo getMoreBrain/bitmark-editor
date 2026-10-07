@@ -14,8 +14,6 @@ These are the Angular components for
 **Guide: https://getmorebrain.github.io/bitmark-editor/guides/angular/**
 -->
 
-> Pre-release: 0.1.0, not yet published.
-
 ## Install
 
 ```sh

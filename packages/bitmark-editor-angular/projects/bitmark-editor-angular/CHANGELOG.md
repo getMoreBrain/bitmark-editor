@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 (unreleased)
+## 0.1.0 (2026-10-07)
 
 - `bm-pane` takes `editorOptions`, passed to Monaco, as the core's panes and
   React's `<BitmarkPane>` do.
