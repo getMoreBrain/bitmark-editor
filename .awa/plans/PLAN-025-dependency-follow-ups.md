@@ -81,7 +81,7 @@ Findings as of 2026-10-07 (from `npm outdated` and `npm audit`, root and Angular
   - `intentionallyNotExported` for 4 internal types;
   - `externalSymbolLinkMappings` sends the parser's and Monaco's types to their docs.
 
-  The 9 left all come from comments that typedoc copies from the parser and Monaco (`RawParserModule` reuses `typeof Parser.*`): 3 links to the parser's unexported `UnsupportedFeatureError`, 1 malformed Monaco link, and 5 member-link notices. They can't be fixed here without dropping the parser's types, and turning off link validation would hide our own broken links. So warnings don't fail CI. The `UnsupportedFeatureError` export is now an ask in `docs/upstream-parser-note.md`
+  The 9 left all come from comments that typedoc copies from the parser and Monaco (`RawParserModule` reuses `typeof Parser.*`): 3 links to the parser's unexported `UnsupportedFeatureError`, 1 malformed Monaco link, and 5 member-link notices. They can't be fixed here without dropping the parser's types, and turning off link validation would hide our own broken links. So warnings don't fail CI. The `UnsupportedFeatureError` export is now an ask for the parser repo
 - [x] Angular project: pin Prettier exactly as in the root and core (3.9.9), or remove it if nothing in that project uses it — pinned to 3.9.9: the project's own `.prettierrc` (with the Angular template parser) uses it
 - [x] `npm outdated` in the root and the Angular project after each step above. Record what is still behind, and why, under Risks — see "Still behind" below
 
