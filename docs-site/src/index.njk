@@ -33,7 +33,7 @@ Hello **World**!
 The capital of France is [_Paris].</code></pre>
     <div class="demo-panes">
       <bitmark-pane type="bitmark" label="bitmark"></bitmark-pane>
-      <bitmark-pane type="json" label="JSON"></bitmark-pane>
+      <bitmark-pane type="json" label="JSON" id="home-json"></bitmark-pane>
     </div>
   </bitmark-session>
 </div>
@@ -73,4 +73,10 @@ npm install @gmb/bitmark-editor monaco-editor
   </p>
 </div>
 
+<script type="module">
+  // The generated views don't need Monaco's sticky scroll. Set before the
+  // elements are defined; they take the property over when they upgrade.
+  const noStickyScroll = { stickyScroll: { enabled: false } };
+  document.getElementById('home-json').editorOptions = noStickyScroll;
+</script>
 <script type="module" src="/bundled/bundled.js"></script>

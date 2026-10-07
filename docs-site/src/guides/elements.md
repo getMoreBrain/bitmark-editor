@@ -57,6 +57,11 @@ and ignored, as in [React](/guides/react/).
 | `scroll-sync="off"` | Leave the session's scroll linking |
 | `session="<id>"` | The session, when the pane isn't inside it |
 
+| Property | |
+|---|---|
+| `pane` | The pane, once it is mounted |
+| `editorOptions` | Options for the pane's Monaco editor, for example `{ stickyScroll: { enabled: false } }`. Changing them makes the editor again |
+
 ## Layout elements
 
 - `<bitmark-tabs>`: tabs over its child panes; only the active one is mounted.
@@ -64,6 +69,8 @@ and ignored, as in [React](/guides/react/).
 - `<bitmark-editor panes="json,html,xml:xml-niso-iec">`: the full editor in one
   tag, the bitmark pane beside tabs over the panes you list. The
   [Try it demo](/demos/try-it/) uses it.
+  Its `paneEditorOptions` property sets `editorOptions` on the panes it
+  builds, by type: `editor.paneEditorOptions = { json: { … }, html: { … } }`.
 
 ## Server-side rendering
 

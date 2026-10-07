@@ -2,6 +2,9 @@
 
 ## 0.1.0 (unreleased)
 
+- `<bitmark-pane>` takes Monaco options in its `editorOptions` property, as
+  `<BitmarkPane>` and `bm-pane` do, and `<bitmark-editor>` hands them to the
+  panes it builds through `paneEditorOptions`, by pane type.
 - `/bundled`: Monaco's editor features are registered before Monaco starts.
   Before, they loaded with the JSON language, after Monaco had taken its
   services, so an editor created later (a tab, a pane added at runtime)

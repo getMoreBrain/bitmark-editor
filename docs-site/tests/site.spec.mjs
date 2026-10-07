@@ -11,6 +11,15 @@ const paneText = (page, type) =>
     type,
   );
 
+/** Whether a pane's Monaco editor has sticky scroll on (Monaco's default). */
+const stickyScroll = (page, type) =>
+  page.evaluate(
+    (t) =>
+      document.querySelector(`bitmark-pane[type="${t}"]`)?.pane?.textEditor.editor.getRawOptions()
+        .stickyScroll?.enabled ?? true,
+    type,
+  );
+
 const collectErrors = (page) => {
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));
@@ -68,6 +77,7 @@ test('home: the live editor converts, under the sub-path', async ({ page }) => {
   });
   await expect(page.locator('.bm-tok-bitType').first()).toBeVisible();
   await expect.poll(() => paneText(page, 'json')).toContain('"type": "cloze"');
+  expect(await stickyScroll(page, 'json')).toBe(false);
   expect(errors).toEqual([]);
 });
 
@@ -85,6 +95,8 @@ test('try it: the full editor completes, converts and shows the other views', as
   // The HTML view, once the full parser is in.
   await page.getByRole('tab', { name: 'html' }).click();
   await expect.poll(() => paneText(page, 'html'), { timeout: 30_000 }).toContain('<bitmark-bit');
+  expect(await stickyScroll(page, 'html')).toBe(false);
+  expect(await stickyScroll(page, 'bitmark')).toBe(true);
   // Monaco creates some editor features only once the page is idle: give
   // them time, so a missing service shows up here, not on a reader's page.
   await page.waitForTimeout(3000);
@@ -103,6 +115,7 @@ test('injected parser: the page’s parser, then its full variant', async ({ pag
   await page.locator('#load-full').click();
   await expect(page.locator('#injected-status')).toHaveText('ready: full', { timeout: 30_000 });
   await expect.poll(() => paneText(page, 'html'), { timeout: 10_000 }).toContain('Injected parser');
+  expect(await stickyScroll(page, 'html')).toBe(false);
   expect(errors).toEqual([]);
 });
 

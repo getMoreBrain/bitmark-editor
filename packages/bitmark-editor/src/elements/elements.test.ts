@@ -6,6 +6,7 @@ import type { BitmarkEngine, RawParserModule } from '../engine/types.js';
 import { createFakeMonaco, FakeModel } from '../testing/fakeMonaco.js';
 import { setMonacoLoader } from './defaults.js';
 import {
+  BitmarkEditorElementApi,
   BitmarkPaneElementApi,
   BitmarkSessionElementApi,
   defineBitmarkElements,
@@ -81,6 +82,21 @@ describe('<bitmark-session> and <bitmark-pane> (PLAN-022 D3, D9)', () => {
     json.setAttribute('type', 'text');
     await vi.waitFor(() => expect(json.pane!.type).toBe('text'));
     await vi.waitFor(() => expect(paneText(json)).toContain('Hello World!'));
+  });
+
+  it('passes a pane its editorOptions, and makes it again when they change', async () => {
+    const { fake, host } = mount(
+      `<bitmark-session value="${DOC}" schema="off"><bitmark-pane type="json"></bitmark-pane></bitmark-session>`,
+    );
+    const json = host.querySelector('bitmark-pane') as BitmarkPaneElementApi;
+    json.editorOptions = { stickyScroll: { enabled: false } };
+    await vi.waitFor(() => expect(paneText(json)).toContain('World'));
+    expect(fake.editors.at(-1)!.options['stickyScroll']).toEqual({ enabled: false });
+    const before = json.pane;
+    json.editorOptions = { stickyScroll: { enabled: true } };
+    expect(json.pane).not.toBe(before);
+    await vi.waitFor(() => expect(paneText(json)).toContain('World'));
+    expect(fake.editors.at(-1)!.options['stickyScroll']).toEqual({ enabled: true });
   });
 
   it('disposes on removal, but survives a move in the DOM', async () => {
@@ -376,5 +392,30 @@ describe('element lifecycle (PLAN-023 pass 1)', () => {
     expect(
       [...host.querySelectorAll('bitmark-tabs > bitmark-pane')].map((p) => p.getAttribute('type')),
     ).toEqual(['html', 'text']);
+  });
+
+  it('gives the panes <bitmark-editor> builds their paneEditorOptions, by type', async () => {
+    const fake = createFakeMonaco();
+    const host = document.createElement('div');
+    host.innerHTML = `<bitmark-editor value="${DOC}" schema="off" panes="json"></bitmark-editor>`;
+    const editor = host.querySelector('bitmark-editor') as BitmarkEditorElementApi;
+    editor.monaco = fake.monaco;
+    editor.engine = engine;
+    const off = { stickyScroll: { enabled: false } };
+    editor.paneEditorOptions = { json: off, html: off };
+    document.body.append(host);
+    const panes = () => [...host.querySelectorAll<BitmarkPaneElementApi>('bitmark-pane')];
+    expect(panes().map((p) => [p.getAttribute('type'), p.editorOptions])).toEqual([
+      ['bitmark', undefined],
+      ['json', off],
+    ]);
+    editor.setAttribute('panes', 'html,text');
+    expect(panes().map((p) => [p.getAttribute('type'), p.editorOptions])).toEqual([
+      ['bitmark', undefined],
+      ['html', off],
+      ['text', undefined],
+    ]);
+    editor.paneEditorOptions = { bitmark: off };
+    expect(panes().map((p) => p.editorOptions)).toEqual([off, undefined, undefined]);
   });
 });
