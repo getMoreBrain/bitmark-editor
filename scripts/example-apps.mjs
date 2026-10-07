@@ -6,6 +6,10 @@
 //   node scripts/example-apps.mjs install  install each app and the test harness
 //   node scripts/example-apps.mjs build    build each app for production
 //   node scripts/example-apps.mjs test     smoke-test the production builds
+//   node scripts/example-apps.mjs check <app>
+//                                          warn if the app's installed packs are
+//                                          older than the library sources (the
+//                                          start:example:* scripts run it first)
 //
 // Install: each pack's integrity hash changes with every build, so the
 // committed lockfile's hash is always out of date. With it, `npm ci` fails
@@ -16,7 +20,16 @@
 // (npm ci alone can still pick a cached pack). Everything else stays pinned
 // by the lockfile.
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  renameSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -24,13 +37,21 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const examples = path.join(root, 'examples');
 const packs = path.join(examples, '.packs');
 const PACKAGES = [
-  { dir: 'packages/bitmark-editor', built: 'dist/esm/index.js', file: 'gmb-bitmark-editor.tgz' },
+  {
+    dir: 'packages/bitmark-editor',
+    built: 'dist/esm/index.js',
+    src: 'packages/bitmark-editor/src',
+    file: 'gmb-bitmark-editor.tgz',
+  },
   {
     dir: 'packages/bitmark-editor-angular/dist/bitmark-editor-angular',
     built: 'package.json',
+    src: 'packages/bitmark-editor-angular/projects/bitmark-editor-angular/src',
     file: 'gmb-bitmark-editor-angular.tgz',
   },
 ];
+/** Written into each app's node_modules when its packs are installed. */
+const STAMP = 'node_modules/.bitmark-packs-installed';
 const APPS = [
   { name: 'vanilla-ts', packs: ['gmb-bitmark-editor.tgz'] },
   { name: 'react', packs: ['gmb-bitmark-editor.tgz'] },
@@ -58,6 +79,17 @@ const ciWithCurrentPacks = (cwd) => {
   }
 };
 
+/** The newest modification time of any file under `dir`. */
+const newestMtime = (dir) =>
+  Math.max(
+    0,
+    ...readdirSync(dir, { recursive: true, withFileTypes: true })
+      .filter((e) => e.isFile())
+      .map((e) => statSync(path.join(e.parentPath, e.name)).mtimeMs),
+  );
+
+const mtime = (file) => (existsSync(file) ? statSync(file).mtimeMs : 0);
+
 const commands = {
   pack: () => {
     rmSync(packs, { recursive: true, force: true });
@@ -79,12 +111,29 @@ const commands = {
       const cwd = path.join(examples, app.name);
       ciWithCurrentPacks(cwd);
       run(['install', '--no-save', ...app.packs.map((p) => `../.packs/${p}`)], cwd);
+      writeFileSync(path.join(cwd, STAMP), `${new Date().toISOString()}\n`);
     }
   },
   build: () => {
     for (const app of APPS) run(['run', 'build'], path.join(examples, app.name));
   },
   test: () => run(['test'], examples),
+  // Warns only: a stale install still starts, it just isn't the current code.
+  check: () => {
+    const app = APPS.find((a) => a.name === process.argv[3]);
+    if (!app) throw new Error(`check: name an app (${APPS.map((a) => a.name).join(', ')})`);
+    const installed = mtime(path.join(examples, app.name, STAMP));
+    const stale = PACKAGES.filter(({ file }) => app.packs.includes(file)).filter(
+      ({ src, file }) =>
+        newestMtime(path.join(root, src)) > Math.min(installed, mtime(path.join(packs, file))),
+    );
+    if (stale.length) {
+      console.warn(
+        `\n⚠ examples/${app.name} runs an install older than ${stale.map((p) => p.src).join(' and ')}.` +
+          '\n  To run the current code: npm run build && npm run build:angular && npm run pack:examples && npm run install:examples\n',
+      );
+    }
+  },
 };
 
 const command = commands[process.argv[2]];

@@ -89,6 +89,7 @@ AMD and an injected parser.
 
   Live docs and workflows use the new names; the completed PLAN-024/025 keep the old ones as history. `lint:fix` now also fixes the core, as `lint` checks it
 - [x] Start scripts: `start:example:vanilla-ts` (5173), `start:example:react` (5174), `start:example:angular` (4200). Each ends with `--`, so options reach the dev server. Without it, `npm run start:example:react -- --port 3000` gave npm the `--port` and gave Vite `3000` as its root folder
+- [x] Stale install warning: each start script first runs `node scripts/example-apps.mjs check <app>`, which warns (and still starts) when the library's source is newer than the app's pack or its install (a stamp written by `install:examples`). A stale Angular install had failed with NG8002 on `bm-pane`'s new `editorOptions` input
 - [x] Dev servers in the devcontainer: Vite and `ng serve` listened on `localhost`, which resolved to IPv6 `::1` only. Port forwarding connects over IPv4, so every app hung in the browser (reported by the user). Each app now listens on every address: Vite `server.host: true`, Angular serve `"host": "0.0.0.0"`. Checked: reachable on `127.0.0.1`, and the smoke test passes against all three dev servers
 - [x] Reset is in all three apps and in the smoke test: it covers the app-to-session direction (`setBitmark`, React's `value`, Angular's `writeValue`)
 - [x] The release's verify job runs the example apps as well, so "verifies everything CI does" stays true
@@ -143,7 +144,7 @@ AMD and an injected parser.
 
 ## Completion Criteria
 
-- [ ] The three apps build from the packed tarballs and pass their smoke tests, locally and in CI — passing locally; CI pending
+- [x] The three apps build from the packed tarballs and pass their smoke tests, locally and in CI
 - [x] Each app's README shows the minimal setup for its kind of host
 - [x] `awa check` passes
 

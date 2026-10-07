@@ -1,6 +1,6 @@
 # PLAN-027: Docs Site and Example Styling
 
-STATUS: in-progress
+STATUS: completed
 DIRECTION: lateral
 TRACEABILITY: PLAN-024-extract-from-playground.md, PLAN-026-example-apps.md
 
@@ -106,7 +106,7 @@ look finished, without becoming hard to copy from.
 
 ## Completion Criteria
 
-- [ ] The site builds, its smoke test passes locally and in CI, and it deploys to https://getmorebrain.github.io/bitmark-editor/ — builds and passes locally; CI and the deploy come with the merge
+- [x] The site builds, its smoke test passes locally and in CI, and it deploys to https://getmorebrain.github.io/bitmark-editor/ (CI and the Pages deploy passed on the merge of #10, 2026-10-07)
 - [x] Every guide topic lives on the site; the READMEs link to it and keep a quick start
 - [x] The example apps share the site's look and still pass their smoke tests
 - [x] `awa check` passes

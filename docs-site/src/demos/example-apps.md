@@ -28,5 +28,7 @@ npm run start:example:angular      # http://localhost:4200
 {% endhighlight %}
 
 The apps install the packages from `npm pack` tarballs of the current build,
-exactly what npm would publish. CI builds all three on every change and checks
+exactly what npm would publish. After changing the library, run the build,
+pack and install steps again; the start scripts warn when an app's install is
+older than the library's source. CI builds all three on every change and checks
 each one in a browser: highlighting, a typed edit, Reset, and the themes.
