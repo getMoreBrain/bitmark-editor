@@ -51,3 +51,7 @@ junit.xml
 /examples/**/dist
 /examples/**/.angular
 /examples/test-results/
+
+# Docs site (PLAN-027)
+/docs-site/_site/
+/docs-site/test-results/

@@ -1,0 +1,17 @@
+{
+  "name": "bitmark-editor-docs-site",
+  "private": true,
+  "type": "module",
+  "description": "The documentation site for @gmb/bitmark-editor (PLAN-027).",
+  "scripts": {
+    "build": "eleventy --pathprefix=/bitmark-editor/ && pagefind --site _site",
+    "start": "eleventy --serve",
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.1.6",
+    "@11ty/eleventy-plugin-syntaxhighlight": "^5.0.2",
+    "@playwright/test": "1.63.0",
+    "pagefind": "^1.5.2"
+  }
+}

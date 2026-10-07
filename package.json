@@ -10,20 +10,21 @@
   },
   "workspaces": [
     "packages/bitmark-editor",
-    "packages/bitmark-editor/examples"
+    "packages/bitmark-editor/examples",
+    "docs-site"
   ],
   "scripts": {
     "build": "npm run build -w @gmb/bitmark-editor",
     "build:angular": "cd packages/bitmark-editor-angular && npx ng build bitmark-editor-angular && npx ng build example",
     "build:docs": "npm run docs -w @gmb/bitmark-editor",
-    "build:pages": "npm run build:pages -w bitmark-editor-examples",
+    "build:site": "npm run build -w bitmark-editor-docs-site",
     "build:examples": "node scripts/example-apps.mjs build",
     "typecheck": "npm run typecheck -w @gmb/bitmark-editor",
     "lint": "eslint . --max-warnings 0 && npm run lint -w @gmb/bitmark-editor",
     "lint:fix": "eslint . --fix --max-warnings 0 && npm run lint -w @gmb/bitmark-editor -- --fix",
     "test": "npm run test -w @gmb/bitmark-editor",
     "test:browser": "npm run test -w bitmark-editor-examples",
-    "test:pages": "npm run test:pages -w bitmark-editor-examples",
+    "test:site": "npm run test -w bitmark-editor-docs-site",
     "test:angular": "cd packages/bitmark-editor-angular/e2e && npx playwright test -c playwright.config.mjs",
     "test:examples": "node scripts/example-apps.mjs test",
     "check:package": "npm pack --dry-run -w @gmb/bitmark-editor && publint packages/bitmark-editor && attw --pack packages/bitmark-editor --profile esm-only",
@@ -31,6 +32,7 @@
     "install:angular": "npm ci --prefix packages/bitmark-editor-angular",
     "install:examples": "node scripts/example-apps.mjs install",
     "pack:examples": "node scripts/example-apps.mjs pack",
+    "start:site": "npm run start -w bitmark-editor-docs-site --",
     "start:example:vanilla-ts": "npm --prefix examples/vanilla-ts run dev --",
     "start:example:react": "npm --prefix examples/react run dev --",
     "start:example:angular": "npm --prefix examples/angular start --",
@@ -45,6 +47,7 @@
     "eslint": "^10.12.0",
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-simple-import-sort": "^14.0.0",
+    "globals": "^17.13.0",
     "prettier": "3.9.9",
     "publint": "^0.3.25"
   },

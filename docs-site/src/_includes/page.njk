@@ -1,0 +1,15 @@
+{% extends "base.njk" %}
+{% block content %}
+  <article class="prose{% if wide %} wide{% endif %}" data-pagefind-body>
+    <h1>{{ title }}</h1>
+    {% if lead %}<p class="lead">{{ lead }}</p>{% endif %}
+    {{ content | safe }}
+  </article>
+  {% set n = page.url | neighbours %}
+  {% if n.previous or n.next %}
+    <nav class="pager" aria-label="Previous and next page">
+      {% if n.previous %}<a class="pager-previous" href="{{ n.previous.url }}"><span>Previous</span>{{ n.previous.title }}</a>{% endif %}
+      {% if n.next %}<a class="pager-next" href="{{ n.next.url }}"><span>Next</span>{{ n.next.title }}</a>{% endif %}
+    </nav>
+  {% endif %}
+{% endblock %}

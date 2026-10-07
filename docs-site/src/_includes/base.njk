@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="site-base" content="{{ '/' | htmlBaseUrl }}" />
+    <title>{% if title and page.url != '/' %}{{ title }} · {% endif %}{{ site.title }}</title>
+    <meta name="description" content="{{ description or site.description }}" />
+    <link rel="icon" type="image/png" href="/assets/images/bm_fav.png" />
+    <script>
+      // The stored theme, stamped before first paint (no flash).
+      try {
+        var t = localStorage.getItem('bitmark-editor-docs-theme');
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
+    <link rel="stylesheet" href="/assets/css/tokens.css" />
+    <link rel="stylesheet" href="/assets/css/base.css" />
+    <link rel="stylesheet" href="/assets/css/shell.css" />
+    <link rel="stylesheet" href="/assets/css/content.css" />
+    <link rel="stylesheet" href="/pagefind/pagefind-component-ui.css" />
+    <script type="module" src="/pagefind/pagefind-component-ui.js"></script>
+    {% block head %}{% endblock %}
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    {% include "partials/header.njk" %}
+    <div class="site-layout">
+      {% include "partials/sidebar.njk" %}
+      <div class="sidebar-backdrop" hidden></div>
+      <main id="main-content" class="main-content">
+        {% block content %}{{ content | safe }}{% endblock %}
+        {% include "partials/footer.njk" %}
+      </main>
+    </div>
+    <script type="module" src="/assets/js/theme.js"></script>
+    <script type="module" src="/assets/js/nav.js"></script>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

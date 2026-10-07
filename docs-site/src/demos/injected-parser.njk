@@ -1,0 +1,63 @@
+---
+wide: true
+title: Injected parser
+lead: The page loads and initialises the parser itself, and hands it to the editor. The editor never initialises it again.
+---
+<div class="demo">
+  <div class="demo-bar">
+    <span>The page's own parser ({{ site.parserVersion }}, <code>bitmark-json</code>)</span>
+    <span id="injected-status">loading…</span>
+  </div>
+  <bitmark-session id="injected" class="demo-stage" theme="auto" schema="off" value="[.article]
+Injected parser">
+    <pre data-bitmark-static><code>[.article]
+Injected parser</code></pre>
+    <div class="demo-panes">
+      <bitmark-pane type="bitmark" label="bitmark"></bitmark-pane>
+      <bitmark-pane type="html" label="HTML"></bitmark-pane>
+    </div>
+  </bitmark-session>
+</div>
+
+<p>
+  The page initialises only the <code>bitmark-json</code> variant, so the HTML pane says it needs the full parser.
+  <button type="button" class="button" id="load-full">Load the full parser</button> calls
+  <code>init({ feature: 'full' })</code> on the page's parser, then tells the session with
+  <code>engine.setFeature('full')</code>, and the HTML view appears.
+</p>
+
+<h2>The code</h2>
+{% highlight "js" %}
+const parser = await import('https://cdn.jsdelivr.net/npm/@gmb/bitmark-parser@{{ site.parserVersion }}/dist/browser/bitmark-parser.min.js');
+await parser.init({ feature: 'bitmark-json' });
+
+const session = document.getElementById('injected');
+// Set before the element starts: it reads the engine then.
+session.engine = { module: parser, feature: 'bitmark-json' };
+await import('{{ site.cdn }}');
+
+// Later: the full variant, for the other views.
+await parser.init({ feature: 'full' });
+session.session.engine.setFeature('full');
+{% endhighlight %}
+
+<p>More in <a href="/guides/parser/#injected-by-your-app">The parser</a>.</p>
+
+<script type="module">
+  const base = document.querySelector('meta[name="site-base"]').content;
+  const status = document.getElementById('injected-status');
+  const button = document.getElementById('load-full');
+  const session = document.getElementById('injected');
+  const parser = await import('https://cdn.jsdelivr.net/npm/@gmb/bitmark-parser@{{ site.parserVersion }}/dist/browser/bitmark-parser.min.js');
+  await parser.init({ feature: 'bitmark-json' });
+  session.engine = { module: parser, feature: 'bitmark-json' };
+  session.addEventListener('ready', () => (status.textContent = 'ready: bitmark-json'));
+  button.addEventListener('click', async () => {
+    button.disabled = true;
+    status.textContent = 'loading the full parser…';
+    await parser.init({ feature: 'full' });
+    session.session?.engine?.setFeature('full');
+    status.textContent = 'ready: full';
+  });
+  await import(`${base}bundled/bundled.js`);
+</script>
