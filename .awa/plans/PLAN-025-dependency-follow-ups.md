@@ -68,15 +68,31 @@ Findings as of 2026-10-07 (from `npm outdated` and `npm audit`, root and Angular
 
 ### 5. Small clean-ups
 
-- [ ] Theme defaults (found in PLAN-026): with no `theme`, the panes use the dark token palette, while a host's Monaco keeps its own theme, light `vs` by default. A host following the quick start gets dark-theme colours on a white editor (bit types at about 2:1 contrast). The README now says to match them. Decide whether the default should change too, for example to warn once when `theme` is unset and `applyMonacoTheme` is false. Changing the default palette to light would only move the mismatch to `vs-dark` hosts
-- [ ] Angular wrapper: no `applyMonacoTheme` (found in PLAN-026). Neither `provideBitmarkEditor` nor `bm-session` can pass it, so an Angular host that owns its Monaco has to call `monaco.editor.setTheme` itself (as `examples/angular` does). Add it to `BitmarkEditorConfig` and as a `bm-session` input
+- [x] Theme defaults (found in PLAN-026): with no `theme`, the panes use the dark token palette, while a host's Monaco keeps its own theme, light `vs` by default. A host following the quick start gets dark-theme colours on a white editor (bit types at about 2:1 contrast). The README now says to match them. Decide whether the default should change too, for example to warn once when `theme` is unset and `applyMonacoTheme` is false. Changing the default palette to light would only move the mismatch to `vs-dark` hosts — done (2026-10-07):
+  - A session with no `theme` that leaves Monaco's theme to the host warns once per page (`log.warnOnce`), saying how to match them.
+  - Found while doing it: `applyMonacoTheme: true` with no `theme` didn't touch Monaco at all, so `/bundled` without a `theme` attribute had the same mismatch. Monaco now gets the panes' default (`DEFAULT_THEME`, dark). An elements test that asserted the old behaviour was updated.
+  - Unit tests for both. The warning test was checked by disabling the warning, which fails it
+- [x] Angular wrapper: no `applyMonacoTheme` (found in PLAN-026). Neither `provideBitmarkEditor` nor `bm-session` can pass it, so an Angular host that owns its Monaco has to call `monaco.editor.setTheme` itself (as `examples/angular` does). Add it to `BitmarkEditorConfig` and as a `bm-session` input — done, and documented in the wrapper's README and CHANGELOG. The Angular example uses it (`provideBitmarkEditor({ …, applyMonacoTheme: true })`) instead of setting Monaco's theme itself; its theme checks pass on the packed wrapper
 
-- [ ] React adapter sizing (found in PLAN-026): `<BitmarkPane>` sets `height: 100%` on its `<div>`. A host `className` with a border or padding (`content-box`) then makes a grid or flex container grow forever. Set `boxSizing: 'border-box'` in the adapter's default style, with a unit test, and note it in the CHANGELOG
+- [x] React adapter sizing (found in PLAN-026): `<BitmarkPane>` sets `height: 100%` on its `<div>`. A host `className` with a border or padding (`content-box`) then makes a grid or flex container grow forever. Set `boxSizing: 'border-box'` in the adapter's default style, with a unit test, and note it in the CHANGELOG — done; the host's own `style` still wins
 
-- [ ] `.vscode/settings.json`: remove the leftovers from other projects. That means `pasteImage.*` (pointing at `packages/gatsby/static`), the `jest.*` settings and the Java paths
-- [ ] typedoc: `npm run docs` reports 22 warnings, from links between doc pages (e.g. `RawParserModule.convert`). They predate PLAN-024. Fix the TSDoc `{@link}` targets, or set `validation.invalidLink`, and consider `--treatWarningsAsErrors` in CI once it is clean
-- [ ] Angular project: pin Prettier exactly as in the root and core (3.9.9), or remove it if nothing in that project uses it
-- [ ] `npm outdated` in the root and the Angular project after each step above. Record what is still behind, and why, under Risks
+- [x] `.vscode/settings.json`: remove the leftovers from other projects. That means `pasteImage.*` (pointing at `packages/gatsby/static`), the `jest.*` settings and the Java paths
+- [x] typedoc: `npm run docs` reports 22 warnings, from links between doc pages (e.g. `RawParserModule.convert`). They predate PLAN-024. Fix the TSDoc `{@link}` targets, or set `validation.invalidLink`, and consider `--treatWarningsAsErrors` in CI once it is clean — 22 → 9:
+  - `intentionallyNotExported` for 4 internal types;
+  - `externalSymbolLinkMappings` sends the parser's and Monaco's types to their docs.
+
+  The 9 left all come from comments that typedoc copies from the parser and Monaco (`RawParserModule` reuses `typeof Parser.*`): 3 links to the parser's unexported `UnsupportedFeatureError`, 1 malformed Monaco link, and 5 member-link notices. They can't be fixed here without dropping the parser's types, and turning off link validation would hide our own broken links. So warnings don't fail CI. The `UnsupportedFeatureError` export is now an ask in `docs/upstream-parser-note.md`
+- [x] Angular project: pin Prettier exactly as in the root and core (3.9.9), or remove it if nothing in that project uses it — pinned to 3.9.9: the project's own `.prettierrc` (with the Angular template parser) uses it
+- [x] `npm outdated` in the root and the Angular project after each step above. Record what is still behind, and why, under Risks — see "Still behind" below
+
+## Still behind (2026-10-07)
+
+- TypeScript 7: blocked by typescript-eslint and typedoc (Step 3).
+- `@types/node` 26: the types follow the oldest supported Node (`>=22`), not the newest.
+- Angular 22 in the wrapper and `examples/angular`: they stay on 21, the build baseline, so their output suits Angular 21 users. CI's `angular-22` job tests 22.
+- Monaco 0.46 in the wrapper's project: pinned to match cosmic.
+- Vitest 4 and jsdom 28 in the wrapper's project: they come with the Angular 21 tooling.
+- `npm audit`, root: low, `dompurify` 3.4.15 declared by Monaco's `package.json`. It is never bundled (Step 1). The example apps ship Monaco's vendored copy as it comes (`examples/README.md`). The wrapper's project is clean.
 
 ## Risks
 
@@ -92,15 +108,15 @@ Findings as of 2026-10-07 (from `npm outdated` and `npm audit`, root and Angular
 
 ## Completion Criteria
 
-- [ ] `npm audit` is clean in the root and in the Angular project, or each remaining finding is listed here with the reason it is accepted
-- [ ] ESLint 10 runs in the root and the core, and lint is clean
-- [ ] CI covers both ends of each peer range: Angular 21 and 22, React 18 and 19, Monaco 0.46 and 0.57
-- [ ] The toolchain majors are either taken, or deferred with a reason written here
+- [x] `npm audit` is clean in the root and in the Angular project, or each remaining finding is listed here with the reason it is accepted
+- [x] ESLint 10 runs in the root and the core, and lint is clean
+- [ ] CI covers both ends of each peer range: Angular 21 and 22, React 18 and 19, Monaco 0.46 and 0.57 — the jobs exist (`angular`, `angular-22`, `react-18`, the core, the examples) and pass locally, but haven't run on GitHub yet
+- [x] The toolchain majors are either taken, or deferred with a reason written here
 
 ## Open Questions
 
 - [x] Should a scheduled job (like the parser bump) open dependency PRs, or is Dependabot (PLAN-024 Phase 5) enough? — Dependabot is enough. The parser keeps its own workflow, because the default version is also a source constant
-- [ ] TypeScript 7: is it worth taking now, or should we wait for typedoc and Angular to support it?
+- [x] TypeScript 7: is it worth taking now, or should we wait for typedoc and Angular to support it? — wait: the code is ready, the tooling isn't (Step 3)
 
 ## References
 

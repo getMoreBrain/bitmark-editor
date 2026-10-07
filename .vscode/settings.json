@@ -19,24 +19,17 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
-  "pasteImage.path": "${projectRoot}/packages/gatsby/static",
-  "pasteImage.basePath": "${projectRoot}/packages/gatsby/static",
-  "pasteImage.forceUnixStyleSeparator": true,
-  "pasteImage.prefix": "/",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "search.exclude": {
     // "**/dist": true,
     // "**/docs": true
   },
   // "prettier.prettierPath": "node_modules/prettier/index.js"
-  "jest.runMode": "on-demand",
   "mise.configureExtensionsUseSymLinks": true,
   "debug.javascript.defaultRuntimeExecutable": {
     "pwa-node": "${workspaceFolder}/.vscode/mise-tools/node"
   },
   "python.defaultInterpreterPath": "${workspaceFolder}/.vscode/mise-tools/python",
-  "java.jdt.ls.java.home": "${workspaceFolder}/.vscode/mise-tools/java",
-  "java.import.gradle.java.home": "${workspaceFolder}/.vscode/mise-tools/java",
   "chat.tools.terminal.autoApprove": {
     "npm run": true,
     "npx vitest": true
