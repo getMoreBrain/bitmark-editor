@@ -22,16 +22,20 @@
     "examples:test": "npm run test -w bitmark-editor-examples",
     "angular:install": "npm ci --prefix packages/bitmark-editor-angular",
     "angular:build": "cd packages/bitmark-editor-angular && npx ng build bitmark-editor-angular && npx ng build example",
-    "angular:test": "cd packages/bitmark-editor-angular/e2e && npx playwright test -c playwright.config.mjs"
+    "angular:test": "cd packages/bitmark-editor-angular/e2e && npx playwright test -c playwright.config.mjs",
+    "pack:check": "npm pack --dry-run -w @gmb/bitmark-editor && publint packages/bitmark-editor && attw --pack packages/bitmark-editor --profile esm-only",
+    "angular:pack:check": "cd packages/bitmark-editor-angular/dist/bitmark-editor-angular && npm pack --dry-run && publint . && attw --pack . --profile esm-only"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@eslint/js": "^9.28.0",
     "@eslint/markdown": "^7.5.1",
     "@ncoderz/awa": "^1.10.3",
     "eslint": "^9.28.0",
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-simple-import-sort": "^12.1.1",
-    "prettier": "3.9.9"
+    "prettier": "3.9.9",
+    "publint": "^0.3.25"
   },
   "packageManager": "npm@11.13.0",
   "engines": {

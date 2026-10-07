@@ -132,16 +132,18 @@ the repo from Bun to npm, and prepares both packages for publishing to npm.
 
 ### Phase 5 — CI
 
-- [ ] `.github/workflows/bitmark-editor.yml` → rename to `ci.yml`:
+- [x] `.github/workflows/bitmark-editor.yml` → rename to `ci.yml`:
   - drop the root `src` path filter and the step "The playground still compiles and passes on the package source"
   - run on every push or PR to `main` (no path filters, since the whole repo is now the package)
   - keep the core job (lint, typecheck, test, build, examples) and the Angular job (lib build, example build, e2e)
-  - add `npm pack --dry-run`, `publint` and `attw` for both packages
+  - add `npm pack --dry-run`, `publint` and `attw` for both packages — root scripts `pack:check` and `angular:pack:check`, with `publint` and `@arethetypeswrong/cli` as root dev dependencies (pinned by the lockfile, not `@latest`). Both exit 0 today
+  - also `npm run docs`, so a typedoc error fails CI (warnings don't, yet: PLAN-025)
+  - `concurrency`: a newer push cancels a running PR build; `main` builds always finish
   - core job: replace `oven-sh/setup-bun` with `actions/setup-node` (`node-version-file: .nvmrc`, `cache: npm`), `npm ci` at the root, then the root scripts. Examples no longer need their own install step
-  - Angular job: `cache: npm` with `cache-dependency-path: packages/bitmark-editor-angular/package-lock.json`
-- [ ] `bitmark-editor-parser-bump.yml`: remove `setup-bun`; `bun install` → `npm install` (it updates `package-lock.json`); update the comments; keep `BITMARK_EDITOR_BOT_TOKEN`
-- [ ] Remove the README badge for the Playground deploy workflow
-- [ ] Add `.github/dependabot.yml` for `github-actions` and `npm` (root and Angular directories), grouped and weekly. Ignore `@gmb/bitmark-parser`, because the parser-bump workflow owns it
+  - Angular job: `cache: npm` with `cache-dependency-path` on both lockfiles. It runs a root `npm ci` too, for publint and attw. The root's Playwright browser install serves its e2e test, because both lockfiles pin Playwright 1.63.0
+- [x] `bitmark-editor-parser-bump.yml`: remove `setup-bun`; `bun install` → `npm install` (it updates `package-lock.json`); update the comments; keep `BITMARK_EDITOR_BOT_TOKEN` — `npm install --package-lock-only --ignore-scripts`, since the PR only needs the lockfile. The comments now say a merged bump ships with the next release tag (releases are tag-triggered, Phase 7), not automatically
+- [x] Remove the README badge for the Playground deploy workflow — replaced by the CI badge; the rest of the root README is rewritten in Phase 8
+- [x] Add `.github/dependabot.yml` for `github-actions` and `npm` (root and Angular directories), grouped and weekly. Ignore `@gmb/bitmark-parser`, because the parser-bump workflow owns it. The Angular directory also ignores `monaco-editor` (pinned to 0.46 to match cosmic), and Angular, ng-packagr and TypeScript majors (planned in PLAN-025)
 - [ ] Branch protection on `main`: require the CI jobs to pass and require PRs. This is a manual step for a repo admin
 
 ### Phase 6 — GitHub Pages (examples + API docs)

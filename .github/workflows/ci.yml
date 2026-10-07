@@ -1,0 +1,77 @@
+# CI for @gmb/bitmark-editor and @gmb/bitmark-editor-angular (PLAN-024 Phase 5).
+# Publishing is release.yml's job (PLAN-024 Phase 7).
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - name: Package contents, publint, attw
+        run: npm run pack:check
+      - name: API docs build
+        run: npm run docs
+      - name: Examples (static site on Monaco 0.57, /esm consumer)
+        run: |
+          npx playwright install --with-deps chromium
+          npm run examples:test
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bitmark-editor-dist
+          path: packages/bitmark-editor/dist
+
+  angular:
+    needs: core
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            packages/bitmark-editor-angular/package-lock.json
+      # The root install brings publint and attw for the pack check.
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: bitmark-editor-dist
+          path: packages/bitmark-editor/dist
+      # A standalone npm project, not a workspace member (PLAN-024 D5).
+      - run: npm run angular:install
+      - run: npm run angular:build
+      - name: Package contents, publint, attw
+        run: npm run angular:pack:check
+      - name: "Example (cosmic-shaped: zones, Monaco 0.46 AMD, injected parser)"
+        # The root and the Angular project pin the same Playwright (1.63.0),
+        # so the root's browser install serves both.
+        run: |
+          npx playwright install --with-deps chromium
+          npm run angular:test
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bitmark-editor-angular-dist
+          path: packages/bitmark-editor-angular/dist/bitmark-editor-angular
