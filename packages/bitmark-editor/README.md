@@ -66,7 +66,7 @@ including Monaco's workers.
   <bitmark-pane type="bitmark" style="height: 300px"></bitmark-pane>
   <bitmark-pane type="json" style="height: 300px"></bitmark-pane>
 </bitmark-session>
-<script type="module" src="https://cdn.jsdelivr.net/npm/@gmb/bitmark-editor@0.1.0/dist/bundled/bundled.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@gmb/bitmark-editor@0.1.0-rc.0/dist/bundled/bundled.js"></script>
 ```
 
 <!-- docs-site-links -->

@@ -1,6 +1,6 @@
 {
   "name": "@gmb/bitmark-editor",
-  "version": "0.1.0",
+  "version": "0.1.0-rc.0",
   "description": "bitmark and JSON editors on Monaco, with optional HTML, XML, Text, Info and Mappings panes, for any framework.",
   "author": "Get More Brain Ltd",
   "license": "ISC",
