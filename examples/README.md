@@ -46,6 +46,11 @@ Options after `--` reach the dev server, for example
 address, so a devcontainer's port forwarding reaches them. Inside an app's
 folder, `npm run dev` (Angular: `npm start`) does the same.
 
+The apps run the packs as last installed, not the library's source. The
+start scripts warn when an app's install is older than the source; then run
+`npm run build`, `npm run build:angular`, `npm run pack:examples` and
+`npm run install:examples` again.
+
 Don't run a plain `npm install` or `npm ci` in an app. The lockfile holds the
 integrity hash of whichever pack it was written with, and every build changes
 it. So npm either fails (`EINTEGRITY`, on a clean machine) or installs an

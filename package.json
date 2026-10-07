@@ -33,9 +33,9 @@
     "install:examples": "node scripts/example-apps.mjs install",
     "pack:examples": "node scripts/example-apps.mjs pack",
     "start:site": "npm run start -w bitmark-editor-docs-site --",
-    "start:example:vanilla-ts": "npm --prefix examples/vanilla-ts run dev --",
-    "start:example:react": "npm --prefix examples/react run dev --",
-    "start:example:angular": "npm --prefix examples/angular start --",
+    "start:example:vanilla-ts": "node scripts/example-apps.mjs check vanilla-ts && npm --prefix examples/vanilla-ts run dev --",
+    "start:example:react": "node scripts/example-apps.mjs check react && npm --prefix examples/react run dev --",
+    "start:example:angular": "node scripts/example-apps.mjs check angular && npm --prefix examples/angular start --",
     "bump:parser": "node packages/bitmark-editor/scripts/bump-parser.mjs && npm install --no-audit --no-fund",
     "release:version": "node scripts/release.mjs version",
     "release:check": "node scripts/release.mjs check"
