@@ -1,8 +1,10 @@
 # bitmark editor
 
-[![CI](https://github.com/getMoreBrain/bitmark-editor/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/getMoreBrain/bitmark-editor/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/@gmb/bitmark-editor?label=%40gmb%2Fbitmark-editor)](https://www.npmjs.com/package/@gmb/bitmark-editor)
 [![npm](https://img.shields.io/npm/v/@gmb/bitmark-editor-angular?label=%40gmb%2Fbitmark-editor-angular)](https://www.npmjs.com/package/@gmb/bitmark-editor-angular)
+[![Downloads](https://img.shields.io/npm/dm/@gmb/bitmark-editor)](https://www.npmjs.com/package/@gmb/bitmark-editor)
+[![Publish](https://github.com/getMoreBrain/bitmark-editor/actions/workflows/publish.yml/badge.svg)](https://github.com/getMoreBrain/bitmark-editor/actions/workflows/publish.yml)
+[![License](https://img.shields.io/npm/l/@gmb/bitmark-editor)](./LICENSE)
 
 A bitmark editor built on [Monaco](https://microsoft.github.io/monaco-editor/),
 with syntax highlighting, error checking, autocomplete and hover help, for
@@ -43,84 +45,28 @@ Guides: [React](https://getmorebrain.github.io/bitmark-editor/guides/react/),
 [the parser](https://getmorebrain.github.io/bitmark-editor/guides/parser/).
 -->
 
-To start from a complete app instead, see the [example apps](examples/):
-[plain TypeScript](examples/vanilla-ts/), [React](examples/react/) and
-[Angular](examples/angular/).
 
 <!-- docs-site-links
 Start with the [docs site](https://getmorebrain.github.io/bitmark-editor/getting-started/):
 which build to use, guides for each kind of host, and the API reference.
 -->
 
-## Repository layout
+## Building from source
 
-```text
-packages/bitmark-editor/            @gmb/bitmark-editor (npm workspace)
-  src/                              engine/, monaco/, session/, panes/, scroll/, theme/,
-                                    editor/, elements/, react/, bundled/
-  examples/                         static-site and /esm examples, with browser checks
-                                    (npm workspace)
-  docs/api/                         the API reference (generated, not committed)
-packages/bitmark-editor-angular/    Angular CLI project: the library and an NgModule
-                                    example with zones, an AMD Monaco 0.46 and its own
-                                    parser (standalone npm project)
-examples/                           example apps: vanilla-ts, react, angular (each its own
-                                    npm project, installed from packed tarballs)
-docs-site/                          the docs site (Eleventy, Pagefind; npm workspace),
-                                    built and tested in CI, not yet deployed; GitHub
-                                    Pages serves only the API reference
-scripts/                            release.mjs (one version for both packages),
-                                    example-apps.mjs (pack, install, build, test the apps)
-.awa/                               the architecture spec and implementation plans
-```
-
-The Angular project is not in the root npm workspace. It pins Monaco 0.46
-and its own TypeScript for its example, and builds against the core's build
-output (`dist`).
-
-## Development
-
-You need Node 24 and npm. Install the workspace, build the core, then run
-any of the checks. The docs site, the Angular project and the example apps
-each build on the core's build output, so build the core first.
+You need Node 24 and npm.
 
 ```bash
-# The core
-npm ci                     # install the workspace: the core, its examples, the docs site
-npm run build              # build the core → packages/bitmark-editor/dist
-npm run lint
-npm run typecheck
-npm test                   # unit tests
-npm run test:browser       # browser tests
-npm run check:package      # check what npm would publish
-
-# The docs
-npm run build:docs         # the API reference → packages/bitmark-editor/docs/api
-npm run build:site         # the docs site (after build:docs) → docs-site/_site
-npm run test:site          # the docs site's smoke tests
-npm run start:site         # the docs site's dev server: http://localhost:8080
-
-# The Angular package
-npm run install:angular    # its own install
-npm run build:angular
-npm run test:angular       # end-to-end tests of its NgModule example
-npm run check:package:angular
-
-# The example apps (after build and build:angular)
-npm run pack:examples      # pack both packages as the apps install them
-npm run install:examples
-npm run build:examples
-npm run test:examples
-npm run start:example:react   # a dev server; or :vanilla-ts, :angular
-
-# Maintenance
-npm run bump:parser        # update the parser version the editor loads by default to the latest 7.x
+npm ci                     # install
+npm run build              # the core → packages/bitmark-editor/dist
+npm run install:angular    # the Angular project's own install
+npm run build:angular      # the Angular library → packages/bitmark-editor-angular/dist
 ```
 
-## Releasing
 
-Both packages release together, from a `v<version>` tag, by npm trusted
-publishing. See [RELEASING.md](RELEASING.md).
+## Contributing
+
+This repository is generated at each release, so pull requests can't be merged here. Please
+[open an issue](../../issues/new/choose) instead; see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 

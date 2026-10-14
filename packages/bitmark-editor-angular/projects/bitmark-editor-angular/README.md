@@ -98,11 +98,69 @@ export class App {
 
 `monaco.ts` is your Monaco. Its `loadMonaco()` sets up Monaco's workers and
 attaches Monaco's stylesheet, which Angular's builder doesn't do for code
-loaded on first use. Copy it from the example app:
-[`monaco.ts`](https://github.com/getMoreBrain/bitmark-editor/blob/main/examples/angular/src/app/monaco.ts),
-its [workers](https://github.com/getMoreBrain/bitmark-editor/tree/main/examples/angular/src/app/workers),
-and the `monaco` stylesheet entry in its
-[`angular.json`](https://github.com/getMoreBrain/bitmark-editor/blob/main/examples/angular/angular.json).
+loaded on first use. From the example app:
+
+```ts
+// monaco.ts
+// The host's Monaco, loaded on first use (see app.config.ts).
+//
+// Styles: Angular's builder doesn't attach the CSS that Monaco's lazily
+// loaded code imports, so Monaco's prebuilt stylesheet is built as
+// `monaco.css` (angular.json, `inject: false`) and attached here, before the
+// first editor. That keeps it out of the initial bundle.
+//
+// Workers: Angular's builder bundles each `new Worker(new URL(…), { type:
+// 'module' })`. Give each language you include its own worker: the full
+// `monaco-editor` import includes HTML, whose requests fail on the generic
+// editor worker.
+import * as monaco from 'monaco-editor';
+
+self.MonacoEnvironment = {
+  getWorker: (_id: string, label: string) => {
+    if (label === 'json') return new Worker(new URL('./workers/json.worker', import.meta.url), { type: 'module' });
+    if (label === 'html') return new Worker(new URL('./workers/html.worker', import.meta.url), { type: 'module' });
+    return new Worker(new URL('./workers/editor.worker', import.meta.url), { type: 'module' });
+  },
+};
+
+let styles: Promise<void> | undefined;
+
+/** Monaco, once its stylesheet has loaded. */
+export const loadMonaco = async (): Promise<typeof monaco> => {
+  styles ??= new Promise((resolve, reject) => {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'monaco.css';
+    link.onload = () => resolve();
+    link.onerror = () => reject(new Error('monaco.css failed to load'));
+    document.head.append(link);
+  });
+  await styles;
+  return monaco;
+};
+```
+
+Each worker is a one-line file next to it:
+
+```ts
+// workers/editor.worker.ts
+import 'monaco-editor/editor/editor.worker';
+// workers/json.worker.ts
+import 'monaco-editor/language/json/json.worker';
+// workers/html.worker.ts
+import 'monaco-editor/language/html/html.worker';
+```
+
+And Monaco's stylesheet is built as `monaco.css`, not injected, in
+`angular.json` (`architect.build.options.styles`):
+
+```json
+{
+  "input": "node_modules/monaco-editor/min/vs/editor/editor.main.css",
+  "bundleName": "monaco",
+  "inject": false
+}
+```
 
 ### Built-in Monaco
 
@@ -189,13 +247,6 @@ in the core package.
 `bm-tabs`: `[(active)]`, the index of the open tab, and `tabLabels`. Only
 the open tab's pane is mounted.
 
-## Example apps
-
-- [The Angular example app](https://github.com/getMoreBrain/bitmark-editor/tree/main/examples/angular):
-  a complete zoneless app, with the setup above.
-- [An NgModule example](https://github.com/getMoreBrain/bitmark-editor/tree/main/packages/bitmark-editor-angular/projects/example):
-  zone change detection, Monaco 0.46 loaded as AMD (`window.monaco`), and
-  the app's own parser.
 
 ## License
 

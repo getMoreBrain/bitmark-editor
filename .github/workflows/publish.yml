@@ -1,0 +1,81 @@
+# Publishes a release of @gmb/bitmark-editor and @gmb/bitmark-editor-angular to npm when its tag
+# is pushed, then creates the GitHub release. Release commits and tags are created by the export
+# bot; the release notes are the tag's commit message. Both packages share the tag's version; a
+# prerelease (v0.2.0-rc.1) goes to the `next` dist-tag, anything else to `latest`.
+
+name: Publish
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: write
+  id-token: write # npm trusted publishing and provenance
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - name: Version and dist-tag
+        id: version
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          core=$(node -p "require('./packages/bitmark-editor/package.json').version")
+          angular=$(node -p "require('./packages/bitmark-editor-angular/projects/bitmark-editor-angular/package.json').version")
+          if [ "$core" != "$version" ] || [ "$angular" != "$version" ]; then
+            echo "::error::$GITHUB_REF_NAME does not match the package versions ($core, $angular)"
+            exit 1
+          fi
+          case "$version" in *-*) tag=next ;; *) tag=latest ;; esac
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "dist-tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Build
+        run: |
+          npm ci
+          npm run build
+          npm run install:angular
+          npm run build:angular
+
+      # A version already on npm is skipped, so a release that failed half-way can be re-run.
+      - name: Publish
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          DIST_TAG: ${{ steps.version.outputs.dist-tag }}
+        run: |
+          publish() {
+            if npm view "$1@$VERSION" version >/dev/null 2>&1; then
+              echo "$1@$VERSION is already on npm: skipped"
+            else
+              (cd "$2" && npm publish --provenance --access public --tag "$DIST_TAG")
+            fi
+          }
+          publish @gmb/bitmark-editor packages/bitmark-editor
+          publish @gmb/bitmark-editor-angular packages/bitmark-editor-angular/dist/bitmark-editor-angular
+
+      - name: Release notes
+        run: git log -1 --format=%b "$GITHUB_REF_NAME" > release-notes.md
+
+      - name: GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DIST_TAG: ${{ steps.version.outputs.dist-tag }}
+        run: |
+          prerelease=""
+          if [ "$DIST_TAG" = "next" ]; then prerelease="--prerelease"; fi
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 || \
+            gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" \
+              --notes-file release-notes.md --verify-tag $prerelease

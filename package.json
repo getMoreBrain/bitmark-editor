@@ -15,6 +15,7 @@
     "build": "npm run build -w @gmb/bitmark-editor",
     "build:angular": "cd packages/bitmark-editor-angular && npx ng build bitmark-editor-angular",
     "typecheck": "npm run typecheck -w @gmb/bitmark-editor",
+    "test:export": "node --test scripts/export-public/*.test.mjs",
     "check:package": "npm pack --dry-run -w @gmb/bitmark-editor && publint packages/bitmark-editor && attw --pack packages/bitmark-editor --profile esm-only",
     "check:package:angular": "cd packages/bitmark-editor-angular/dist/bitmark-editor-angular && npm pack --dry-run && publint . && attw --pack . --profile esm-only",
     "install:angular": "npm ci --prefix packages/bitmark-editor-angular"
