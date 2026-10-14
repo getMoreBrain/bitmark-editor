@@ -1,0 +1,246 @@
+<!DOCTYPE html><html class="default" lang="en" data-base="./"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>@gmb/bitmark-editor</title><meta name="description" content="Documentation for @gmb/bitmark-editor"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script defer src="assets/main.js"></script><script async src="assets/icons.js" id="tsd-icons-script"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container"><a href="index.html" class="title">@gmb/bitmark-editor</a>
+<div id="tsd-toolbar-links"></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
+<ul role="listbox" id="tsd-search-results"></ul>
+<div id="tsd-search-status" aria-live="polite" aria-atomic="true">
+<div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-menu"></use></svg></a></div></header>
+<div class="container container-main">
+<div class="col-content">
+<div class="tsd-page-title">
+<h1>@gmb/bitmark-editor</h1></div>
+<div class="tsd-panel tsd-typography">
+<p>A bitmark editor built on <a href="https://microsoft.github.io/monaco-editor/">Monaco</a>,
+with syntax highlighting, error checking, autocomplete and hover help, for
+any framework. Alongside it, scroll-linked editors show the bitmark converted
+to JSON, HTML, XML and Text. It uses its own built-in Monaco and bitmark
+parser, or the ones your app already has, injected.</p>
+<!-- docs-site-links: links into the docs site, hidden in comments until it is deployed (only the API reference is). To show them, remove the comment.
+**Documentation, guides and live demos: https://getmorebrain.github.io/bitmark-editor/**
+-->
+<h2 id="install" class="tsd-anchor-link">Install<a href="#install" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<pre><code class="sh"><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-2">install</span><span class="hl-1"> </span><span class="hl-2">@gmb/bitmark-editor</span><span class="hl-1"> </span><span class="hl-2">monaco-editor</span>
+</code><button type="button">Copy</button></pre>
+
+<p><code>monaco-editor</code> is only needed when you inject your own Monaco. For Angular,
+see <a href="https://www.npmjs.com/package/@gmb/bitmark-editor-angular"><code>@gmb/bitmark-editor-angular</code></a>.</p>
+<!-- docs-site-links
+[Which build?](https://getmorebrain.github.io/bitmark-editor/getting-started/)
+-->
+<h2 id="how-it-works" class="tsd-anchor-link">How it works<a href="#how-it-works" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<ul>
+<li>A <strong>session</strong> holds one bitmark document.</li>
+<li><strong>Panes</strong> are Monaco editors on a session: bitmark, JSON, HTML, XML, Text,
+Info and Mappings. Editing the bitmark, JSON, HTML or XML pane updates the
+others. A pane fills the element it is mounted in, so give that element a
+height.</li>
+<li>The <strong>parser</strong>, <a href="https://www.npmjs.com/package/@gmb/bitmark-parser"><code>@gmb/bitmark-parser</code></a>,
+does the language work: highlighting, errors, autocomplete, hover and the
+conversions.</li>
+</ul>
+<p>Monaco and the parser can each be built-in or injected:</p>
+<ul>
+<li><strong>Monaco.</strong> Apps with a bundler usually inject their own Monaco, set up
+with its workers as usual. Static pages use the built-in one, from
+<code>/bundled</code> (Monaco 0.57, its workers set up for you). An injected Monaco
+keeps its own, page-wide theme: set the session's <code>theme</code> to match it, or
+set <code>applyMonacoTheme</code> and the session sets Monaco's theme for you.</li>
+<li><strong>The parser.</strong> By default the editor loads it from jsDelivr, at a version
+pinned in this package. To inject your own, see
+<a href="#injecting-your-own-parser">Injecting your own parser</a>.</li>
+</ul>
+<h2 id="entry-points" class="tsd-anchor-link">Entry points<a href="#entry-points" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<table>
+<thead>
+<tr>
+<th>Entry</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@gmb/bitmark-editor</code></td>
+<td>The core: sessions, panes, the parser engine, themes, scroll linking. No Monaco inside.</td>
+</tr>
+<tr>
+<td><code>@gmb/bitmark-editor/react</code></td>
+<td>React components: <code>&lt;BitmarkSession&gt;</code>, <code>&lt;BitmarkPane&gt;</code>.</td>
+</tr>
+<tr>
+<td><code>@gmb/bitmark-editor/elements</code></td>
+<td>Custom elements (<code>&lt;bitmark-session&gt;</code>, <code>&lt;bitmark-pane&gt;</code>), defined on import. No Monaco inside.</td>
+</tr>
+<tr>
+<td><code>@gmb/bitmark-editor/bundled</code></td>
+<td>The custom elements with the built-in Monaco. CDN-ready.</td>
+</tr>
+<tr>
+<td><code>@gmb/bitmark-editor/worker</code></td>
+<td>A worker script that runs the parser off the main thread, for large documents.</td>
+</tr>
+<tr>
+<td><code>@gmb/bitmark-editor-angular</code></td>
+<td>Angular components (a separate package).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="quick-start-react" class="tsd-anchor-link">Quick start: React<a href="#quick-start-react" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>A session with a bitmark pane and a JSON pane, on your app's Monaco:</p>
+<pre><code class="tsx"><span class="hl-3">// App.tsx</span><br/><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-5">BitmarkPane</span><span class="hl-1">, </span><span class="hl-5">BitmarkSession</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;@gmb/bitmark-editor/react&#39;</span><span class="hl-1">;</span><br/><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-5">useState</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;react&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-5">monaco</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;./monaco&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">export</span><span class="hl-1"> </span><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-0">App</span><span class="hl-1"> = () </span><span class="hl-6">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-6">const</span><span class="hl-1"> [</span><span class="hl-7">doc</span><span class="hl-1">, </span><span class="hl-7">setDoc</span><span class="hl-1">] = </span><span class="hl-0">useState</span><span class="hl-1">(</span><span class="hl-2">&#39;[.article]</span><span class="hl-8">\n</span><span class="hl-2">Hello **World**!&#39;</span><span class="hl-1">);</span><br/><span class="hl-1">  </span><span class="hl-4">return</span><span class="hl-1"> (</span><br/><span class="hl-1">    </span><span class="hl-9">&lt;</span><span class="hl-10">BitmarkSession</span><span class="hl-1"> </span><span class="hl-11">monaco</span><span class="hl-1">=</span><span class="hl-6">{</span><span class="hl-5">monaco</span><span class="hl-6">}</span><span class="hl-1"> </span><span class="hl-11">theme</span><span class="hl-1">=</span><span class="hl-2">&quot;light&quot;</span><span class="hl-1"> </span><span class="hl-11">applyMonacoTheme</span><span class="hl-1"> </span><span class="hl-11">value</span><span class="hl-1">=</span><span class="hl-6">{</span><span class="hl-5">doc</span><span class="hl-6">}</span><span class="hl-1"> </span><span class="hl-11">onChange</span><span class="hl-1">=</span><span class="hl-6">{</span><span class="hl-12">(</span><span class="hl-5">e</span><span class="hl-12">) </span><span class="hl-6">=&gt;</span><span class="hl-12"> </span><span class="hl-0">setDoc</span><span class="hl-12">(</span><span class="hl-5">e</span><span class="hl-12">.</span><span class="hl-5">bitmark</span><span class="hl-12">)</span><span class="hl-6">}</span><span class="hl-9">&gt;</span><br/><span class="hl-1">      </span><span class="hl-9">&lt;</span><span class="hl-10">BitmarkPane</span><span class="hl-1"> </span><span class="hl-11">type</span><span class="hl-1">=</span><span class="hl-2">&quot;bitmark&quot;</span><span class="hl-1"> </span><span class="hl-11">style</span><span class="hl-1">=</span><span class="hl-6">{</span><span class="hl-12">{ </span><span class="hl-5">height:</span><span class="hl-12"> </span><span class="hl-13">300</span><span class="hl-12"> }</span><span class="hl-6">}</span><span class="hl-1"> </span><span class="hl-9">/&gt;</span><br/><span class="hl-1">      </span><span class="hl-9">&lt;</span><span class="hl-10">BitmarkPane</span><span class="hl-1"> </span><span class="hl-11">type</span><span class="hl-1">=</span><span class="hl-2">&quot;json&quot;</span><span class="hl-1"> </span><span class="hl-11">style</span><span class="hl-1">=</span><span class="hl-6">{</span><span class="hl-12">{ </span><span class="hl-5">height:</span><span class="hl-12"> </span><span class="hl-13">300</span><span class="hl-12"> }</span><span class="hl-6">}</span><span class="hl-1"> </span><span class="hl-9">/&gt;</span><br/><span class="hl-1">    </span><span class="hl-9">&lt;/</span><span class="hl-10">BitmarkSession</span><span class="hl-9">&gt;</span><br/><span class="hl-1">  );</span><br/><span class="hl-1">};</span>
+</code><button type="button">Copy</button></pre>
+
+<p><code>monaco.ts</code> is your Monaco, with a worker for each language it includes
+(shown for Vite):</p>
+<pre><code class="ts"><span class="hl-3">// monaco.ts</span><br/><span class="hl-4">import</span><span class="hl-1"> </span><span class="hl-6">*</span><span class="hl-1"> </span><span class="hl-4">as</span><span class="hl-1"> </span><span class="hl-5">monaco</span><span class="hl-1"> </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;monaco-editor&#39;</span><span class="hl-1">;</span><br/><span class="hl-4">import</span><span class="hl-1"> </span><span class="hl-5">editorWorker</span><span class="hl-1"> </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;monaco-editor/editor/editor.worker?worker&#39;</span><span class="hl-1">;</span><br/><span class="hl-4">import</span><span class="hl-1"> </span><span class="hl-5">htmlWorker</span><span class="hl-1"> </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;monaco-editor/language/html/html.worker?worker&#39;</span><span class="hl-1">;</span><br/><span class="hl-4">import</span><span class="hl-1"> </span><span class="hl-5">jsonWorker</span><span class="hl-1"> </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;monaco-editor/language/json/json.worker?worker&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-5">self</span><span class="hl-1">.</span><span class="hl-5">MonacoEnvironment</span><span class="hl-1"> = {</span><br/><span class="hl-1">  </span><span class="hl-0">getWorker</span><span class="hl-5">:</span><span class="hl-1"> (</span><span class="hl-5">_id</span><span class="hl-1">, </span><span class="hl-5">label</span><span class="hl-1">) </span><span class="hl-6">=&gt;</span><br/><span class="hl-1">    </span><span class="hl-5">label</span><span class="hl-1"> === </span><span class="hl-2">&#39;json&#39;</span><span class="hl-1"> ? </span><span class="hl-6">new</span><span class="hl-1"> </span><span class="hl-0">jsonWorker</span><span class="hl-1">() : </span><span class="hl-5">label</span><span class="hl-1"> === </span><span class="hl-2">&#39;html&#39;</span><span class="hl-1"> ? </span><span class="hl-6">new</span><span class="hl-1"> </span><span class="hl-0">htmlWorker</span><span class="hl-1">() : </span><span class="hl-6">new</span><span class="hl-1"> </span><span class="hl-0">editorWorker</span><span class="hl-1">(),</span><br/><span class="hl-1">};</span><br/><span class="hl-4">export</span><span class="hl-1"> { </span><span class="hl-5">monaco</span><span class="hl-1"> };</span>
+</code><button type="button">Copy</button></pre>
+
+<h3 id="built-in-monaco" class="tsd-anchor-link">Built-in Monaco<a href="#built-in-monaco" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>Leave out <code>monaco-editor</code>. Copy this package's <code>dist/bundled</code> folder into the
+app's <code>public/bitmark-editor/</code> (for example in a <code>postinstall</code> script), and
+make <code>monaco.ts</code>:</p>
+<pre><code class="ts"><span class="hl-3">// monaco.ts: the built-in Monaco, loaded from beside its files.</span><br/><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-5">loadBundledMonaco</span><span class="hl-1">, </span><span class="hl-5">setBitmarkAssetBase</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;@gmb/bitmark-editor/bundled&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-0">setBitmarkAssetBase</span><span class="hl-1">(</span><span class="hl-2">&#39;/bitmark-editor/&#39;</span><span class="hl-1">);</span><br/><span class="hl-4">export</span><span class="hl-1"> </span><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">monaco</span><span class="hl-1"> = </span><span class="hl-4">await</span><span class="hl-1"> </span><span class="hl-0">loadBundledMonaco</span><span class="hl-1">();</span>
+</code><button type="button">Copy</button></pre>
+
+<h3 id="your-own-parser" class="tsd-anchor-link">Your own parser<a href="#your-own-parser" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>Pass it to the session as <code>engine</code> (see <a href="#injecting-your-own-parser">Injecting your own parser</a>):</p>
+<pre><code class="tsx"><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">engine</span><span class="hl-1"> = { </span><span class="hl-5">module:</span><span class="hl-1"> </span><span class="hl-5">parser</span><span class="hl-1"> </span><span class="hl-4">as</span><span class="hl-1"> </span><span class="hl-10">unknown</span><span class="hl-1"> </span><span class="hl-4">as</span><span class="hl-1"> </span><span class="hl-10">RawParserModule</span><span class="hl-1">, </span><span class="hl-5">feature:</span><span class="hl-1"> </span><span class="hl-2">&#39;full&#39;</span><span class="hl-1"> </span><span class="hl-4">as</span><span class="hl-1"> </span><span class="hl-6">const</span><span class="hl-1"> };</span><br/><br/><span class="hl-9">&lt;</span><span class="hl-10">BitmarkSession</span><span class="hl-1"> </span><span class="hl-11">monaco</span><span class="hl-1">=</span><span class="hl-6">{</span><span class="hl-5">monaco</span><span class="hl-6">}</span><span class="hl-1"> </span><span class="hl-11">engine</span><span class="hl-1">=</span><span class="hl-6">{</span><span class="hl-5">engine</span><span class="hl-6">}</span><span class="hl-1"> </span><span class="hl-3">/* … */</span><span class="hl-9">&gt;</span>
+</code><button type="button">Copy</button></pre>
+
+<!-- docs-site-links
+More: [React](https://getmorebrain.github.io/bitmark-editor/guides/react/).
+-->
+<h2 id="quick-start-plain-typescript" class="tsd-anchor-link">Quick start: plain TypeScript<a href="#quick-start-plain-typescript" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>A session with a bitmark pane and a JSON pane, mounted in two elements of the
+page, on your app's Monaco:</p>
+<pre><code class="html"><span class="hl-9">&lt;</span><span class="hl-14">div</span><span class="hl-1"> </span><span class="hl-11">id</span><span class="hl-1">=</span><span class="hl-15">&quot;bitmark&quot;</span><span class="hl-1"> </span><span class="hl-11">style</span><span class="hl-1">=</span><span class="hl-15">&quot;height: 300px&quot;</span><span class="hl-9">&gt;&lt;/</span><span class="hl-14">div</span><span class="hl-9">&gt;</span><br/><span class="hl-9">&lt;</span><span class="hl-14">div</span><span class="hl-1"> </span><span class="hl-11">id</span><span class="hl-1">=</span><span class="hl-15">&quot;json&quot;</span><span class="hl-1"> </span><span class="hl-11">style</span><span class="hl-1">=</span><span class="hl-15">&quot;height: 300px&quot;</span><span class="hl-9">&gt;&lt;/</span><span class="hl-14">div</span><span class="hl-9">&gt;</span>
+</code><button type="button">Copy</button></pre>
+
+<pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-5">createBitmarkPane</span><span class="hl-1">, </span><span class="hl-5">createBitmarkSession</span><span class="hl-1">, </span><span class="hl-5">createJsonPane</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;@gmb/bitmark-editor&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-5">monaco</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;./monaco&#39;</span><span class="hl-1">; </span><span class="hl-3">// as for React</span><br/><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">session</span><span class="hl-1"> = </span><span class="hl-0">createBitmarkSession</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-5">monaco</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-5">value:</span><span class="hl-1"> </span><span class="hl-2">&#39;[.article]</span><span class="hl-8">\n</span><span class="hl-2">Hello **World**!&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-5">theme:</span><span class="hl-1"> </span><span class="hl-2">&#39;light&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-5">applyMonacoTheme:</span><span class="hl-1"> </span><span class="hl-6">true</span><span class="hl-1">,</span><br/><span class="hl-1">});</span><br/><span class="hl-0">createBitmarkPane</span><span class="hl-1">(</span><span class="hl-5">document</span><span class="hl-1">.</span><span class="hl-0">getElementById</span><span class="hl-1">(</span><span class="hl-2">&#39;bitmark&#39;</span><span class="hl-1">)!, </span><span class="hl-5">session</span><span class="hl-1">);</span><br/><span class="hl-0">createJsonPane</span><span class="hl-1">(</span><span class="hl-5">document</span><span class="hl-1">.</span><span class="hl-0">getElementById</span><span class="hl-1">(</span><span class="hl-2">&#39;json&#39;</span><span class="hl-1">)!, </span><span class="hl-5">session</span><span class="hl-1">);</span><br/><span class="hl-5">session</span><span class="hl-1">.</span><span class="hl-0">on</span><span class="hl-1">(</span><span class="hl-2">&#39;change&#39;</span><span class="hl-1">, ({ </span><span class="hl-5">bitmark</span><span class="hl-1"> }) </span><span class="hl-6">=&gt;</span><span class="hl-1"> </span><span class="hl-5">console</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">(</span><span class="hl-5">bitmark</span><span class="hl-1">));</span>
+</code><button type="button">Copy</button></pre>
+
+<h3 id="built-in-monaco-1" class="tsd-anchor-link">Built-in Monaco<a href="#built-in-monaco-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>Use the built-in <code>monaco.ts</code> from <a href="#built-in-monaco">React</a>.</p>
+<h3 id="your-own-parser-1" class="tsd-anchor-link">Your own parser<a href="#your-own-parser-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>Pass it to the session as <code>engine</code> (see <a href="#injecting-your-own-parser">Injecting your own parser</a>):</p>
+<pre><code class="ts"><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">session</span><span class="hl-1"> = </span><span class="hl-0">createBitmarkSession</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-5">monaco</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-5">engine:</span><span class="hl-1"> { </span><span class="hl-5">module:</span><span class="hl-1"> </span><span class="hl-5">parser</span><span class="hl-1"> </span><span class="hl-4">as</span><span class="hl-1"> </span><span class="hl-10">unknown</span><span class="hl-1"> </span><span class="hl-4">as</span><span class="hl-1"> </span><span class="hl-10">RawParserModule</span><span class="hl-1">, </span><span class="hl-5">feature:</span><span class="hl-1"> </span><span class="hl-2">&#39;full&#39;</span><span class="hl-1"> },</span><br/><span class="hl-1">  </span><span class="hl-3">// …</span><br/><span class="hl-1">});</span>
+</code><button type="button">Copy</button></pre>
+
+<!-- docs-site-links
+[More](https://getmorebrain.github.io/bitmark-editor/guides/host-with-monaco/),
+including Monaco's workers.
+-->
+<h2 id="quick-start-a-static-site-no-bundler" class="tsd-anchor-link">Quick start: a static site (no bundler)<a href="#quick-start-a-static-site-no-bundler" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>A session with a bitmark pane and a JSON pane. One script tag brings the
+elements and the built-in Monaco:</p>
+<pre><code class="html"><span class="hl-9">&lt;</span><span class="hl-14">bitmark-session</span><span class="hl-1"> </span><span class="hl-11">lazy</span><span class="hl-1">=</span><span class="hl-15">&quot;idle&quot;</span><span class="hl-1"> </span><span class="hl-11">theme</span><span class="hl-1">=</span><span class="hl-15">&quot;auto&quot;</span><span class="hl-1"> </span><span class="hl-11">value</span><span class="hl-1">=</span><span class="hl-15">&quot;[.article]</span><span class="hl-6">&amp;#10;</span><span class="hl-15">Hello&quot;</span><span class="hl-9">&gt;</span><br/><span class="hl-1">  </span><span class="hl-9">&lt;</span><span class="hl-14">pre</span><span class="hl-1"> </span><span class="hl-11">data-bitmark-static</span><span class="hl-9">&gt;</span><span class="hl-1">[.article]</span><span class="hl-6">&amp;#10;</span><span class="hl-1">Hello</span><span class="hl-9">&lt;/</span><span class="hl-14">pre</span><span class="hl-9">&gt;</span><br/><span class="hl-1">  </span><span class="hl-9">&lt;</span><span class="hl-14">bitmark-pane</span><span class="hl-1"> </span><span class="hl-11">type</span><span class="hl-1">=</span><span class="hl-15">&quot;bitmark&quot;</span><span class="hl-1"> </span><span class="hl-11">style</span><span class="hl-1">=</span><span class="hl-15">&quot;height: 300px&quot;</span><span class="hl-9">&gt;&lt;/</span><span class="hl-14">bitmark-pane</span><span class="hl-9">&gt;</span><br/><span class="hl-1">  </span><span class="hl-9">&lt;</span><span class="hl-14">bitmark-pane</span><span class="hl-1"> </span><span class="hl-11">type</span><span class="hl-1">=</span><span class="hl-15">&quot;json&quot;</span><span class="hl-1"> </span><span class="hl-11">style</span><span class="hl-1">=</span><span class="hl-15">&quot;height: 300px&quot;</span><span class="hl-9">&gt;&lt;/</span><span class="hl-14">bitmark-pane</span><span class="hl-9">&gt;</span><br/><span class="hl-9">&lt;/</span><span class="hl-14">bitmark-session</span><span class="hl-9">&gt;</span><br/><span class="hl-9">&lt;</span><span class="hl-14">script</span><span class="hl-12"> </span><span class="hl-11">type</span><span class="hl-12">=</span><span class="hl-15">&quot;module&quot;</span><span class="hl-12"> </span><span class="hl-11">src</span><span class="hl-12">=</span><span class="hl-15">&quot;https://cdn.jsdelivr.net/npm/@gmb/bitmark-editor@0.2.0/dist/bundled/bundled.js&quot;</span><span class="hl-9">&gt;&lt;/</span><span class="hl-14">script</span><span class="hl-9">&gt;</span>
+</code><button type="button">Copy</button></pre>
+
+<p><code>lazy=&quot;idle&quot;</code> loads Monaco and the parser once the page has rendered. Until
+then, the page shows the <code>data-bitmark-static</code> content.</p>
+<h3 id="your-own-monaco" class="tsd-anchor-link">Your own Monaco<a href="#your-own-monaco" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>Load your Monaco (here AMD, as <code>window.monaco</code>), set it on the session, then
+load <code>/elements</code>, which has no Monaco inside:</p>
+<pre><code class="html"><span class="hl-9">&lt;</span><span class="hl-14">bitmark-session</span><span class="hl-1"> </span><span class="hl-11">theme</span><span class="hl-1">=</span><span class="hl-15">&quot;light&quot;</span><span class="hl-1"> </span><span class="hl-11">apply-monaco-theme</span><span class="hl-1"> </span><span class="hl-11">value</span><span class="hl-1">=</span><span class="hl-15">&quot;[.article]</span><span class="hl-6">&amp;#10;</span><span class="hl-15">Hello&quot;</span><span class="hl-9">&gt;</span><br/><span class="hl-1">  </span><span class="hl-3">&lt;!-- the panes, as above --&gt;</span><br/><span class="hl-9">&lt;/</span><span class="hl-14">bitmark-session</span><span class="hl-9">&gt;</span><br/><span class="hl-9">&lt;</span><span class="hl-14">script</span><span class="hl-12"> </span><span class="hl-11">src</span><span class="hl-12">=</span><span class="hl-15">&quot;/monaco/min/vs/loader.js&quot;</span><span class="hl-9">&gt;&lt;/</span><span class="hl-14">script</span><span class="hl-9">&gt;</span><br/><span class="hl-9">&lt;</span><span class="hl-14">script</span><span class="hl-12"> </span><span class="hl-11">type</span><span class="hl-12">=</span><span class="hl-15">&quot;module&quot;</span><span class="hl-9">&gt;</span><br/><span class="hl-12">  </span><span class="hl-5">require</span><span class="hl-12">.</span><span class="hl-0">config</span><span class="hl-12">({ </span><span class="hl-5">paths:</span><span class="hl-12"> { </span><span class="hl-5">vs:</span><span class="hl-12"> </span><span class="hl-2">&#39;/monaco/min/vs&#39;</span><span class="hl-12"> } });</span><br/><span class="hl-12">  </span><span class="hl-6">const</span><span class="hl-12"> </span><span class="hl-7">monaco</span><span class="hl-12"> </span><span class="hl-1">=</span><span class="hl-12"> </span><span class="hl-4">await</span><span class="hl-12"> </span><span class="hl-6">new</span><span class="hl-12"> </span><span class="hl-10">Promise</span><span class="hl-12">((</span><span class="hl-5">resolve</span><span class="hl-12">) </span><span class="hl-6">=&gt;</span><span class="hl-12"> </span><span class="hl-0">require</span><span class="hl-12">([</span><span class="hl-2">&#39;vs/editor/editor.main&#39;</span><span class="hl-12">], () </span><span class="hl-6">=&gt;</span><span class="hl-12"> </span><span class="hl-0">resolve</span><span class="hl-12">(</span><span class="hl-5">window</span><span class="hl-12">.</span><span class="hl-5">monaco</span><span class="hl-12">)));</span><br/><span class="hl-12">  </span><span class="hl-5">document</span><span class="hl-12">.</span><span class="hl-0">querySelector</span><span class="hl-12">(</span><span class="hl-2">&#39;bitmark-session&#39;</span><span class="hl-12">).</span><span class="hl-5">monaco</span><span class="hl-12"> </span><span class="hl-1">=</span><span class="hl-12"> </span><span class="hl-5">monaco</span><span class="hl-12">;</span><br/><span class="hl-12">  </span><span class="hl-4">await</span><span class="hl-12"> </span><span class="hl-6">import</span><span class="hl-12">(</span><span class="hl-2">&#39;https://cdn.jsdelivr.net/npm/@gmb/bitmark-editor@0.2.0/dist/esm/elements/index.js&#39;</span><span class="hl-12">);</span><br/><span class="hl-9">&lt;/</span><span class="hl-14">script</span><span class="hl-9">&gt;</span>
+</code><button type="button">Copy</button></pre>
+
+<h3 id="your-own-parser-2" class="tsd-anchor-link">Your own parser<a href="#your-own-parser-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>Set it on the session as <code>engine</code> (see <a href="#injecting-your-own-parser">Injecting your own parser</a>),
+then load the elements (<code>/bundled</code> here, or <code>/elements</code> with your Monaco):</p>
+<pre><code class="html"><span class="hl-9">&lt;</span><span class="hl-14">script</span><span class="hl-12"> </span><span class="hl-11">type</span><span class="hl-12">=</span><span class="hl-15">&quot;module&quot;</span><span class="hl-9">&gt;</span><br/><span class="hl-12">  </span><span class="hl-6">const</span><span class="hl-12"> </span><span class="hl-7">parser</span><span class="hl-12"> </span><span class="hl-1">=</span><span class="hl-12"> </span><span class="hl-4">await</span><span class="hl-12"> </span><span class="hl-6">import</span><span class="hl-12">(</span><span class="hl-2">&#39;https://cdn.jsdelivr.net/npm/@gmb/bitmark-parser@7.9.0/dist/browser/bitmark-parser.min.js&#39;</span><span class="hl-12">);</span><br/><span class="hl-12">  </span><span class="hl-4">await</span><span class="hl-12"> </span><span class="hl-5">parser</span><span class="hl-12">.</span><span class="hl-0">init</span><span class="hl-12">({ </span><span class="hl-5">feature:</span><span class="hl-12"> </span><span class="hl-2">&#39;full&#39;</span><span class="hl-12"> });</span><br/><span class="hl-12">  </span><span class="hl-5">document</span><span class="hl-12">.</span><span class="hl-0">querySelector</span><span class="hl-12">(</span><span class="hl-2">&#39;bitmark-session&#39;</span><span class="hl-12">).</span><span class="hl-5">engine</span><span class="hl-12"> </span><span class="hl-1">=</span><span class="hl-12"> { </span><span class="hl-5">module:</span><span class="hl-12"> </span><span class="hl-5">parser</span><span class="hl-12">, </span><span class="hl-5">feature:</span><span class="hl-12"> </span><span class="hl-2">&#39;full&#39;</span><span class="hl-12"> };</span><br/><span class="hl-12">  </span><span class="hl-4">await</span><span class="hl-12"> </span><span class="hl-6">import</span><span class="hl-12">(</span><span class="hl-2">&#39;https://cdn.jsdelivr.net/npm/@gmb/bitmark-editor@0.2.0/dist/bundled/bundled.js&#39;</span><span class="hl-12">);</span><br/><span class="hl-9">&lt;/</span><span class="hl-14">script</span><span class="hl-9">&gt;</span>
+</code><button type="button">Copy</button></pre>
+
+<!-- docs-site-links
+[More](https://getmorebrain.github.io/bitmark-editor/guides/static-site/):
+loading, self-hosting, caching.
+-->
+<h2 id="injecting-your-own-parser" class="tsd-anchor-link">Injecting your own parser<a href="#injecting-your-own-parser" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>To use your app's own parser instead of the one the editor loads:</p>
+<ol>
+<li>
+<p><code>npm install @gmb/bitmark-parser</code> (7.7 or later).</p>
+</li>
+<li>
+<p>Initialise it before the first session starts:</p>
+<pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> </span><span class="hl-4">type</span><span class="hl-1"> { </span><span class="hl-5">RawParserModule</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;@gmb/bitmark-editor&#39;</span><span class="hl-1">;</span><br/><span class="hl-4">import</span><span class="hl-1"> </span><span class="hl-6">*</span><span class="hl-1"> </span><span class="hl-4">as</span><span class="hl-1"> </span><span class="hl-5">parser</span><span class="hl-1"> </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;@gmb/bitmark-parser/browser&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-4">await</span><span class="hl-1"> </span><span class="hl-5">parser</span><span class="hl-1">.</span><span class="hl-0">init</span><span class="hl-1">({ </span><span class="hl-5">feature:</span><span class="hl-1"> </span><span class="hl-2">&#39;full&#39;</span><span class="hl-1"> }); </span><span class="hl-3">// however your app initialises it</span>
+</code><button type="button">Copy</button></pre>
+
+</li>
+<li>
+<p>Pass it to the session as <code>engine: { module: parser, feature: 'full' }</code>,
+as each quick start shows.</p>
+</li>
+</ol>
+<p>The editor never calls <code>init</code> on a parser you pass in, so <code>feature</code> must name
+the variant you initialised. The HTML, XML, Text, Info and Mappings panes
+need <code>full</code>. With <code>bitmark-json</code>, only the bitmark and JSON panes work.</p>
+<p>In TypeScript, cast the module (<code>parser as unknown as RawParserModule</code>): the
+parser types <code>init</code> as returning <code>Promise&lt;unknown&gt;</code>, where the editor expects
+<code>Promise&lt;void&gt;</code>.</p>
+<!-- docs-site-links
+More: [the parser](https://getmorebrain.github.io/bitmark-editor/guides/parser/).
+-->
+<h2 id="more" class="tsd-anchor-link">More<a href="#more" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p><a href="https://getmorebrain.github.io/bitmark-editor/">API reference</a> ·
+<a href="https://github.com/getMoreBrain/bitmark-editor">repository</a> (development and releases)</p>
+<!-- docs-site-links
+- Guides: [static site](https://getmorebrain.github.io/bitmark-editor/guides/static-site/),
+  [a host with Monaco](https://getmorebrain.github.io/bitmark-editor/guides/host-with-monaco/),
+  [React](https://getmorebrain.github.io/bitmark-editor/guides/react/),
+  [Angular](https://getmorebrain.github.io/bitmark-editor/guides/angular/),
+  [custom elements](https://getmorebrain.github.io/bitmark-editor/guides/elements/),
+  [panes](https://getmorebrain.github.io/bitmark-editor/guides/panes/),
+  [the session](https://getmorebrain.github.io/bitmark-editor/guides/session/),
+  [the parser](https://getmorebrain.github.io/bitmark-editor/guides/parser/),
+  [theming](https://getmorebrain.github.io/bitmark-editor/guides/theming/),
+  [Content Security Policy](https://getmorebrain.github.io/bitmark-editor/guides/csp/)
+- [Live demos](https://getmorebrain.github.io/bitmark-editor/demos/try-it/) and
+  [example apps](https://getmorebrain.github.io/bitmark-editor/demos/example-apps/)
+  (plain TypeScript, React, Angular)
+- [Tested versions](https://getmorebrain.github.io/bitmark-editor/reference/tested-versions/),
+  [sizes](https://getmorebrain.github.io/bitmark-editor/reference/sizes/)
+-->
+<h2 id="license" class="tsd-anchor-link">License<a href="#license" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>ISC</p>
+</div></div>
+<div class="col-sidebar">
+<div class="page-menu">
+<div class="tsd-navigation settings">
+<details class="tsd-accordion"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg>
+<h3>Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div>
+<div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg>
+<h3>On This Page</h3></summary>
+<div class="tsd-accordion-details"><a href="#gmbbitmark-editor"><span>@gmb/bitmark-<wbr/>editor</span></a>
+<ul>
+<li><a href="#install"><span>Install</span></a></li>
+<li><a href="#how-it-works"><span>How it works</span></a></li>
+<li><a href="#entry-points"><span>Entry points</span></a></li>
+<li><a href="#quick-start-react"><span>Quick start: <wbr/>React</span></a></li>
+<li>
+<ul>
+<li><a href="#built-in-monaco"><span>Built-<wbr/>in <wbr/>Monaco</span></a></li>
+<li><a href="#your-own-parser"><span>Your own parser</span></a></li></ul></li>
+<li><a href="#quick-start-plain-typescript"><span>Quick start: plain <wbr/>Type<wbr/>Script</span></a></li>
+<li>
+<ul>
+<li><a href="#built-in-monaco-1"><span>Built-<wbr/>in <wbr/>Monaco</span></a></li>
+<li><a href="#your-own-parser-1"><span>Your own parser</span></a></li></ul></li>
+<li><a href="#quick-start-a-static-site-no-bundler"><span>Quick start: a static site (no bundler)</span></a></li>
+<li>
+<ul>
+<li><a href="#your-own-monaco"><span>Your own <wbr/>Monaco</span></a></li>
+<li><a href="#your-own-parser-2"><span>Your own parser</span></a></li></ul></li>
+<li><a href="#injecting-your-own-parser"><span>Injecting your own parser</span></a></li>
+<li><a href="#more"><span>More</span></a></li>
+<li><a href="#license"><span>License</span></a></li></ul></div></details></div>
+<div class="site-menu">
+<nav class="tsd-navigation"><a href="modules.html">@gmb/bitmark-editor</a>
+<ul class="tsd-small-nested-navigation" id="tsd-nav-container">
+<li>Loading...</li></ul></nav></div></div></div><footer>
+<p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer>
+<div class="overlay"></div></body></html>

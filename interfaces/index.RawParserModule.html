@@ -1,0 +1,489 @@
+<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>RawParserModule | @gmb/bitmark-editor</title><meta name="description" content="Documentation for @gmb/bitmark-editor"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container"><a href="../index.html" class="title">@gmb/bitmark-editor</a>
+<div id="tsd-toolbar-links"></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
+<ul role="listbox" id="tsd-search-results"></ul>
+<div id="tsd-search-status" aria-live="polite" aria-atomic="true">
+<div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-menu"></use></svg></a></div></header>
+<div class="container container-main">
+<div class="col-content">
+<div class="tsd-page-title">
+<ul class="tsd-breadcrumb" aria-label="Breadcrumb">
+<li><a href="../modules/index.html">index</a></li>
+<li><a href="" aria-current="page">RawParserModule</a></li></ul>
+<h1>Interface RawParserModule</h1></div>
+<section class="tsd-panel tsd-comment">
+<div class="tsd-comment tsd-typography"><p>A raw <code>@gmb/bitmark-parser</code> module (or a compatible object). The editor
+services and bit positions are optional: an older parser without them
+leaves those features off, never an error.</p>
+</div></section>
+<div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">RawParserModule</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#bitmarktoobjects">bitmarkToObjects</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">ParseOptions</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">BitEntry</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#complete">complete</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">(</span><br/>        <span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>        <span class="tsd-kind-parameter">position</span><span class="tsd-signature-symbol">:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">Position</a><span class="tsd-signature-symbol">,</span><br/>        <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">CompleteOptions</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">CompletionList</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#convert">convert</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">ConvertOptions$1</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#convertwithdetails">convertWithDetails</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">(</span><br/>        <span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>        <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">ConvertWithDetailsOptions</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">ConvertResult</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#diagnostics">diagnostics</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">DiagnosticsOptions</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">Diagnostics</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#hover">hover</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">(</span><br/>        <span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>        <span class="tsd-kind-parameter">position</span><span class="tsd-signature-symbol">:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">Position</a><span class="tsd-signature-symbol">,</span><br/>        <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">HoverOptions</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">Hover</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#info">info</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">InfoOptions$1</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#init">init</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">InitOptions</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#resolve">resolve</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">(</span><br/>        <span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>        <span class="tsd-kind-parameter">position</span><span class="tsd-signature-symbol">:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">Position</a><span class="tsd-signature-symbol">,</span><br/>        <span class="tsd-kind-parameter">item</span><span class="tsd-signature-symbol">:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">CompletionItem</a><span class="tsd-signature-symbol">,</span><br/>        <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">CompleteOptions</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">CompletionItem</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#semantictokens">semanticTokens</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><br/>        <span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>        <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">SemanticTokensOptions</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">SemanticTokens</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#splitbits">splitBits</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">SplitBitsOptions</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">BitSlice</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#version">version</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/getMoreBrain/bitmark-editor/blob/v0.2.0/packages/bitmark-editor/src/engine/types.ts#L25">packages/bitmark-editor/src/engine/types.ts:25</a></li></ul></aside>
+<section class="tsd-panel-group tsd-index-group">
+<section class="tsd-panel tsd-index-panel">
+<details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h5 class="tsd-index-heading uppercase">Index</h5></summary>
+<div class="tsd-accordion-details">
+<section class="tsd-index-section">
+<h3 class="tsd-index-heading tsd-anchor-link" id="properties">Properties<a href="#properties" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-index-list"><a href="#bitmarktoobjects" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>bitmark<wbr/>To<wbr/>Objects</span></a>
+<a href="#complete" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>complete?</span></a>
+<a href="#convert" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>convert</span></a>
+<a href="#convertwithdetails" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>convert<wbr/>With<wbr/>Details?</span></a>
+<a href="#diagnostics" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>diagnostics?</span></a>
+<a href="#hover" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>hover?</span></a>
+<a href="#info" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>info?</span></a>
+<a href="#init" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>init?</span></a>
+<a href="#resolve" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>resolve?</span></a>
+<a href="#semantictokens" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>semantic<wbr/>Tokens</span></a>
+<a href="#splitbits" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>split<wbr/>Bits?</span></a>
+<a href="#version" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>version</span></a>
+</div></section></div></details></section></section>
+<details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h2 class="tsd-anchor-link" id="properties-1">Properties<a href="#properties-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
+<section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="bitmarktoobjects"><span>bitmark<wbr/>To<wbr/>Objects</span><a href="#bitmarktoobjects" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">bitmarkToObjects</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">ParseOptions</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">BitEntry</a><span class="tsd-signature-symbol">[]</span></div>
+<div class="tsd-type-declaration">
+<h4>Type Declaration</h4>
+<ul class="tsd-parameters">
+<li class="tsd-parameter-signature">
+<ul class="tsd-signatures">
+<li class="tsd-signature"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">ParseOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">BitEntry</a><span class="tsd-signature-symbol">[]</span></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Parse bitmark into typed bit entries.</p>
+<p>The typed (object) counterpart of
+<code>convert(input, { inputFormat: &quot;bitmark&quot;, outputFormat: &quot;json&quot; })</code>:
+returns the entries as objects instead of a JSON string. <strong>Bitmark input
+only</strong> — the format is pinned, no auto-detection.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">input</span>: <span class="tsd-signature-type">string</span></span></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">ParseOptions</a></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">BitEntry</a><span class="tsd-signature-symbol">[]</span></h4>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example">Example<a href="#example" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">entries</span><span class="hl-1"> = </span><span class="hl-0">bitmarkToObjects</span><span class="hl-1">(</span><span class="hl-2">&quot;[.article]</span><span class="hl-8">\n</span><span class="hl-2">Hello **world**&quot;</span><span class="hl-1">);</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">bit</span><span class="hl-1"> = </span><span class="hl-5">entries</span><span class="hl-1">[</span><span class="hl-13">0</span><span class="hl-1">].</span><span class="hl-5">bit</span><span class="hl-1">;</span><br/><span class="hl-4">if</span><span class="hl-1"> (</span><span class="hl-5">bit</span><span class="hl-1">.</span><span class="hl-5">type</span><span class="hl-1"> === </span><span class="hl-2">&quot;article&quot;</span><span class="hl-1">) </span><span class="hl-5">console</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">(</span><span class="hl-5">bit</span><span class="hl-1">.</span><span class="hl-5">body</span><span class="hl-1">);</span>
+</code><button type="button">Copy</button></pre>
+
+</div>
+<div class="tsd-tag-throws">
+<h4 class="tsd-anchor-link" id="throws">Throws<a href="#throws" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>If the core reports a conversion error.</p>
+</div></div></li></ul></li></ul></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/getMoreBrain/bitmark-editor/blob/v0.2.0/packages/bitmark-editor/src/engine/types.ts#L28">packages/bitmark-editor/src/engine/types.ts:28</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="complete"><code class="tsd-tag">Optional</code><span>complete</span><a href="#complete" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">complete</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">position</span><span class="tsd-signature-symbol">:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">Position</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">CompleteOptions</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">CompletionList</a></div>
+<div class="tsd-type-declaration">
+<h4>Type Declaration</h4>
+<ul class="tsd-parameters">
+<li class="tsd-parameter-signature">
+<ul class="tsd-signatures">
+<li class="tsd-signature"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">position</span><span class="tsd-signature-symbol">:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">Position</a><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">CompleteOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">CompletionList</a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>The constructs valid at <code>position</code> in bitmark source, as an LSP
+<code>CompletionList</code> (PLAN-196): every bit type after <code>[.</code>, the body formats
+and the bit's allowed resource types in the header, the tags valid in the
+scope at the cursor (the bit body, a card variant, a chain — the same set
+the validator enforces, minus tags already at their maximum, the required
+ones the scope still lacks first), a tag's enum / boolean values, the
+inline attribute keys and closed values, and the structural lines the
+card config allows at a line start. Every candidate for the context is
+returned; the editor filters by the typed prefix. Half-typed constructs
+(<code>[@wi</code>, <code>[.art</code>, <code>==x==|bo</code>) resolve as if closed.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">input</span>: <span class="tsd-signature-type">string</span></span>
+<div class="tsd-comment tsd-typography"><p>Bitmark source text.</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">position</span>: <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">Position</a></span>
+<div class="tsd-comment tsd-typography"><p>0-based <code>line</code> / <code>character</code> in <code>positionEncoding</code> units.</p>
+</div></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">CompleteOptions</a></span>
+<div class="tsd-comment tsd-typography"><p><code>positionEncoding</code> (<code>&quot;utf-16&quot;</code>, the default, or <code>&quot;utf-8&quot;</code>),
+<code>includeDeprecated</code>, and <code>triggerCharacter</code> — the character the editor
+sent as the trigger (LSP <code>CompletionContext.triggerCharacter</code>), omitted
+when invoked explicitly. A trigger that opens nothing where the cursor
+is — a <code>.</code> or a <code>-</code> typed in prose — answers an empty list; <code>[</code> opens a
+tag anywhere, and <code>=</code> / <code>-</code> / <code>+</code> at a line start narrow the list to the
+structural lines they begin.</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">CompletionList</a></h4><p>A <a href="https://github.com/getMoreBrain/bitmark-parser#readme">CompletionList</a>; <code>context</code> says where the query resolved.</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-throws">
+<h4 class="tsd-anchor-link" id="throws-1">Throws<a href="#throws-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>UnsupportedFeatureError on a variant built without <code>editor</code>;
+an error when <code>position.line</code> is past the end of the text, or when the
+input is a JSON document (there is no bitmark source to resolve a
+position in).</p>
+</div></div></li></ul></li></ul></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/getMoreBrain/bitmark-editor/blob/v0.2.0/packages/bitmark-editor/src/engine/types.ts#L34">packages/bitmark-editor/src/engine/types.ts:34</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="convert"><span>convert</span><a href="#convert" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">convert</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">ConvertOptions$1</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">string</span></div>
+<div class="tsd-type-declaration">
+<h4>Type Declaration</h4>
+<ul class="tsd-parameters">
+<li class="tsd-parameter-signature">
+<ul class="tsd-signatures">
+<li class="tsd-signature"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">ConvertOptions$1</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Convert between bitmark, JSON, and the mapped markup formats (html/xml/…) —
+the single string-based conversion surface.</p>
+<p>The markup formats need a wasm variant built with <code>markup</code>; on
+<code>bitmark-json</code> they throw an <code>unsupported</code> error.</p>
+<p>Performance: <code>inputFormat</code> defaults to <code>&quot;auto&quot;</code>, which detects the format
+by scanning the input for a bitmark bit header — for non-bitmark input
+that is a full pass over the whole input before parsing starts, and the
+detection is heuristic (markup formats are never auto-detected). <strong>If you
+know the input format, set <code>inputFormat</code> explicitly.</strong> For typed objects
+use <a href="#bitmarktoobjects" class="tsd-kind-type-literal">bitmarkToObjects</a> / <a href="https://github.com/getMoreBrain/bitmark-parser#readme">objectsToBitmark</a>, which pin their
+formats.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">input</span>: <span class="tsd-signature-type">string</span></span>
+<div class="tsd-comment tsd-typography"><p>Bitmark, JSON, or mapped-format input text.</p>
+</div></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">ConvertOptions$1</a></span>
+<div class="tsd-comment tsd-typography"><p>Convert options (e.g. <code>{ inputFormat: &quot;bitmark&quot;, mode: &quot;full&quot; }</code>).</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><p>Converted output string. For bitmark input, this is a JSON string
+array of structured parsed entries (<code>bit</code>, <code>parser</code>, <code>bitmark</code>).</p>
+</li></ul></li></ul></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/getMoreBrain/bitmark-editor/blob/v0.2.0/packages/bitmark-editor/src/engine/types.ts#L29">packages/bitmark-editor/src/engine/types.ts:29</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="convertwithdetails"><code class="tsd-tag">Optional</code><span>convert<wbr/>With<wbr/>Details</span><a href="#convertwithdetails" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">convertWithDetails</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">ConvertWithDetailsOptions</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">ConvertResult</a></div>
+<div class="tsd-type-declaration">
+<h4>Type Declaration</h4>
+<ul class="tsd-parameters">
+<li class="tsd-parameter-signature">
+<ul class="tsd-signatures">
+<li class="tsd-signature"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">ConvertWithDetailsOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">ConvertResult</a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p><a href="#convert" class="tsd-kind-type-literal">convert</a>, returning the output together with the extras asked for
+(PLAN-221) — today <code>bitSpans</code>: where each top-level bit's text is in the
+input and in the output (PLAN-223), for linking the panes that show them
+bit by bit. The
+conversion runs once; <code>output</code> is exactly what <a href="#convert" class="tsd-kind-type-literal">convert</a> returns for
+the same input and options, and it throws exactly as <a href="#convert" class="tsd-kind-type-literal">convert</a> does.</p>
+<p>Spans are reported for the document outputs — <code>&quot;bitmark&quot;</code>, <code>&quot;json&quot;</code>
+(compact or pretty), <code>&quot;text&quot;</code> and the markup formats (<code>&quot;html&quot;</code>, <code>&quot;xml&quot;</code>,
+…), from any input format. A span covers the bit's text only, on either
+side: never the separators between bits, nor the JSON array's <code>[</code> / <code>]</code>.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">input</span>: <span class="tsd-signature-type">string</span></span>
+<div class="tsd-comment tsd-typography"><p>Bitmark, JSON, or mapped-format input text.</p>
+</div></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">ConvertWithDetailsOptions</a></span>
+<div class="tsd-comment tsd-typography"><p><a href="#convert" class="tsd-kind-type-literal">convert</a>'s options, plus a flag per extra.</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">ConvertResult</a></h4><p>A <a href="https://github.com/getMoreBrain/bitmark-parser#readme">ConvertResult</a>.</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-example">
+<h4 class="tsd-anchor-link" id="example-1">Example<a href="#example-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-6">const</span><span class="hl-1"> { </span><span class="hl-7">output</span><span class="hl-1">, </span><span class="hl-7">bitSpans</span><span class="hl-1"> } = </span><span class="hl-0">convertWithDetails</span><span class="hl-1">(</span><span class="hl-5">source</span><span class="hl-1">, {</span><br/><span class="hl-1">  </span><span class="hl-5">inputFormat:</span><span class="hl-1"> </span><span class="hl-2">&quot;bitmark&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-5">outputFormat:</span><span class="hl-1"> </span><span class="hl-2">&quot;html&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-5">bitSpans:</span><span class="hl-1"> </span><span class="hl-6">true</span><span class="hl-1">,</span><br/><span class="hl-1">});</span><br/><span class="hl-4">for</span><span class="hl-1"> (</span><span class="hl-6">const</span><span class="hl-1"> { </span><span class="hl-7">index</span><span class="hl-1">, </span><span class="hl-7">inputStart</span><span class="hl-1">, </span><span class="hl-7">inputEnd</span><span class="hl-1">, </span><span class="hl-7">outputStart</span><span class="hl-1">, </span><span class="hl-7">outputEnd</span><span class="hl-1"> } </span><span class="hl-6">of</span><span class="hl-1"> </span><span class="hl-5">bitSpans</span><span class="hl-1">!.</span><span class="hl-5">spans</span><span class="hl-1">) {</span><br/><span class="hl-1">  </span><span class="hl-5">console</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">(</span><span class="hl-5">index</span><span class="hl-1">, </span><span class="hl-5">source</span><span class="hl-1">.</span><span class="hl-0">slice</span><span class="hl-1">(</span><span class="hl-5">inputStart</span><span class="hl-1">, </span><span class="hl-5">inputEnd</span><span class="hl-1">), </span><span class="hl-5">output</span><span class="hl-1">.</span><span class="hl-0">slice</span><span class="hl-1">(</span><span class="hl-5">outputStart</span><span class="hl-1">, </span><span class="hl-5">outputEnd</span><span class="hl-1">));</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div></li></ul></li></ul></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/getMoreBrain/bitmark-editor/blob/v0.2.0/packages/bitmark-editor/src/engine/types.ts#L31">packages/bitmark-editor/src/engine/types.ts:31</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="diagnostics"><code class="tsd-tag">Optional</code><span>diagnostics</span><a href="#diagnostics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">diagnostics</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">DiagnosticsOptions</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">Diagnostics</a></div>
+<div class="tsd-type-declaration">
+<h4>Type Declaration</h4>
+<ul class="tsd-parameters">
+<li class="tsd-parameter-signature">
+<ul class="tsd-signatures">
+<li class="tsd-signature"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">DiagnosticsOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">Diagnostics</a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Every issue the JSON <code>parser</code> envelope would carry for bitmark source, as
+LSP <code>Diagnostic</code>s with encoded positions (PLAN-196) — the typed form of
+<code>convert(input, { inputFormat: &quot;bitmark&quot;, outputFormat: &quot;diagnostics&quot; })</code>.</p>
+<p>Parse and validate, no serialization: cheap enough to run on every
+keystroke. Same codes, same spans and same order as the envelope's
+<code>errors</code> / <code>warnings</code> / <code>infos</code>, whose buckets become LSP severities
+1 / 2 / 3. <code>code</code> is the contract; <code>message</code> is prose. <code>data.bit</code> is the
+bit's index in the JSON array. Feed the list to <code>editor.setModelMarkers</code>
+(Monaco) or <code>publishDiagnostics</code> (LSP) as is.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">input</span>: <span class="tsd-signature-type">string</span></span>
+<div class="tsd-comment tsd-typography"><p>Bitmark source text.</p>
+</div></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">DiagnosticsOptions</a></span>
+<div class="tsd-comment tsd-typography"><p><code>positionEncoding</code> (<code>&quot;utf-16&quot;</code>, the default, or <code>&quot;utf-8&quot;</code>).</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">Diagnostics</a></h4><p>A <a href="https://github.com/getMoreBrain/bitmark-parser#readme">Diagnostics</a> object.</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-throws">
+<h4 class="tsd-anchor-link" id="throws-2">Throws<a href="#throws-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>On a variant built without <code>editor</code> (an <code>unsupported</code> error).</p>
+</div></div></li></ul></li></ul></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/getMoreBrain/bitmark-editor/blob/v0.2.0/packages/bitmark-editor/src/engine/types.ts#L33">packages/bitmark-editor/src/engine/types.ts:33</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="hover"><code class="tsd-tag">Optional</code><span>hover</span><a href="#hover" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">hover</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">position</span><span class="tsd-signature-symbol">:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">Position</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">HoverOptions</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">Hover</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></div>
+<div class="tsd-type-declaration">
+<h4>Type Declaration</h4>
+<ul class="tsd-parameters">
+<li class="tsd-parameter-signature">
+<ul class="tsd-signatures">
+<li class="tsd-signature"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">position</span><span class="tsd-signature-symbol">:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">Position</a><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">HoverOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">Hover</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>The construct at <code>position</code> in bitmark source, as an LSP <code>Hover</code>
+(PLAN-196): the bit type, a tag in its scope (with the same record
+<code>info({ infoType: &quot;bit&quot;, full: true })</code> shows for it there), a tag value, a
+header resource type, an inline attribute key or value. <code>contents</code> is
+Markdown; <code>data</code> carries the record it was rendered from. <code>null</code> on body
+text, dividers and whitespace.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">input</span>: <span class="tsd-signature-type">string</span></span>
+<div class="tsd-comment tsd-typography"><p>Bitmark source text.</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">position</span>: <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">Position</a></span>
+<div class="tsd-comment tsd-typography"><p>0-based <code>line</code> / <code>character</code> in <code>positionEncoding</code> units.</p>
+</div></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">HoverOptions</a></span>
+<div class="tsd-comment tsd-typography"><p><code>positionEncoding</code> (<code>&quot;utf-16&quot;</code>, the default, or <code>&quot;utf-8&quot;</code>).</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">Hover</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></h4><p>A <a href="https://github.com/getMoreBrain/bitmark-parser#readme">Hover</a>, or <code>null</code>.</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-throws">
+<h4 class="tsd-anchor-link" id="throws-3">Throws<a href="#throws-3" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>UnsupportedFeatureError on a variant built without <code>editor</code>;
+an error when <code>position.line</code> is past the end of the text, or when the
+input is a JSON document (there is no bitmark source to resolve a
+position in).</p>
+</div></div></li></ul></li></ul></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/getMoreBrain/bitmark-editor/blob/v0.2.0/packages/bitmark-editor/src/engine/types.ts#L36">packages/bitmark-editor/src/engine/types.ts:36</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="info"><code class="tsd-tag">Optional</code><span>info</span><a href="#info" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">info</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">InfoOptions$1</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">string</span></div>
+<div class="tsd-type-declaration">
+<h4>Type Declaration</h4>
+<ul class="tsd-parameters">
+<li class="tsd-parameter-signature">
+<ul class="tsd-signatures">
+<li class="tsd-signature"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">InfoOptions$1</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Query information about supported bit types.</p>
+<p><code>format</code> defaults to <code>&quot;text&quot;</code>, the human-readable rendering. That renderer
+is only in the variants built with <code>info-text</code> — on <code>bitmark-json</code> it is
+compiled out and this throws <a href="https://github.com/getMoreBrain/bitmark-parser#readme">UnsupportedFeatureError</a>; ask for
+<code>format: &quot;json&quot;</code> there (the JSON views are the contractual ones and are in
+every variant).</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">InfoOptions$1</a></span>
+<div class="tsd-comment tsd-typography"><p>Info options (e.g. <code>{ infoType: &quot;bit&quot;, format: &quot;json&quot;, bit: &quot;cloze&quot; }</code>).</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><p>Information string.</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-throws">
+<h4 class="tsd-anchor-link" id="throws-4">Throws<a href="#throws-4" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>UnsupportedFeatureError if <code>format</code> is <code>&quot;text&quot;</code> on a variant built
+without the text renderer.</p>
+</div></div></li></ul></li></ul></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/getMoreBrain/bitmark-editor/blob/v0.2.0/packages/bitmark-editor/src/engine/types.ts#L37">packages/bitmark-editor/src/engine/types.ts:37</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="init"><code class="tsd-tag">Optional</code><span>init</span><a href="#init" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">init</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">InitOptions</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></div>
+<div class="tsd-type-declaration">
+<h4>Type Declaration</h4>
+<ul class="tsd-parameters">
+<li class="tsd-parameter-signature">
+<ul class="tsd-signatures">
+<li class="tsd-signature"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">InitOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Select which wasm variant backs the API (PLAN-166 / PLAN-174): <code>&quot;full&quot;</code>
+(default here — everything, including the <code>info</code> meta layer),
+<code>&quot;browser-full&quot;</code> (the same conversion capabilities, without the meta
+strings) or <code>&quot;bitmark-json&quot;</code> (bitmark ↔ JSON only; markup formats, mapping
+report and the <code>lex</code> output unavailable). May be called again to switch — the swap is
+atomic between calls and the surface stays valid throughout. On Node loading
+is synchronous; the Promise is for API symmetry with the browser entry.</p>
+<p>Node defaults to <code>&quot;full&quot;</code> because it loads wasm from disk: only the browser
+pays a download-latency cost for richness. Bundling this entry for the
+browser is legitimate — select <code>&quot;browser-full&quot;</code> explicitly when you do.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">InitOptions</a></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4></li></ul></li></ul></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/getMoreBrain/bitmark-editor/blob/v0.2.0/packages/bitmark-editor/src/engine/types.ts#L26">packages/bitmark-editor/src/engine/types.ts:26</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="resolve"><code class="tsd-tag">Optional</code><span>resolve</span><a href="#resolve" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">resolve</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">position</span><span class="tsd-signature-symbol">:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">Position</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">item</span><span class="tsd-signature-symbol">:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">CompletionItem</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">CompleteOptions</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">CompletionItem</a></div>
+<div class="tsd-type-declaration">
+<h4>Type Declaration</h4>
+<ul class="tsd-parameters">
+<li class="tsd-parameter-signature">
+<ul class="tsd-signatures">
+<li class="tsd-signature"><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">position</span><span class="tsd-signature-symbol">:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">Position</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">item</span><span class="tsd-signature-symbol">:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">CompletionItem</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">CompleteOptions</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">CompletionItem</a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>One item of the list <code>complete</code> returns at <code>position</code>, with its Markdown
+<code>documentation</code> filled in — LSP <code>completionItem/resolve</code> (PLAN-202).
+<code>complete</code> ships no documentation; an editor calls this for the one item
+it is about to show (Monaco's <code>resolveCompletionItem</code>), passing the item
+back as it was listed. The item is found by <code>label</code> and <code>kind</code>; when the
+list no longer holds it (the text or the cursor moved on) the item is
+returned as it was given.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">input</span>: <span class="tsd-signature-type">string</span></span>
+<div class="tsd-comment tsd-typography"><p>The bitmark source <code>complete</code> was asked about.</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">position</span>: <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">Position</a></span>
+<div class="tsd-comment tsd-typography"><p>The position <code>complete</code> was asked at.</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">item</span>: <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">CompletionItem</a></span>
+<div class="tsd-comment tsd-typography"><p>The item as <code>complete</code> listed it (<code>label</code> and <code>kind</code> are read).</p>
+</div></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">CompleteOptions</a></span>
+<div class="tsd-comment tsd-typography"><p>As for <code>complete</code>.</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">CompletionItem</a></h4><p>The item with <code>documentation</code> set where the parser has any.</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-throws">
+<h4 class="tsd-anchor-link" id="throws-5">Throws<a href="#throws-5" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>UnsupportedFeatureError on a variant built without <code>editor</code>;
+an error when <code>position.line</code> is past the end of the text, or when the
+input is a JSON document.</p>
+</div></div></li></ul></li></ul></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/getMoreBrain/bitmark-editor/blob/v0.2.0/packages/bitmark-editor/src/engine/types.ts#L35">packages/bitmark-editor/src/engine/types.ts:35</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="semantictokens"><span>semantic<wbr/>Tokens</span><a href="#semantictokens" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">semanticTokens</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">SemanticTokensOptions</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">SemanticTokens</a></div>
+<div class="tsd-type-declaration">
+<h4>Type Declaration</h4>
+<ul class="tsd-parameters">
+<li class="tsd-parameter-signature">
+<ul class="tsd-signatures">
+<li class="tsd-signature"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">SemanticTokensOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">SemanticTokens</a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Parser-derived highlighting of bitmark source in the LSP semantic-tokens
+shape (PLAN-193) — the typed form of
+<code>convert(input, { inputFormat: &quot;bitmark&quot;, outputFormat: &quot;semantic-tokens&quot; })</code>.</p>
+<p>The parser runs (never the validator) and every byte of the source is
+covered exactly once: unpaired marks are text, an abandoned tag is text
+and the dividers it would have swallowed keep their meaning, a raw body
+(<code>[.code]</code>, <code>==== text ====</code>) is one plain-text run per line. Token types
+name sigil classes and syntax positions, never a bit or tag name; the tag
+class, the commented-bit flag and <code>unclosed</code> are modifiers. Both layouts
+carry the legend, so the response is self-describing.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">input</span>: <span class="tsd-signature-type">string</span></span>
+<div class="tsd-comment tsd-typography"><p>Bitmark source text.</p>
+</div></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">SemanticTokensOptions</a></span>
+<div class="tsd-comment tsd-typography"><p><code>positionEncoding</code> (<code>&quot;utf-16&quot;</code>, the default, or <code>&quot;utf-8&quot;</code>)
+and <code>tokensLayout</code> (<code>&quot;lsp&quot;</code>, the default, or <code>&quot;absolute&quot;</code>).</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">SemanticTokens</a></h4><p>A <a href="https://github.com/getMoreBrain/bitmark-parser#readme">SemanticTokens</a> object, discriminated by <code>layout</code>.</p>
+
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-throws">
+<h4 class="tsd-anchor-link" id="throws-6">Throws<a href="#throws-6" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>On a variant built without <code>semantic-tokens</code> (an <code>unsupported</code>
+error).</p>
+</div></div></li></ul></li></ul></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/getMoreBrain/bitmark-editor/blob/v0.2.0/packages/bitmark-editor/src/engine/types.ts#L30">packages/bitmark-editor/src/engine/types.ts:30</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="splitbits"><code class="tsd-tag">Optional</code><span>split<wbr/>Bits</span><a href="#splitbits" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">splitBits</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">SplitBitsOptions</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">BitSlice</a><span class="tsd-signature-symbol">[]</span></div>
+<div class="tsd-type-declaration">
+<h4>Type Declaration</h4>
+<ul class="tsd-parameters">
+<li class="tsd-parameter-signature">
+<ul class="tsd-signatures">
+<li class="tsd-signature"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">SplitBitsOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">BitSlice</a><span class="tsd-signature-symbol">[]</span></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Split a bitmark document into per-bit source slices.</p>
+<p><code>start</code> / <code>end</code> locate each slice's <code>source</code> in <code>input</code>, counted in
+<code>positionEncoding</code> units — with the default <code>&quot;utf-16&quot;</code>,
+<code>input.slice(start, end) === source</code>. <code>byteStart</code> / <code>byteEnd</code> are UTF-8
+byte offsets that tile the document, for chunking.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">input</span>: <span class="tsd-signature-type">string</span></span></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">SplitBitsOptions</a></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="https://github.com/getMoreBrain/bitmark-parser#readme" class="tsd-signature-type external" target="_blank">BitSlice</a><span class="tsd-signature-symbol">[]</span></h4><p>Array of <code>{ index, start, end, byteStart, byteEnd, source }</code>.</p>
+</li></ul></li></ul></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/getMoreBrain/bitmark-editor/blob/v0.2.0/packages/bitmark-editor/src/engine/types.ts#L32">packages/bitmark-editor/src/engine/types.ts:32</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="version"><span>version</span><a href="#version" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">version</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">string</span></div>
+<div class="tsd-type-declaration">
+<h4>Type Declaration</h4>
+<ul class="tsd-parameters">
+<li class="tsd-parameter-signature">
+<ul class="tsd-signatures">
+<li class="tsd-signature"><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Get the version of the @gmb/bitmark-parser library: the version the loaded
+wasm reports, so it is the parser actually running (PLAN-224); before the
+wasm is loaded, this package's own. Never throws, and does not load it.</p>
+</div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><p>Version string (e.g. &quot;3.0.0&quot;).</p>
+</li></ul></li></ul></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/getMoreBrain/bitmark-editor/blob/v0.2.0/packages/bitmark-editor/src/engine/types.ts#L27">packages/bitmark-editor/src/engine/types.ts:27</a></li></ul></aside></section></section></details></div>
+<div class="col-sidebar">
+<div class="page-menu">
+<div class="tsd-navigation settings">
+<details class="tsd-accordion"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h3>Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div>
+<div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h3>On This Page</h3></summary>
+<div class="tsd-accordion-details">
+<details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Properties</summary>
+<div><a href="#bitmarktoobjects"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>bitmark<wbr/>To<wbr/>Objects</span></a><a href="#complete"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>complete</span></a><a href="#convert"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>convert</span></a><a href="#convertwithdetails"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>convert<wbr/>With<wbr/>Details</span></a><a href="#diagnostics"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>diagnostics</span></a><a href="#hover"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>hover</span></a><a href="#info"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>info</span></a><a href="#init"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>init</span></a><a href="#resolve"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>resolve</span></a><a href="#semantictokens"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>semantic<wbr/>Tokens</span></a><a href="#splitbits"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>split<wbr/>Bits</span></a><a href="#version"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>version</span></a></div></details></div></details></div>
+<div class="site-menu">
+<nav class="tsd-navigation"><a href="../modules.html">@gmb/bitmark-editor</a>
+<ul class="tsd-small-nested-navigation" id="tsd-nav-container">
+<li>Loading...</li></ul></nav></div></div></div><footer>
+<p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer>
+<div class="overlay"></div></body></html>
