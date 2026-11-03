@@ -1,5 +1,6 @@
 export type { BitMarkers } from './bitMarkers.js';
 export { attachBitMarkers } from './bitMarkers.js';
+export { liveBitmarkAnchors } from './liveBitmarkAnchors.js';
 export type { KnotPair, PositionGeometry, ScrollGeometry } from './mapScrollTop.js';
 export { buildKnots, mapPosition, mapScrollTop } from './mapScrollTop.js';
 export type {

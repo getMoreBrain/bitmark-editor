@@ -12,3 +12,5 @@ export {
   reportTargetFor,
 } from './panes.js';
 export { injectPaneCss, PANE_CSS } from './styles.js';
+export type { SyncView, SyncViewEditor, SyncViewOptions } from './syncView.js';
+export { attachSyncView } from './syncView.js';

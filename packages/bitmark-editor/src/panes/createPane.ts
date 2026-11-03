@@ -8,7 +8,7 @@ import { BITMARK_LANGUAGE_ID } from '../monaco/setup.js';
 import { snapAnchorKeys } from '../scroll/anchorKeys.js';
 import { attachBitMarkers, BitMarkers } from '../scroll/bitMarkers.js';
 import { liveBitmarkAnchors } from '../scroll/liveBitmarkAnchors.js';
-import type { AnchorList, MatchRange, ScrollSyncMember } from '../scroll/scrollSyncGroup.js';
+import type { AnchorList, ScrollSyncMember } from '../scroll/scrollSyncGroup.js';
 import { createSplitBitStarts, SplitBitStarts } from '../scroll/splitBitStarts.js';
 import { offsetMap } from '../scroll/textChange.js';
 import type { SessionInternals } from '../session/types.js';
@@ -20,8 +20,8 @@ import type {
   ToBitmarkResult,
 } from '../session/types.js';
 import { AppliedTheme, applyBitmarkTheme } from '../theme/applyTheme.js';
-import { blockEnd } from './blockEnd.js';
 import { injectPaneCss } from './styles.js';
+import { attachSyncView } from './syncView.js';
 
 /** What one pane type does (the per-type part of a pane). */
 export interface PaneSpec {
@@ -202,63 +202,11 @@ export const createPane = (
     () => s.getBitmark(),
   );
   // Where the linked panes are matched (PLAN-028 D7), and the block matching
-  // the cursor in another pane (D8).
-  const guide = document.createElement('div');
-  guide.className = 'bm-pane-sync-line';
-  guide.hidden = true;
-  host.appendChild(guide);
-  const matched = editor.createDecorationsCollection();
-  /** Where the guide line is, when this pane is linked; drawn while `syncLine` is on. */
-  let syncFraction: number | undefined;
-  /** The block matching the cursor; highlighted while `syncMatch` is on. */
-  let lastMatch: MatchRange | undefined;
-  const drawGuide = () => {
-    guide.hidden = !s.syncLine || syncFraction === undefined;
-    if (!guide.hidden) {
-      guide.style.top = `${Math.round(syncFraction! * editor.getLayoutInfo().height)}px`;
-    }
-  };
-  const syncView = {
-    onSyncLine: (fraction: number | undefined) => {
-      syncFraction = fraction;
-      drawGuide();
-    },
-    onMatch: (range: MatchRange | undefined) => {
-      lastMatch = range;
-      const m = editor.getModel();
-      if (!range || !m || !s.syncMatch) {
-        matched.clear();
-        return;
-      }
-      const from = m.getPositionAt(range.start);
-      const end = blockEnd(m, range.start, range.end);
-      // A block that starts its line is shown as whole lines; one that starts
-      // partway along (an element in a line of markup) as exactly its text.
-      if (from.column > m.getLineFirstNonWhitespaceColumn(from.lineNumber)) {
-        const to = m.getPositionAt(Math.max(range.start, end));
-        matched.set([
-          {
-            range: {
-              startLineNumber: from.lineNumber,
-              startColumn: from.column,
-              endLineNumber: to.lineNumber,
-              endColumn: to.column,
-            },
-            options: { className: 'bm-sync-match' },
-          },
-        ]);
-        return;
-      }
-      const first = from.lineNumber;
-      const last = Math.max(first, m.getPositionAt(Math.max(range.start, end - 1)).lineNumber);
-      matched.set([
-        {
-          range: { startLineNumber: first, startColumn: 1, endLineNumber: last, endColumn: 1 },
-          options: { isWholeLine: true, className: 'bm-sync-match' },
-        },
-      ]);
-    },
-  };
+  // the cursor in another pane (D8), drawn while the session's switches are on.
+  const syncView = attachSyncView(editor, host, {
+    syncLine: () => s.syncLine,
+    syncMatch: () => s.syncMatch,
+  });
   if (spec.scroll === 'split') {
     split = createSplitBitStarts(
       editor,
@@ -268,14 +216,16 @@ export const createPane = (
     link.member = s.scrollGroup.join(editor, () => split!.bitStarts(), {
       linked: options.scrollSync ?? true,
       anchors: () => bitmarkAnchors,
-      ...syncView,
+      onSyncLine: syncView.onSyncLine,
+      onMatch: syncView.onMatch,
     });
   } else if (spec.scroll === 'pinned') {
     markers = attachBitMarkers(monaco, editor, () => link.member?.invalidate());
     link.member = s.scrollGroup.join(editor, () => markers!.bitStarts(), {
       linked: options.scrollSync ?? true,
       anchors,
-      ...syncView,
+      onSyncLine: syncView.onSyncLine,
+      onMatch: syncView.onMatch,
     });
   }
 
@@ -433,6 +383,7 @@ export const createPane = (
       split?.dispose();
       markers?.dispose();
       link.member?.dispose();
+      syncView.dispose();
       theme?.dispose();
       textEditor.dispose();
       container.remove();
@@ -492,11 +443,7 @@ export const createPane = (
       theme?.dispose();
       theme = next === undefined ? undefined : applyBitmarkTheme(container, next);
     },
-    // A switch only redraws: scrolling and the match itself are untouched.
-    syncViewChanged: () => {
-      drawGuide();
-      syncView.onMatch(lastMatch);
-    },
+    syncViewChanged: () => syncView.refresh(),
   } satisfies PaneControl);
 
   // The session sets the first state: rendered, its engine error, or loading.
