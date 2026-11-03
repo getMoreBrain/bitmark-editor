@@ -55,7 +55,7 @@ export interface BitmarkSessionProps extends Omit<
 
 /** One document (PLAN-022 D9). Created once; `monaco` and `engine` are read at creation. */
 export const BitmarkSession = (props: BitmarkSessionProps): ReactElement => {
-  const { children, value, theme, onChange, onError, onReady } = props;
+  const { children, value, theme, syncLine, syncMatch, onChange, onError, onReady } = props;
   const [session, setSession] = useState<Session>();
   /** The session's recent reports: a `value` among them is the host's own echo. */
   const echo = useRef(createEchoGuard());
@@ -98,6 +98,14 @@ export const BitmarkSession = (props: BitmarkSessionProps): ReactElement => {
   useEffect(() => {
     if (session && theme !== undefined) session.setTheme(theme);
   }, [session, theme]);
+
+  // The scroll-sync guide line and the matching-block highlight (PLAN-028).
+  useEffect(() => {
+    if (session && syncLine !== undefined) session.setSyncLine(syncLine);
+  }, [session, syncLine]);
+  useEffect(() => {
+    if (session && syncMatch !== undefined) session.setSyncMatch(syncMatch);
+  }, [session, syncMatch]);
 
   return <SessionContext.Provider value={session}>{children}</SessionContext.Provider>;
 };

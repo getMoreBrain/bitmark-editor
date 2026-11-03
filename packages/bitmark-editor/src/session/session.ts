@@ -16,6 +16,7 @@ import {
 } from '../monaco/jsonSchema.js';
 import { debounce } from '../monaco/modelJob.js';
 import { setupBitmarkMonaco } from '../monaco/setup.js';
+import { jsonTextFor } from '../panes/jsonText.js';
 import { createScrollSyncGroup } from '../scroll/scrollSyncGroup.js';
 import { applyBitmarkTheme, BitmarkTheme, DEFAULT_THEME } from '../theme/applyTheme.js';
 import { resolveMessages } from './messages.js';
@@ -103,6 +104,8 @@ export const createBitmarkSession = (options: BitmarkSessionOptions): BitmarkSes
   let editCount = 0;
   let engine: BitmarkEngine | undefined;
   let theme = options.theme;
+  let syncLine = options.syncLine ?? true;
+  let syncMatch = options.syncMatch ?? true;
   let disposed = false;
   let stage2Pending = false;
   /**
@@ -226,11 +229,28 @@ export const createBitmarkSession = (options: BitmarkSessionOptions): BitmarkSes
     },
     getJson: async (opts) => {
       const e = engine ?? (await ready);
-      return (await e.bitmarkToJsonText(bitmark, { mode: opts?.mode })).text;
+      // Exactly the JSON pane's text (PLAN-029 R3).
+      return (await jsonTextFor(e, bitmark, opts?.mode)).text;
     },
     panes: () => controls.map((c) => c.pane),
     setScrollSync: (panes: readonly BitmarkPane[]) => {
       for (const c of controls) c.pane.setScrollSync(panes.includes(c.pane));
+    },
+    get syncLine() {
+      return syncLine;
+    },
+    setSyncLine: (on) => {
+      if (on === syncLine) return;
+      syncLine = on;
+      for (const c of controls) c.syncViewChanged();
+    },
+    get syncMatch() {
+      return syncMatch;
+    },
+    setSyncMatch: (on) => {
+      if (on === syncMatch) return;
+      syncMatch = on;
+      for (const c of controls) c.syncViewChanged();
     },
     setTheme: (next) => {
       theme = next;

@@ -2,12 +2,15 @@ import type * as MonacoApi from 'monaco-editor';
 
 import { createTextEditor } from '../editor/textEditor.js';
 import { createLatestRunner, SUPERSEDED } from '../engine/latest.js';
-import type { BitmarkEngine } from '../engine/types.js';
+import type { Anchor, BitmarkEngine } from '../engine/types.js';
 import { attachBitmarkEditor, BitmarkEditorServices } from '../monaco/attach.js';
 import { BITMARK_LANGUAGE_ID } from '../monaco/setup.js';
+import { snapAnchorKeys } from '../scroll/anchorKeys.js';
 import { attachBitMarkers, BitMarkers } from '../scroll/bitMarkers.js';
-import type { ScrollSyncMember } from '../scroll/scrollSyncGroup.js';
+import { liveBitmarkAnchors } from '../scroll/liveBitmarkAnchors.js';
+import type { AnchorList, MatchRange, ScrollSyncMember } from '../scroll/scrollSyncGroup.js';
 import { createSplitBitStarts, SplitBitStarts } from '../scroll/splitBitStarts.js';
+import { offsetMap } from '../scroll/textChange.js';
 import type { SessionInternals } from '../session/types.js';
 import type {
   BitmarkPane,
@@ -17,6 +20,7 @@ import type {
   ToBitmarkResult,
 } from '../session/types.js';
 import { AppliedTheme, applyBitmarkTheme } from '../theme/applyTheme.js';
+import { blockEnd } from './blockEnd.js';
 import { injectPaneCss } from './styles.js';
 
 /** What one pane type does (the per-type part of a pane). */
@@ -43,7 +47,7 @@ export interface PaneSpec {
   fromSession?(
     engine: BitmarkEngine,
     session: SessionInternals,
-  ): Promise<{ text: string; bitStarts?: readonly number[] }>;
+  ): Promise<{ text: string; bitStarts?: readonly number[]; anchors?: readonly Anchor[] }>;
 }
 
 export interface PaneOptions {
@@ -130,7 +134,12 @@ export const createPane = (
     kind: spec.type,
     extension: spec.extension,
     readOnly,
-    editorOptions: { ...DEFAULT_EDITOR_OPTIONS, ariaLabel: label, ...options.editorOptions },
+    editorOptions: {
+      ...DEFAULT_EDITOR_OPTIONS,
+      ...(spec.type === 'bitmark' ? {} : { stickyScroll: { enabled: false } }),
+      ariaLabel: label,
+      ...options.editorOptions,
+    },
     onInput: (text) => {
       if (readOnly) return;
       // The user's own text now wins: drop any catch-up waiting for blur.
@@ -150,6 +159,106 @@ export const createPane = (
   const link: { member?: ScrollSyncMember } = {};
   let split: SplitBitStarts | undefined;
   let markers: BitMarkers | undefined;
+  /**
+   * The bit anchors of this pane (PLAN-028 D4): offsets into `text` keyed by
+   * offsets into `bitmark`, the texts they were given for. An edit here, or
+   * a new bitmark (from an edit here, or typed in the bitmark pane before
+   * this pane regenerates), moves them with the text when they are next
+   * read (D5).
+   */
+  let anchored = {
+    list: [] as AnchorList,
+    text: '',
+    version: -1,
+    bitmark: '',
+  };
+  const anchors = (): AnchorList => {
+    const version = editor.getModel()?.getVersionId() ?? -1;
+    if (anchored.list.length > 0 && version !== anchored.version) {
+      const text = textEditor.getValue();
+      const move = offsetMap(anchored.text, text);
+      anchored = {
+        ...anchored,
+        list: anchored.list.map((a) => ({ ...a, offset: move(a.offset) })),
+        text,
+        version,
+      };
+    }
+    const bitmark = s.getBitmark();
+    if (anchored.list.length > 0 && bitmark !== anchored.bitmark) {
+      const move = offsetMap(anchored.bitmark, bitmark);
+      anchored = {
+        ...anchored,
+        list: anchored.list.map((a) => ({ ...a, key: move(a.key) })),
+        bitmark,
+      };
+    }
+    return anchored.list;
+  };
+  // The bitmark pane's anchors: keys onto the text being typed (PLAN-029 R5).
+  const bitmarkAnchors = liveBitmarkAnchors(
+    () => editor.getModel()?.getVersionId() ?? -1,
+    () => textEditor.getValue(),
+    () => s.getBitmark(),
+  );
+  // Where the linked panes are matched (PLAN-028 D7), and the block matching
+  // the cursor in another pane (D8).
+  const guide = document.createElement('div');
+  guide.className = 'bm-pane-sync-line';
+  guide.hidden = true;
+  host.appendChild(guide);
+  const matched = editor.createDecorationsCollection();
+  /** Where the guide line is, when this pane is linked; drawn while `syncLine` is on. */
+  let syncFraction: number | undefined;
+  /** The block matching the cursor; highlighted while `syncMatch` is on. */
+  let lastMatch: MatchRange | undefined;
+  const drawGuide = () => {
+    guide.hidden = !s.syncLine || syncFraction === undefined;
+    if (!guide.hidden) {
+      guide.style.top = `${Math.round(syncFraction! * editor.getLayoutInfo().height)}px`;
+    }
+  };
+  const syncView = {
+    onSyncLine: (fraction: number | undefined) => {
+      syncFraction = fraction;
+      drawGuide();
+    },
+    onMatch: (range: MatchRange | undefined) => {
+      lastMatch = range;
+      const m = editor.getModel();
+      if (!range || !m || !s.syncMatch) {
+        matched.clear();
+        return;
+      }
+      const from = m.getPositionAt(range.start);
+      const end = blockEnd(m, range.start, range.end);
+      // A block that starts its line is shown as whole lines; one that starts
+      // partway along (an element in a line of markup) as exactly its text.
+      if (from.column > m.getLineFirstNonWhitespaceColumn(from.lineNumber)) {
+        const to = m.getPositionAt(Math.max(range.start, end));
+        matched.set([
+          {
+            range: {
+              startLineNumber: from.lineNumber,
+              startColumn: from.column,
+              endLineNumber: to.lineNumber,
+              endColumn: to.column,
+            },
+            options: { className: 'bm-sync-match' },
+          },
+        ]);
+        return;
+      }
+      const first = from.lineNumber;
+      const last = Math.max(first, m.getPositionAt(Math.max(range.start, end - 1)).lineNumber);
+      matched.set([
+        {
+          range: { startLineNumber: first, startColumn: 1, endLineNumber: last, endColumn: 1 },
+          options: { isWholeLine: true, className: 'bm-sync-match' },
+        },
+      ]);
+    },
+  };
   if (spec.scroll === 'split') {
     split = createSplitBitStarts(
       editor,
@@ -158,11 +267,15 @@ export const createPane = (
     );
     link.member = s.scrollGroup.join(editor, () => split!.bitStarts(), {
       linked: options.scrollSync ?? true,
+      anchors: () => bitmarkAnchors,
+      ...syncView,
     });
   } else if (spec.scroll === 'pinned') {
     markers = attachBitMarkers(monaco, editor, () => link.member?.invalidate());
     link.member = s.scrollGroup.join(editor, () => markers!.bitStarts(), {
       linked: options.scrollSync ?? true,
+      anchors,
+      ...syncView,
     });
   }
 
@@ -171,6 +284,39 @@ export const createPane = (
     const out = await spec.fromSession!(engine, s);
     return { ...out, durationMs: performance.now() - started };
   });
+
+  /**
+   * The anchors of the text this pane would show for the new document,
+   * moved onto the user's own text, which it keeps (PLAN-028 D5): that text
+   * is the regenerated one with the user's edits, so the two differ only
+   * there. Run after an edit here is committed.
+   */
+  const realign = createLatestRunner(async (engine: BitmarkEngine) => spec.fromSession!(engine, s));
+  const realignAnchors = () => {
+    const engine = s.engine;
+    if (!spec.fromSession || !engine || !link.member) return;
+    const version = s.version;
+    realign(engine).then(
+      (out) => {
+        if (out === SUPERSEDED || version !== s.version || disposed || !isSource) return;
+        if (out.anchors === undefined) return;
+        const text = textEditor.getValue();
+        const move = offsetMap(out.text, text);
+        anchored = {
+          list: snapAnchorKeys(s.getBitmark(), out.anchors).map((a) => ({
+            key: a.input,
+            offset: move(a.output),
+            end: a.end,
+          })),
+          text,
+          version: editor.getModel()?.getVersionId() ?? -1,
+          bitmark: s.getBitmark(),
+        };
+        link.member?.invalidate();
+      },
+      () => undefined,
+    );
+  };
 
   /**
    * This pane made the document's current text (it was the last edit's
@@ -219,7 +365,19 @@ export const createPane = (
         state.notice = undefined;
         state.renderError = undefined;
         state.stale = false;
-        if (show(out.text, force)) markers?.pin(out.text, out.bitStarts);
+        if (show(out.text, force)) {
+          anchored = {
+            list: snapAnchorKeys(s.getBitmark(), out.anchors ?? []).map((a) => ({
+              key: a.input,
+              offset: a.output,
+              end: a.end,
+            })),
+            text: out.text,
+            version: editor.getModel()?.getVersionId() ?? -1,
+            bitmark: s.getBitmark(),
+          };
+          markers?.pin(out.text, out.bitStarts);
+        }
         showBanner();
         options.onRender?.({ durationMs: out.durationMs });
       },
@@ -303,6 +461,7 @@ export const createPane = (
       if (!error) {
         isSource = true;
         pending = false;
+        realignAnchors();
       }
       state.sourceError = error?.message;
       // A JSON syntax error is marked by Monaco's JSON language already.
@@ -332,6 +491,11 @@ export const createPane = (
     applyTheme: (next: Parameters<PaneControl['applyTheme']>[0]) => {
       theme?.dispose();
       theme = next === undefined ? undefined : applyBitmarkTheme(container, next);
+    },
+    // A switch only redraws: scrolling and the match itself are untouched.
+    syncViewChanged: () => {
+      drawGuide();
+      syncView.onMatch(lastMatch);
     },
   } satisfies PaneControl);
 

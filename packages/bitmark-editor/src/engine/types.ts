@@ -53,6 +53,23 @@ export interface OutputWithBitStarts {
    * the user typed it in (main's PLAN-020). `undefined` from an older parser.
    */
   inputStarts: number[] | undefined;
+  /**
+   * Fixed points inside the bits (parser PLAN-266, 7.19+): where each block,
+   * list item, divider and tag starts in the input (`input`) and where its
+   * value starts in the output (`output`), ordered by `input`. Empty where
+   * the parser reports none for the conversion (it does for bitmark → JSON,
+   * HTML and XML);
+   * `undefined` from an older parser.
+   */
+  anchors: Anchor[] | undefined;
+}
+
+/** One bit anchor (UTF-16 offsets). */
+export interface Anchor {
+  input: number;
+  output: number;
+  /** The bit's end: its last visible character and its value's end (the bit's last anchor). */
+  end?: boolean;
 }
 
 /** What the parser can do; fixed per module, independent of the variant. */

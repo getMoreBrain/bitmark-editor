@@ -65,6 +65,17 @@ export interface BitmarkSessionOptions {
    * own editors and the session's panes link together.
    */
   scrollGroup?: ScrollSyncGroup;
+  /**
+   * Draw the scroll-sync guide line in each linked pane, where they are
+   * matched (PLAN-028 D7). Default true. Only linked panes have one.
+   */
+  syncLine?: boolean;
+  /**
+   * Highlight the block under the cursor, in its pane and the matching
+   * block in the others (PLAN-028 D8), whether or not their scrolling is
+   * linked. Default true.
+   */
+  syncMatch?: boolean;
   messages?: Partial<Omit<BitmarkEditorMessages, 'labels'>> & {
     labels?: Partial<Record<PaneType, string>>;
   };
@@ -130,12 +141,21 @@ export interface BitmarkSession {
    * keeps the last one).
    */
   setBitmark(text: string, origin?: EditOrigin | false): void;
-  /** The document as JSON text (computed on demand). */
+  /**
+   * The document as JSON text (computed on demand): exactly the JSON pane's
+   * text, the parser's pretty JSON with parser 7.19 or later.
+   */
   getJson(options?: { mode?: 'optimized' | 'full' }): Promise<string>;
   readonly lastEdit: LastEdit | undefined;
   panes(): readonly BitmarkPane[];
   /** Link exactly these panes' scrolling; every other pane scrolls alone (D9). */
   setScrollSync(panes: readonly BitmarkPane[]): void;
+  /** Whether the scroll-sync guide line is drawn (`syncLine`). */
+  readonly syncLine: boolean;
+  setSyncLine(on: boolean): void;
+  /** Whether the matching block is highlighted (`syncMatch`). */
+  readonly syncMatch: boolean;
+  setSyncMatch(on: boolean): void;
   setTheme(theme: BitmarkTheme): void;
   on<K extends keyof SessionEvents>(event: K, listener: (e: SessionEvents[K]) => void): () => void;
   dispose(): void;
@@ -183,4 +203,6 @@ export interface PaneControl {
   showSourceError(error: Error | undefined): void;
   setStale(stale: boolean): void;
   applyTheme(theme: BitmarkTheme | undefined): void;
+  /** `syncLine` or `syncMatch` changed: draw or hide them. */
+  syncViewChanged(): void;
 }

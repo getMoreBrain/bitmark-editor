@@ -1,7 +1,7 @@
 import type { ConvertOptions, Feature } from '@gmb/bitmark-parser';
 
 import { jsonWithBitStarts } from '../json/jsonText.js';
-import { BitmarkEngine, BitmarkEngineError, RawParserModule } from './types.js';
+import { Anchor, BitmarkEngine, BitmarkEngineError, RawParserModule } from './types.js';
 
 // The string-based API (`convert`, `info`) reports failures by returning an
 // `error: …`-prefixed string rather than throwing.
@@ -25,6 +25,23 @@ export const spanOutputStart = (span: { outputStart?: number; start?: number }):
 /** The offsets, or `undefined` when the parser gave none (one older than PLAN-223). */
 const offsets = (values: readonly unknown[] | undefined): number[] | undefined =>
   values?.every((v) => typeof v === 'number') ? (values as number[]) : undefined;
+
+/**
+ * The anchors of a `convertWithDetails` result (parser PLAN-266), or
+ * `undefined` from a parser without them. Read structurally, so the core
+ * still builds against a parser whose types predate them.
+ */
+const anchorsOf = (result: object): Anchor[] | undefined => {
+  const found = (result as { bitAnchors?: { anchors?: unknown } }).bitAnchors?.anchors;
+  if (!Array.isArray(found)) return undefined;
+  // Each bit's last anchor is its end (parser PLAN-266 D3).
+  const list = found as { index: number; inputOffset: number; outputOffset: number }[];
+  return list.map((a, i) => ({
+    input: a.inputOffset,
+    output: a.outputOffset,
+    ...(list[i + 1]?.index !== a.index && { end: true }),
+  }));
+};
 
 /** Positions in UTF-16, the editors' own units. */
 const UTF16 = { positionEncoding: 'utf-16' } as const;
@@ -98,13 +115,19 @@ export const createBitmarkEngine = (
             output: throwIfParserError(module.convert(input, opts)),
             bitStarts: undefined,
             inputStarts: undefined,
+            anchors: undefined,
           };
         }
-        const { output, bitSpans } = module.convertWithDetails(input, { ...opts, bitSpans: true });
+        // `bitAnchors` (PLAN-028 D2): a parser that predates it ignores the
+        // flag and returns no anchors.
+        const details = { ...opts, bitSpans: true, bitAnchors: true };
+        const result = module.convertWithDetails(input, details);
+        const { output, bitSpans } = result;
         return {
           output: throwIfParserError(output),
           bitStarts: bitSpans?.spans.map(spanOutputStart),
           inputStarts: offsets(bitSpans?.spans.map((span) => span.inputStart)),
+          anchors: anchorsOf(result),
         };
       }),
     semanticTokens: (input) =>

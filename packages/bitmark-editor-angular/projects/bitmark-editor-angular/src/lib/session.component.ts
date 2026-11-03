@@ -55,6 +55,10 @@ export class BmSessionComponent implements OnInit, OnDestroy, ControlValueAccess
   /** Set Monaco's (page-wide) theme from `theme` too. Read at start. Default: the config's, else false. */
   readonly applyMonacoTheme = input<boolean>();
   readonly debounceMs = input<number>();
+  /** Draw the scroll-sync guide line (default true). */
+  readonly syncLine = input<boolean>();
+  /** Highlight the block matching the cursor (default true). */
+  readonly syncMatch = input<boolean>();
   /** The JSON schema: an object, a URL, or `false`. */
   readonly schema = input<unknown>();
 
@@ -89,6 +93,16 @@ export class BmSessionComponent implements OnInit, OnDestroy, ControlValueAccess
       const s = this.session();
       if (s && theme !== undefined) s.setTheme(theme);
     });
+    effect(() => {
+      const on = this.syncLine();
+      const s = this.session();
+      if (s && on !== undefined) s.setSyncLine(on);
+    });
+    effect(() => {
+      const on = this.syncMatch();
+      const s = this.session();
+      if (s && on !== undefined) s.setSyncMatch(on);
+    });
   }
 
   ngOnInit(): void {
@@ -119,6 +133,8 @@ export class BmSessionComponent implements OnInit, OnDestroy, ControlValueAccess
         applyMonacoTheme: this.applyMonacoTheme() ?? this.config.applyMonacoTheme,
         messages: this.config.messages,
         debounceMs: this.debounceMs(),
+        syncLine: this.syncLine(),
+        syncMatch: this.syncMatch(),
         schema: this.schema() ?? this.config.schema,
       }),
     );

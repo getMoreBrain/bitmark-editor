@@ -4,6 +4,7 @@ import type { BitmarkEngine } from '../engine/types.js';
 import { BITMARK_LANGUAGE_ID } from '../monaco/setup.js';
 import type { BitmarkPane, BitmarkSession } from '../session/types.js';
 import { createPane, PaneOptions, PaneSpec } from './createPane.js';
+import { jsonTextFor } from './jsonText.js';
 
 /** The bitmark pane: the document itself, with the editor services (D1). */
 export const createBitmarkPane = (
@@ -63,7 +64,8 @@ export const createJsonPane = (
         });
         return { bitmark: output, inputStarts };
       },
-      fromSession: (engine, s) => engine.bitmarkToJsonText(s.getBitmark(), { mode: options?.mode }),
+      // The same JSON as `session.getJson()` (PLAN-028 D3, PLAN-029 R3).
+      fromSession: (engine, s) => jsonTextFor(engine, s.getBitmark(), options?.mode),
     },
     options,
   );
@@ -88,11 +90,15 @@ const mappingSpec = (type: 'html' | 'xml', mapping: string, language: string): P
   fromSession: async (engine, s) => {
     const bitmark = s.getBitmark();
     if (bitmark === '') return { text: '', bitStarts: [] };
-    const { output, bitStarts } = await engine.convertWithBitStarts(bitmark, {
+    // Pretty: one element per line, as the JSON pane is (it reads back to
+    // the same bitmark as compact markup). With the parser's anchors
+    // (7.19+): each element's `<` (PLAN-028 ET5).
+    const { output, bitStarts, anchors } = await engine.convertWithBitStarts(bitmark, {
       inputFormat: 'bitmark',
       outputFormat: mapping,
+      pretty: true,
     });
-    return { text: output, bitStarts };
+    return { text: output, bitStarts, anchors };
   },
 });
 

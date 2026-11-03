@@ -80,11 +80,22 @@ interface RoleStyle extends Omit<TokenStyle, 'color'> {
 }
 
 /**
+ * Token types the parser no longer emits but an older parser in the peer
+ * range still does: the `|code` block, removed in bitmark-parser 7.9.1.
+ * Styled for such a parser; typing them apart lets the build pass against
+ * the parser's legend before and after.
+ */
+type RetiredTokenType = 'codeSigil' | 'codeLanguage' | 'codeBody';
+
+/** Every token type the editor styles. */
+type StyledTokenType = SemanticTokenType | RetiredTokenType;
+
+/**
  * Style per parser token type. Typed against the parser's `SemanticTokenType`
  * so a legend change in the parser fails the build here rather than silently
  * un-colouring tokens.
  */
-const TYPE_ROLES: Record<SemanticTokenType, RoleStyle> = {
+const TYPE_ROLES: Record<StyledTokenType, RoleStyle> = {
   frontmatter: { role: 'comment', fontStyle: 'italic' },
   bitSigil: { role: 'sigil' },
   bitType: { role: 'bitType', fontWeight: 'bold' },
@@ -152,11 +163,8 @@ const resolve = <K extends string>(
 };
 
 /** The dark token styles (the defaults). */
-export const TOKEN_STYLES: Record<SemanticTokenType, TokenStyle> = resolve(
-  TYPE_ROLES,
-  DARK_PALETTE,
-);
-export const LIGHT_TOKEN_STYLES: Record<SemanticTokenType, TokenStyle> = resolve(
+export const TOKEN_STYLES: Record<StyledTokenType, TokenStyle> = resolve(TYPE_ROLES, DARK_PALETTE);
+export const LIGHT_TOKEN_STYLES: Record<StyledTokenType, TokenStyle> = resolve(
   TYPE_ROLES,
   LIGHT_PALETTE,
 );

@@ -10,7 +10,14 @@ export interface CustomTheme {
   monacoTheme?: string;
   /** Per token type or modifier: the properties to change. */
   tokens?: Partial<Record<TokenKey, Partial<TokenStyle>>>;
+  /** The scroll-sync guide line's colour (PLAN-028 D7), any CSS colour. */
+  syncLine?: string;
+  /** The matching block's background (PLAN-028 D8), any CSS colour. */
+  syncMatch?: string;
 }
+
+/** The CSS custom properties a custom theme's own colours set. */
+const THEME_VARS = { syncLine: '--bm-sync-line', syncMatch: '--bm-sync-match' } as const;
 
 export type BitmarkTheme = ThemeBase | 'auto' | CustomTheme;
 
@@ -82,6 +89,12 @@ export const applyBitmarkTheme = (
         element.style.setProperty(v, value);
         inlineVars.push(v);
       }
+    }
+    for (const [key, v] of Object.entries(THEME_VARS) as [keyof typeof THEME_VARS, string][]) {
+      const value = custom?.[key];
+      if (value === undefined) continue;
+      element.style.setProperty(v, value);
+      inlineVars.push(v);
     }
 
     if (options.applyMonacoTheme && options.monaco) {
