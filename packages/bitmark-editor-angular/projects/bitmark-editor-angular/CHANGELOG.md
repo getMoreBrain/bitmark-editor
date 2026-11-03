@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.1 (2026-11-03)
+
+### Updated
+
+- README
+- Repository configuration
+
+**Packages:** [`@gmb/bitmark-editor@0.3.1`](https://www.npmjs.com/package/@gmb/bitmark-editor/v/0.3.1), [`@gmb/bitmark-editor-angular@0.3.1`](https://www.npmjs.com/package/@gmb/bitmark-editor-angular/v/0.3.1)
+
 ## 0.3.0 (2026-11-03)
 
 ### Updated

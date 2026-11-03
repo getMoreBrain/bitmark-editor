@@ -3,7 +3,7 @@
 [![npm](https://img.shields.io/npm/v/@gmb/bitmark-editor?label=%40gmb%2Fbitmark-editor)](https://www.npmjs.com/package/@gmb/bitmark-editor)
 [![npm](https://img.shields.io/npm/v/@gmb/bitmark-editor-angular?label=%40gmb%2Fbitmark-editor-angular)](https://www.npmjs.com/package/@gmb/bitmark-editor-angular)
 [![Downloads](https://img.shields.io/npm/dm/@gmb/bitmark-editor)](https://www.npmjs.com/package/@gmb/bitmark-editor)
-[![Publish](https://github.com/getMoreBrain/bitmark-editor/actions/workflows/publish.yml/badge.svg)](https://github.com/getMoreBrain/bitmark-editor/actions/workflows/publish.yml)
+[![Publish](https://github.com/getMoreBrain/bitmark-editor/actions/workflows/release.yml/badge.svg)](https://github.com/getMoreBrain/bitmark-editor/actions/workflows/release.yml)
 [![License](https://img.shields.io/npm/l/@gmb/bitmark-editor)](./LICENSE)
 
 A bitmark editor built on [Monaco](https://microsoft.github.io/monaco-editor/),
