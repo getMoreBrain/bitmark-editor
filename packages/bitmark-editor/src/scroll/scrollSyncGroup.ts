@@ -152,7 +152,8 @@ interface Pane {
  *   follower puts the matching position at the same fraction of its own
  *   viewport. Positions map between bit starts and bit anchors;
  * - a cursor move highlights its block, and the matching block in every
- *   other member, linked or not (D8);
+ *   other member, linked or not (D8); after a change, the highlights are
+ *   matched again from that cursor, even once no member has focus;
  * - the group's own scrolls of followers are not taken as the user's (echo
  *   suppression; Monaco reports `setScrollTop` synchronously);
  * - after a content, marker or layout change the focused member leads, and
@@ -176,6 +177,11 @@ export const createScrollSyncGroup = (
     { pane: Pane; cursor: boolean; fraction: number; bias: number; top: number } | undefined;
   /** Members changed since the last settle (PLAN-029 R7). */
   const dirty = new Set<Pane>();
+  /**
+   * The member whose cursor made the highlights (PLAN-031 D1): matched from
+   * again after a change while no member has focus (a tab was clicked).
+   */
+  let matchSource: Pane | undefined;
 
   /** The pixel top of `offset` in `pane`'s text. */
   const topAt = (pane: Pane, offset: number): number | undefined => {
@@ -291,9 +297,16 @@ export const createScrollSyncGroup = (
   /**
    * The block of `dst` matching offset `at` in `src` (PLAN-028 D8): from the
    * last bit start or anchor at or before it, to the next one in `dst`. A
-   * bit's end starts no block: just past it, the bit's last block; further,
-   * between bits, none.
+   * bit's end starts no block: just past it, or further along its line (text
+   * typed onto the bit, not converted yet: PLAN-031 D2), the bit's last
+   * block; on a later line, between bits, none.
    */
+  /** Whether offsets `a` and `b` of `pane`'s text are on one line. */
+  const sameLine = (pane: Pane, a: number, b: number): boolean => {
+    const model = pane.editor.getModel();
+    return !!model && model.getPositionAt(a).lineNumber === model.getPositionAt(b).lineNumber;
+  };
+
   const blockFor = (
     src: Pane,
     dst: Pane,
@@ -314,7 +327,9 @@ export const createScrollSyncGroup = (
       if (!last || p[0] >= last[0]) last = p;
       if (!p[2] && (!best || p[0] >= best[0])) best = p;
     }
-    if (!best || (last?.[2] && at > last[0] + 1)) return undefined;
+    if (!best || (last?.[2] && at > last[0] + 1 && !sameLine(src, last[0], at))) {
+      return undefined;
+    }
     const start = best[1];
     let end: number | undefined;
     let to: number | undefined;
@@ -400,6 +415,7 @@ export const createScrollSyncGroup = (
     const model = src.editor.getModel();
     const cursor = src.editor.getPosition();
     if (!model || !cursor) return;
+    matchSource = src;
     const at = model.getOffsetAt(cursor);
     // The user's own block too: the narrowest any follower pairs it by.
     let own: MatchRange | undefined;
@@ -437,9 +453,11 @@ export const createScrollSyncGroup = (
       }
       follow();
     }
-    // The user is working in a pane: its cursor's block, matched again in
-    // the new content (an edit, the regenerated panes after it).
-    if (focused) match(focused);
+    // The cursor's block, matched again in the new content (an edit, the
+    // regenerated panes after it, a pane shown or joined): the focused
+    // member's cursor, else the one that made the highlights (PLAN-031 D1).
+    const src = focused ?? (matchSource && panes.includes(matchSource) ? matchSource : undefined);
+    if (src) match(src);
     else for (const p of changed) p.options.onMatch?.(undefined);
   };
 
@@ -474,6 +492,7 @@ export const createScrollSyncGroup = (
         panes.splice(i, 1);
         dirty.delete(pane);
         if (leader === pane) leader = undefined;
+        if (matchSource === pane) matchSource = undefined;
         const fraction = line?.fraction;
         if (line?.pane === pane) line = undefined;
         pane.options.onSyncLine?.(undefined);

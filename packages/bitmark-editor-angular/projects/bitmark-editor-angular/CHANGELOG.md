@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.1 (2026-11-03)
+
+### Updated
+
+- Scroll sync
+- Core
+- README
+
+**Packages:** [`@gmb/bitmark-editor@0.4.1`](https://www.npmjs.com/package/@gmb/bitmark-editor/v/0.4.1), [`@gmb/bitmark-editor-angular@0.4.1`](https://www.npmjs.com/package/@gmb/bitmark-editor-angular/v/0.4.1)
+
 ## 0.4.0 (2026-11-03)
 
 ### Updated

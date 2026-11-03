@@ -80,24 +80,13 @@ const resync = (a: Line[], b: Line[], i: number, j: number): [number, number] | 
   return undefined;
 };
 
-/**
- * Where each offset of `before` is in `after`, through any number of changes
- * (PLAN-028 D5): lines the two share keep their place; inside each changed
- * stretch between them, {@link moveOffset} over that stretch alone. One
- * change within a line (a keystroke) needs no line walk.
- */
-export const offsetMap = (before: string, after: string): ((offset: number) => number) => {
-  const change = textChange(before, after);
-  if (
-    !before.slice(change.start, change.oldEnd).includes('\n') &&
-    !after.slice(change.start, change.newEnd).includes('\n')
-  ) {
-    return (offset) => moveOffset(offset, change);
-  }
+/** Runs of lines the two texts share, in order: [start in before, start in after, length]. */
+type Run = [number, number, number];
+
+const sharedRuns = (before: string, after: string): Run[] => {
   const a = linesOf(before);
   const b = linesOf(after);
-  // Runs of shared lines: [start in before, start in after, length].
-  const runs: [number, number, number][] = [];
+  const runs: Run[] = [];
   let i = 0;
   let j = 0;
   while (i < a.length && j < b.length) {
@@ -116,6 +105,24 @@ export const offsetMap = (before: string, after: string): ((offset: number) => n
     i++;
     j++;
   }
+  return runs;
+};
+
+/** Whether `change` stays within one line of both texts (a keystroke). */
+const withinLine = (before: string, after: string, change: TextChange): boolean =>
+  !before.slice(change.start, change.oldEnd).includes('\n') &&
+  !after.slice(change.start, change.newEnd).includes('\n');
+
+/**
+ * Where each offset of `before` is in `after`, through any number of changes
+ * (PLAN-028 D5): lines the two share keep their place; inside each changed
+ * stretch between them, {@link moveOffset} over that stretch alone. One
+ * change within a line (a keystroke) needs no line walk.
+ */
+export const offsetMap = (before: string, after: string): ((offset: number) => number) => {
+  const change = textChange(before, after);
+  if (withinLine(before, after, change)) return (offset) => moveOffset(offset, change);
+  const runs = sharedRuns(before, after);
   return (offset) => {
     // The last run starting at or before `offset`.
     let lo = 0;
@@ -141,4 +148,51 @@ export const offsetMap = (before: string, after: string): ((offset: number) => n
     const gap = textChange(before.slice(oldFrom, oldTo), after.slice(newFrom, newTo));
     return newFrom + moveOffset(offset - oldFrom, gap);
   };
+};
+
+/** One replaced stretch: `before[oldStart, oldEnd)` became `after[newStart, newEnd)`. */
+export interface TextEdit {
+  oldStart: number;
+  oldEnd: number;
+  newStart: number;
+  newEnd: number;
+}
+
+/**
+ * The stretches that changed between two texts, in order and apart (PLAN-031
+ * D3): between the lines they share, each trimmed to where the texts differ.
+ * Two changes far apart (a value, and the source echoed at the end of the
+ * JSON) are two edits, not one that spans everything between them.
+ */
+export const textEdits = (before: string, after: string): TextEdit[] => {
+  if (before === after) return [];
+  const change = textChange(before, after);
+  const runs = withinLine(before, after, change) ? [] : sharedRuns(before, after);
+  if (runs.length === 0) {
+    return [
+      {
+        oldStart: change.start,
+        oldEnd: change.oldEnd,
+        newStart: change.start,
+        newEnd: change.newEnd,
+      },
+    ];
+  }
+  const edits: TextEdit[] = [];
+  let oldFrom = 0;
+  let newFrom = 0;
+  for (const [oldAt, newAt, length] of [...runs, [before.length, after.length, 0] as Run]) {
+    if (oldAt > oldFrom || newAt > newFrom) {
+      const gap = textChange(before.slice(oldFrom, oldAt), after.slice(newFrom, newAt));
+      edits.push({
+        oldStart: oldFrom + gap.start,
+        oldEnd: oldFrom + gap.oldEnd,
+        newStart: newFrom + gap.start,
+        newEnd: newFrom + gap.newEnd,
+      });
+    }
+    oldFrom = oldAt + length;
+    newFrom = newAt + length;
+  }
+  return edits;
 };

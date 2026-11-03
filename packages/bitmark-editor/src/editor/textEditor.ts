@@ -2,6 +2,7 @@ import type * as MonacoApi from 'monaco-editor';
 
 import { BITMARK_MODEL_SCHEME } from '../monaco/jsonSchema.js';
 import type { Monaco, TextModel } from '../monaco/types.js';
+import { textEdits } from '../scroll/textChange.js';
 
 /**
  * Passes on only a value that differs from the last one the editor held
@@ -26,15 +27,46 @@ export const createChangeFilter = (initial: string) => {
   };
 };
 
+/** Whether `code` is the first half of a UTF-16 surrogate pair, or a CR (of a CRLF). */
+const splitsPair = (code: number): boolean => (code >= 0xd800 && code <= 0xdbff) || code === 13;
+
 /**
- * Replace a model's whole text as one undoable edit, not `setValue`: the
- * pane's undo stack survives regeneration (PLAN-022 D16). The cursor is
- * clamped by Monaco; scroll is left where it was.
+ * Replace a model's text as one undoable edit, not `setValue`: the pane's
+ * undo stack survives regeneration (PLAN-022 D16). Only the stretches that
+ * changed are replaced (PLAN-031 D3), so every other line keeps its syntax
+ * colours, decorations and markers: a regeneration after each keystroke
+ * does not flash the pane uncoloured. The cursor is clamped by Monaco;
+ * scroll is left where it was.
  */
 export const replaceAllKeepingUndo = (model: TextModel, text: string): void => {
-  if (model.getValue() === text) return;
+  const before = model.getValue();
+  if (before === text) return;
+  const operations = textEdits(before, text).map((e) => {
+    let { oldStart, oldEnd, newStart, newEnd } = e;
+    // Never split a surrogate pair or a CRLF: widen the stretch over it
+    // (the characters around a stretch are the same in both texts).
+    if (oldStart > 0 && splitsPair(before.charCodeAt(oldStart - 1))) {
+      oldStart--;
+      newStart--;
+    }
+    if (oldEnd > oldStart && oldEnd < before.length && splitsPair(before.charCodeAt(oldEnd - 1))) {
+      oldEnd++;
+      newEnd++;
+    }
+    const from = model.getPositionAt(oldStart);
+    const to = model.getPositionAt(oldEnd);
+    return {
+      range: {
+        startLineNumber: from.lineNumber,
+        startColumn: from.column,
+        endLineNumber: to.lineNumber,
+        endColumn: to.column,
+      },
+      text: text.slice(newStart, newEnd),
+    };
+  });
   model.pushStackElement();
-  model.pushEditOperations([], [{ range: model.getFullModelRange(), text }], () => null);
+  model.pushEditOperations([], operations, () => null);
   model.pushStackElement();
 };
 
