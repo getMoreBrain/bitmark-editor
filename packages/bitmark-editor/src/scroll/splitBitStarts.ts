@@ -14,11 +14,35 @@ export interface SplitBitStarts extends MonacoApi.IDisposable {
 
 const warnedNoStart = new WeakSet<BitmarkEngine>();
 
+type ContentChange = Pick<
+  MonacoApi.editor.IModelContentChange,
+  'rangeOffset' | 'rangeLength' | 'text'
+>;
+
+/**
+ * Where `offset` is after `changes` (one Monaco event: each range is in the
+ * text before them all). Past a change, it moves with the text; inside a
+ * replaced range, it stays where it was, within what replaced it.
+ */
+export const shiftOffset = (offset: number, changes: readonly ContentChange[]): number => {
+  let delta = 0;
+  let inside: ContentChange | undefined;
+  for (const c of changes) {
+    if (c.rangeOffset + c.rangeLength <= offset) delta += c.text.length - c.rangeLength;
+    else if (c.rangeOffset < offset) inside = c;
+  }
+  return inside
+    ? inside.rangeOffset + delta + Math.min(offset - inside.rangeOffset, inside.text.length)
+    : offset + delta;
+};
+
 /**
  * Where each bit starts in a bitmark pane's text: the parser's `splitBits`
  * `start` (PLAN-018 D1), split asynchronously once per content version
  * (PLAN-022 D14). `onChange` is called when new starts land, so the scroll
  * group can re-measure. Bitmark that is broken still splits, at each `[.`.
+ * Until a change's split lands, the starts move with the text it changed
+ * (PLAN-032 D1): typing never leaves them pointing at the text before it.
  */
 export const createSplitBitStarts = (
   editor: Pick<
@@ -69,7 +93,13 @@ export const createSplitBitStarts = (
     );
   };
 
-  const listeners = [editor.onDidChangeModelContent(refresh), editor.onDidChangeModel(refresh)];
+  const listeners = [
+    editor.onDidChangeModelContent((e) => {
+      if (e.changes?.length) starts = starts.map((start) => shiftOffset(start, e.changes));
+      refresh();
+    }),
+    editor.onDidChangeModel(refresh),
+  ];
   refresh();
 
   return {
