@@ -6,6 +6,7 @@ export type {
   BitmarkPane,
   BitmarkSession,
   BitmarkSessionOptions,
+  BitmarkWritingOptions,
   EditOrigin,
   EngineSource,
   LastEdit,

@@ -17,6 +17,7 @@ import type {
   BitmarkPane,
   BitmarkSession,
   BitmarkSessionOptions,
+  BitmarkWritingOptions,
   EngineSource,
   PaneType,
 } from '../session/types.js';
@@ -93,7 +94,7 @@ export const defineBitmarkElements = (): void => {
 
   /** `<bitmark-session>`: one document; renders nothing itself. */
   class BitmarkSessionElement extends HTMLElement {
-    static observedAttributes = ['value', 'theme', 'sync-line', 'sync-match'];
+    static observedAttributes = ['value', 'theme', 'sync-line', 'sync-match', 'inline-style'];
     #session: BitmarkSession | undefined;
     #starting = false;
     /** +1 per start and per removal: a start that is no longer current gives up (no second session). */
@@ -183,6 +184,13 @@ export const defineBitmarkElements = (): void => {
       if (name === 'theme' && value) this.#session.setTheme(value as BitmarkTheme);
       if (name === 'sync-line') this.#session.setSyncLine(value !== 'off');
       if (name === 'sync-match') this.#session.setSyncMatch(value !== 'off');
+      if (name === 'inline-style') this.#session.setBitmarkOptions(this.#bitmarkOptions());
+    }
+
+    /** `inline-style="toggle"` or `"legacy"`: how bitmark made from another pane is written (PLAN-046). */
+    #bitmarkOptions(): BitmarkWritingOptions | undefined {
+      const style = this.getAttribute('inline-style');
+      return style === 'toggle' || style === 'legacy' ? { inlineStyle: style } : undefined;
     }
 
     /** Start now, whatever `lazy` says. */
@@ -241,6 +249,7 @@ export const defineBitmarkElements = (): void => {
           debounceMs: Number(this.getAttribute('debounce') ?? 0) || 0,
           syncLine: this.getAttribute('sync-line') !== 'off',
           syncMatch: this.getAttribute('sync-match') !== 'off',
+          bitmarkOptions: this.#bitmarkOptions(),
           theme: (this.getAttribute('theme') as BitmarkTheme | null) ?? undefined,
           // The package's own Monaco (`/bundled`) takes the session's theme.
           applyMonacoTheme:
@@ -573,6 +582,7 @@ export const defineBitmarkElements = (): void => {
       'apply-monaco-theme',
       'sync-line',
       'sync-match',
+      'inline-style',
     ];
     static observedAttributes = [...BitmarkEditorElement.FORWARDED, 'panes'];
     #session: BitmarkSessionElement | undefined;

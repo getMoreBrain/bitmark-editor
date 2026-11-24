@@ -42,6 +42,31 @@ export const jsonDefaultsOf = (monaco: Monaco): JsonDefaults | undefined =>
 /** The schema's id in Monaco's JSON service. */
 export const BITMARK_SCHEMA_URI = 'https://getmorebrain.github.io/bitmark/bitmark.schema.json';
 
+/**
+ * A JSON document of more lines than this is not checked against the schema
+ * (PLAN-039 D2). Every use Monaco's JSON service makes of a schema (checking,
+ * hover, completion) matches the whole document against it, and the bitmark
+ * schema has one alternative per bit type: 15 ms a bit, and on a document of
+ * a few thousand bits the service runs out of stack.
+ */
+export const JSON_SCHEMA_MAX_LINES = 5000;
+
+/** Per Monaco: the bound schema's own `fileMatch`, and the models taken out of it. */
+const bindings = new WeakMap<object, { fileMatch: string[]; excluded: Set<string> }>();
+const bindingOf = (monaco: Monaco) => {
+  let binding = bindings.get(monaco);
+  if (!binding) {
+    binding = { fileMatch: [BITMARK_MODEL_FILE_MATCH], excluded: new Set() };
+    bindings.set(monaco, binding);
+  }
+  return binding;
+};
+/** The last pattern that matches decides, and one starting with `!` excludes. */
+const fileMatchOf = (binding: { fileMatch: string[]; excluded: Set<string> }): string[] => [
+  ...binding.fileMatch,
+  ...[...binding.excluded].map((uri) => `!${uri}`),
+];
+
 /** The schema URL beside an engine URL (`…/dist/browser/x.js` → `…/schema/…`). */
 export const schemaUrlFor = (engineUrl: string): string => {
   const clean = engineUrl.split('?')[0]!;
@@ -79,6 +104,8 @@ export const bindBitmarkJsonSchema = (
 ): boolean => {
   const jsonDefaults = jsonDefaultsOf(monaco);
   if (!jsonDefaults) return false;
+  const binding = bindingOf(monaco);
+  binding.fileMatch = options.fileMatch ?? [BITMARK_MODEL_FILE_MATCH];
   // Merge, never replace (D5): the host's own schemas and settings stay; only
   // the bitmark schema's entry is added or replaced.
   const current = jsonDefaults.diagnosticsOptions ?? {};
@@ -89,10 +116,48 @@ export const bindBitmarkJsonSchema = (
       ...(current.schemas ?? []).filter((entry) => entry.uri !== BITMARK_SCHEMA_URI),
       {
         uri: BITMARK_SCHEMA_URI,
-        fileMatch: options.fileMatch ?? [BITMARK_MODEL_FILE_MATCH],
-        schema,
+        fileMatch: fileMatchOf(binding),
+        schema: withoutDraft(schema),
       },
     ],
   });
   return true;
+};
+
+/**
+ * The schema without its draft (`$schema`), PLAN-039 D1. A JSON service that
+ * knows the draft only in part (Monaco up to 0.4x, for 2020-12) answers a
+ * schema naming it with one warning on the document's first line and checks
+ * nothing. Without the name every version checks with what it knows, and the
+ * versions that know 2020-12 take it for a schema that names no draft.
+ */
+const withoutDraft = (schema: unknown): unknown => {
+  if (typeof schema !== 'object' || schema === null || !('$schema' in schema)) return schema;
+  const { $schema: _draft, ...rest } = schema as Record<string, unknown>;
+  return rest;
+};
+
+/**
+ * Whether the bound schema applies to the model at `modelUri` (PLAN-039 D2):
+ * a pane takes its model out while its document is large. Kept from before
+ * the schema is bound.
+ */
+export const setBitmarkJsonSchemaApplies = (
+  monaco: Monaco,
+  modelUri: string,
+  applies: boolean,
+): void => {
+  const binding = bindingOf(monaco);
+  if (applies === !binding.excluded.has(modelUri)) return;
+  if (applies) binding.excluded.delete(modelUri);
+  else binding.excluded.add(modelUri);
+  const jsonDefaults = jsonDefaultsOf(monaco);
+  const current = jsonDefaults?.diagnosticsOptions;
+  if (!jsonDefaults || !current?.schemas?.some((entry) => entry.uri === BITMARK_SCHEMA_URI)) return;
+  jsonDefaults.setDiagnosticsOptions({
+    ...current,
+    schemas: current.schemas.map((entry) =>
+      entry.uri === BITMARK_SCHEMA_URI ? { ...entry, fileMatch: fileMatchOf(binding) } : entry,
+    ),
+  });
 };

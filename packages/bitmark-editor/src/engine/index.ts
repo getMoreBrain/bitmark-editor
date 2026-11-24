@@ -9,9 +9,14 @@ export {
   parserCdnUrl,
 } from './loadBitmarkEngine.js';
 export type {
+  Anchor,
   BitmarkEngine,
   CompletionOptions,
   EngineCapabilities,
+  EngineDocument,
+  EngineDocumentUpdate,
+  EngineViewOptions,
+  EngineViewUpdate,
   Feature,
   JsonText,
   OutputWithBitStarts,

@@ -24,6 +24,14 @@ export type ScrollSyncEditor = Pick<
 export interface ScrollSyncMember extends MonacoApi.IDisposable {
   /** The pane's bit starts changed without a content change (markers pinned, a split landed). */
   invalidate(): void;
+  /**
+   * The pane's positions were refined without a content change (PLAN-037):
+   * a member that learns its bits' heights as it shows them. Dropped and
+   * re-synced like `invalidate`, but the lead stays where it is: with the
+   * member if it leads, and not taken by the member that has focus. So a
+   * view being scrolled is not moved by its own measuring.
+   */
+  refine(): void;
   /** Take part in the linking (true) or scroll alone (false). Joining follows the leader. */
   setLinked(linked: boolean): void;
   readonly linked: boolean;
@@ -76,6 +84,62 @@ export interface JoinOptions {
   onMatch?: (range: MatchRange | undefined) => void;
 }
 
+/**
+ * A view of a host's own in the group that is not a Monaco editor (PLAN-041
+ * D1): a rendered preview, a list. Its positions are its bits, by index.
+ */
+export interface ScrollSyncView {
+  /** How many bits it shows. */
+  count(): number;
+  /** The top of bit `index` in the view's scroll range, in pixels. */
+  getTop(index: number): number;
+  getScrollTop(): number;
+  /** Scroll the view (the group following another member). */
+  setScrollTop(top: number): void;
+  getScrollHeight(): number;
+  /** The height of the part in view. */
+  getViewportHeight(): number;
+  /** Calls back when the user scrolled the view: not for `setScrollTop`. */
+  onDidScroll(listener: () => void): MonacoApi.IDisposable;
+  /** Calls back when its bits, their tops or its size changed. */
+  onDidChange(listener: () => void): MonacoApi.IDisposable;
+}
+
+export interface JoinViewOptions {
+  linked?: boolean;
+  /** As `JoinOptions.onSyncLine`. */
+  onSyncLine?: (fraction: number | undefined) => void;
+  /** The bit of this view matching the cursor in another member; `undefined` to clear it. */
+  onMatch?: (index: number | undefined) => void;
+}
+
+const NO_LISTENER: MonacoApi.IDisposable = { dispose: () => {} };
+
+/**
+ * `view` as the group reads an editor: bit `index` is the text offset
+ * `index`, on line `index + 1`. A view has no cursor and no text focus.
+ */
+const viewAsEditor = (view: ScrollSyncView): ScrollSyncEditor =>
+  ({
+    getModel: () => ({
+      getPositionAt: (offset: number) => ({ lineNumber: offset + 1, column: 1 }),
+    }),
+    getTopForPosition: (lineNumber: number) => view.getTop(lineNumber - 1),
+    getScrollTop: () => view.getScrollTop(),
+    setScrollTop: (top: number) => view.setScrollTop(top),
+    getScrollHeight: () => view.getScrollHeight(),
+    getLayoutInfo: () => ({ height: view.getViewportHeight() }),
+    hasTextFocus: () => false,
+    getPosition: () => null,
+    onDidChangeCursorPosition: () => NO_LISTENER,
+    onDidScrollChange: (
+      listener: (e: { scrollTopChanged: boolean; scrollHeightChanged: boolean }) => void,
+    ) => view.onDidScroll(() => listener({ scrollTopChanged: true, scrollHeightChanged: false })),
+    onDidChangeModelContent: (listener: () => void) => view.onDidChange(() => listener()),
+    onDidContentSizeChange: () => NO_LISTENER,
+    onDidLayoutChange: () => NO_LISTENER,
+  }) as unknown as ScrollSyncEditor;
+
 export interface ScrollSyncGroupOptions {
   /**
    * Run `settle` once the current changes are in (PLAN-029 R7): default the
@@ -123,6 +187,12 @@ export interface ScrollSyncGroup {
     bitStarts: () => readonly number[],
     options?: JoinOptions,
   ): ScrollSyncMember;
+  /**
+   * Add a view that is not an editor (PLAN-041 D1): it scrolls with the
+   * other members bit by bit. A view that learns its bits' tops as it shows
+   * them calls the member's `refine()` when they change.
+   */
+  joinView(view: ScrollSyncView, options?: JoinViewOptions): ScrollSyncMember;
   /** The current members, in join order. */
   members(): readonly ScrollSyncMember[];
 }
@@ -177,6 +247,8 @@ export const createScrollSyncGroup = (
     { pane: Pane; cursor: boolean; fraction: number; bias: number; top: number } | undefined;
   /** Members changed since the last settle (PLAN-029 R7). */
   const dirty = new Set<Pane>();
+  /** Of those, the members whose positions were only refined (PLAN-037). */
+  const refined = new Set<Pane>();
   /**
    * The member whose cursor made the highlights (PLAN-031 D1): matched from
    * again after a change while no member has focus (a tab was clicked).
@@ -443,13 +515,20 @@ export const createScrollSyncGroup = (
    */
   const settle = (): void => {
     const changed = [...dirty].filter((p) => panes.includes(p));
+    const onlyRefined = new Set(refined);
     dirty.clear();
+    refined.clear();
     if (changed.length === 0) return;
     const focused = panes.find((p) => p.editor.hasTextFocus());
+    // A refinement is no edit: whoever leads keeps the lead, the focused
+    // member does not take it (PLAN-037 D1).
+    const edited = changed.filter((p) => !onlyRefined.has(p));
     if (changed.some((p) => p.linked)) {
-      if (focused?.linked) leader = focused;
-      else if (leader && changed.includes(leader)) {
-        leader = linked().find((p) => !changed.includes(p)) ?? leader;
+      if (edited.length > 0) {
+        if (focused?.linked) leader = focused;
+        else if (leader && edited.includes(leader)) {
+          leader = linked().find((p) => !edited.includes(p)) ?? leader;
+        }
       }
       follow();
     }
@@ -462,10 +541,12 @@ export const createScrollSyncGroup = (
   };
 
   /** A member's positions are stale: dropped now, re-synced at the next settle. */
-  const refresh = (pane: Pane): void => {
+  const refresh = (pane: Pane, onlyRefined = false): void => {
     pane.tops = undefined;
     pane.offsetTops.clear();
     if (dirty.size === 0) schedule(settle);
+    if (!onlyRefined) refined.delete(pane);
+    else if (!dirty.has(pane)) refined.add(pane);
     dirty.add(pane);
   };
 
@@ -476,6 +557,7 @@ export const createScrollSyncGroup = (
         return pane.linked;
       },
       invalidate: () => refresh(pane),
+      refine: () => refresh(pane, true),
       setLinked: (next) => {
         if (next === pane.linked) return;
         pane.linked = next;
@@ -542,5 +624,12 @@ export const createScrollSyncGroup = (
     return member;
   };
 
-  return { join, members: () => panes.map((p) => p.member) };
+  const joinView = (view: ScrollSyncView, options: JoinViewOptions = {}): ScrollSyncMember =>
+    join(viewAsEditor(view), () => Array.from({ length: view.count() }, (_, index) => index), {
+      linked: options.linked,
+      onSyncLine: options.onSyncLine,
+      onMatch: options.onMatch && ((range) => options.onMatch!(range?.start)),
+    });
+
+  return { join, joinView, members: () => panes.map((p) => p.member) };
 };

@@ -47,14 +47,14 @@ Monaco and the parser can each be built-in or injected:
 
 ## Entry points
 
-| Entry | What it is |
-|---|---|
-| `@gmb/bitmark-editor` | The core: sessions, panes, the parser engine, themes, scroll linking. No Monaco inside. |
-| `@gmb/bitmark-editor/react` | React components: `<BitmarkSession>`, `<BitmarkPane>`. |
+| Entry                          | What it is                                                                                    |
+| ------------------------------ | --------------------------------------------------------------------------------------------- |
+| `@gmb/bitmark-editor`          | The core: sessions, panes, the parser engine, themes, scroll linking. No Monaco inside.       |
+| `@gmb/bitmark-editor/react`    | React components: `<BitmarkSession>`, `<BitmarkPane>`.                                        |
 | `@gmb/bitmark-editor/elements` | Custom elements (`<bitmark-session>`, `<bitmark-pane>`), defined on import. No Monaco inside. |
-| `@gmb/bitmark-editor/bundled` | The custom elements with the built-in Monaco. CDN-ready. |
-| `@gmb/bitmark-editor/worker` | A worker script that runs the parser off the main thread, for large documents. |
-| `@gmb/bitmark-editor-angular` | Angular components (a separate package). |
+| `@gmb/bitmark-editor/bundled`  | The custom elements with the built-in Monaco. CDN-ready.                                      |
+| `@gmb/bitmark-editor/worker`   | A worker script that runs the parser off the main thread, for large documents.                |
+| `@gmb/bitmark-editor-angular`  | Angular components (a separate package).                                                      |
 
 ## Quick start: React
 
@@ -68,9 +68,15 @@ import { useState } from 'react';
 import { monaco } from './monaco';
 
 export const App = () => {
-  const [doc, setDoc] = useState('[.article]\nHello **World**!');
+  const [doc, setDoc] = useState('[.article]\nHello (+bold)World(-bold)!');
   return (
-    <BitmarkSession monaco={monaco} theme="light" applyMonacoTheme value={doc} onChange={(e) => setDoc(e.bitmark)}>
+    <BitmarkSession
+      monaco={monaco}
+      theme="light"
+      applyMonacoTheme
+      value={doc}
+      onChange={(e) => setDoc(e.bitmark)}
+    >
       <BitmarkPane type="bitmark" style={{ height: 300 }} />
       <BitmarkPane type="json" style={{ height: 300 }} />
     </BitmarkSession>
@@ -140,7 +146,7 @@ import { monaco } from './monaco'; // as for React
 
 const session = createBitmarkSession({
   monaco,
-  value: '[.article]\nHello **World**!',
+  value: '[.article]\nHello (+bold)World(-bold)!',
   theme: 'light',
   applyMonacoTheme: true,
 });
@@ -181,7 +187,10 @@ elements and the built-in Monaco:
   <bitmark-pane type="bitmark" style="height: 300px"></bitmark-pane>
   <bitmark-pane type="json" style="height: 300px"></bitmark-pane>
 </bitmark-session>
-<script type="module" src="https://cdn.jsdelivr.net/npm/@gmb/bitmark-editor@0.4.2/dist/bundled/bundled.js"></script>
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/@gmb/bitmark-editor@0.5.0/dist/bundled/bundled.js"
+></script>
 ```
 
 `lazy="idle"` loads Monaco and the parser once the page has rendered. Until
@@ -199,9 +208,11 @@ load `/elements`, which has no Monaco inside:
 <script src="/monaco/min/vs/loader.js"></script>
 <script type="module">
   require.config({ paths: { vs: '/monaco/min/vs' } });
-  const monaco = await new Promise((resolve) => require(['vs/editor/editor.main'], () => resolve(window.monaco)));
+  const monaco = await new Promise((resolve) =>
+    require(['vs/editor/editor.main'], () => resolve(window.monaco)),
+  );
   document.querySelector('bitmark-session').monaco = monaco;
-  await import('https://cdn.jsdelivr.net/npm/@gmb/bitmark-editor@0.4.2/dist/esm/elements/index.js');
+  await import('https://cdn.jsdelivr.net/npm/@gmb/bitmark-editor@0.5.0/dist/esm/elements/index.js');
 </script>
 ```
 
@@ -212,10 +223,11 @@ then load the elements (`/bundled` here, or `/elements` with your Monaco):
 
 ```html
 <script type="module">
-  const parser = await import('https://cdn.jsdelivr.net/npm/@gmb/bitmark-parser@7.9.0/dist/browser/bitmark-parser.min.js');
+  const parser =
+    await import('https://cdn.jsdelivr.net/npm/@gmb/bitmark-parser@7.9.0/dist/browser/bitmark-parser.min.js');
   await parser.init({ feature: 'full' });
   document.querySelector('bitmark-session').engine = { module: parser, feature: 'full' };
-  await import('https://cdn.jsdelivr.net/npm/@gmb/bitmark-editor@0.4.2/dist/bundled/bundled.js');
+  await import('https://cdn.jsdelivr.net/npm/@gmb/bitmark-editor@0.5.0/dist/bundled/bundled.js');
 </script>
 ```
 
@@ -252,6 +264,20 @@ parser types `init` as returning `Promise<unknown>`, where the editor expects
 <!-- docs-site-links
 More: [the parser](https://getmorebrain.github.io/bitmark-editor/guides/parser/).
 -->
+
+## Search
+
+One query over several editors: counts for each, Next and Previous through one
+editor and on to the next, replace in the active one. The package gives the
+search (`createSearchController`, `createSearchState`, `createSearchTargets`,
+`attachSearchShortcut`); the bar to type in is yours. `findInElement` finds
+the same query in a rendered view of your own, as DOM ranges to highlight.
+
+## Your own views
+
+An editor of your own joins a session's scroll linking with
+`session.scrollGroup.join(…)`; a view that is not an editor (a rendered
+preview, a list) with `session.scrollGroup.joinView(…)`.
 
 ## More
 

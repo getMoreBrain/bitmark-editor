@@ -4,6 +4,7 @@ import type { BitmarkEngine } from '../engine/types.js';
 import { BITMARK_LANGUAGE_ID } from '../monaco/setup.js';
 import type { BitmarkPane, BitmarkSession } from '../session/types.js';
 import { createPane, PaneOptions, PaneSpec } from './createPane.js';
+import { jsonMemberStart } from './jsonMemberStart.js';
 import { jsonTextFor } from './jsonText.js';
 
 /** The bitmark pane: the document itself, with the editor services (D1). */
@@ -54,11 +55,12 @@ export const createJsonPane = (
       inputFormat: 'json',
       editable: true,
       scroll: 'pinned',
-      toBitmark: async (engine, text) => {
+      toBitmark: async (engine, text, writing) => {
         // The engine recovers leniently from malformed JSON: check the
         // syntax first, so the user sees the real error (a SyntaxError).
         JSON.parse(text);
         const { output, inputStarts } = await engine.convertWithBitStarts(text, {
+          ...writing,
           inputFormat: 'json',
           outputFormat: 'bitmark',
         });
@@ -66,6 +68,11 @@ export const createJsonPane = (
       },
       // The same JSON as `session.getJson()` (PLAN-028 D3, PLAN-029 R3).
       fromSession: (engine, s) => jsonTextFor(engine, s.getBitmark(), options?.mode),
+      // The same text again, as a view (PLAN-035 D6): the parser's pretty JSON.
+      view: { outputFormat: 'json', mode: options?.mode, pretty: true },
+      viewAnchor: jsonMemberStart,
+      // And the other way (PLAN-035 D7): the JSON typed here, kept as a document.
+      source: { inputFormat: 'json', view: { outputFormat: 'bitmark' } },
     },
     options,
   );
@@ -79,9 +86,10 @@ const mappingSpec = (type: 'html' | 'xml', mapping: string, language: string): P
   editable: true,
   scroll: 'pinned',
   needsMarkup: true,
-  toBitmark: async (engine, text) => {
+  toBitmark: async (engine, text, writing) => {
     if (text === '') return { bitmark: '', inputStarts: [] };
     const { output, inputStarts } = await engine.convertWithBitStarts(text, {
+      ...writing,
       inputFormat: mapping,
       outputFormat: 'bitmark',
     });
@@ -93,13 +101,17 @@ const mappingSpec = (type: 'html' | 'xml', mapping: string, language: string): P
     // Pretty: one element per line, as the JSON pane is (it reads back to
     // the same bitmark as compact markup). With the parser's anchors
     // (7.19+): each element's `<` (PLAN-028 ET5).
-    const { output, bitStarts, anchors } = await engine.convertWithBitStarts(bitmark, {
+    const { output, bitStarts, anchors, parseMs } = await engine.convertWithBitStarts(bitmark, {
       inputFormat: 'bitmark',
       outputFormat: mapping,
       pretty: true,
     });
-    return { text: output, bitStarts, anchors };
+    return { text: output, bitStarts, anchors, parseMs };
   },
+  // The same text again, as a view (PLAN-042 D1), and the other way: the
+  // markup typed here, kept as a document (D2).
+  view: { outputFormat: mapping, pretty: true },
+  source: { inputFormat: mapping, view: { outputFormat: 'bitmark' } },
 });
 
 /**
@@ -142,12 +154,14 @@ export const createTextPane = (
       scroll: 'pinned',
       needsMarkup: true,
       fromSession: async (engine, s) => {
-        const { output, bitStarts } = await engine.convertWithBitStarts(s.getBitmark(), {
+        const { output, bitStarts, parseMs } = await engine.convertWithBitStarts(s.getBitmark(), {
           inputFormat: 'bitmark',
           outputFormat: 'text',
         });
-        return { text: output, bitStarts };
+        return { text: output, bitStarts, parseMs };
       },
+      // The same text again, as a view (PLAN-042 D1).
+      view: { outputFormat: 'text' },
     },
     options,
   );

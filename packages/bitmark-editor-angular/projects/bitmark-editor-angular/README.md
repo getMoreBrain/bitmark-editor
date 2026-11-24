@@ -49,7 +49,10 @@ Monaco and the parser can each be built-in or injected:
 
 Monaco and the sessions run outside the Angular zone, and the outputs
 re-enter it. Typing in an editor doesn't trigger change detection; each
-document change does, once.
+document change does, once, when the session is a form control or `(change)`
+is bound. A session with neither (a `[value]` only) causes none: read its
+text with `session()?.getBitmark()`, or listen with `session()?.on('change', …)`,
+which runs outside the zone.
 
 ## Quick start
 
@@ -92,7 +95,7 @@ import { BmPaneComponent, BmSessionComponent, BmSplitComponent } from '@gmb/bitm
   `,
 })
 export class App {
-  protected readonly content = new FormControl('[.article]\nHello **World**!', { nonNullable: true });
+  protected readonly content = new FormControl('[.article]\nHello (+bold)World(-bold)!', { nonNullable: true });
 }
 ```
 
@@ -242,6 +245,10 @@ in the core package.
 | `scrollSync` | Take part in scroll linking |
 | `editorOptions` | Options passed to the pane's Monaco editor, for example `{ stickyScroll: { enabled: false } }` |
 | `inactive` | Don't mount the pane |
+
+Output `paneChange`: the pane each time one is made, and `undefined` when it
+goes while the component stays (it became inactive). For a host that works on
+the pane's editor, for example to search over the panes (`createSearchController` in `@gmb/bitmark-editor`).
 
 `bm-split`: `direction`, `row` (default) or `column`.
 `bm-tabs`: `[(active)]`, the index of the open tab, and `tabLabels`. Only

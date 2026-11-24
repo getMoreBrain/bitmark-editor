@@ -2,7 +2,9 @@
  * The panes' own layout and banner styles, once per document. Colours come
  * from CSS custom properties a host (or a custom theme) can set
  * (`--bm-banner-*`, `--bm-sync-line` for the scroll-sync guide line,
- * `--bm-sync-match` for the matching block), with dark and light defaults.
+ * `--bm-sync-match` for the matching block, `--bm-search-match` and
+ * `--bm-search-current` for the search's matches), with dark and light
+ * defaults; the search's default to the Monaco theme's find colours.
  */
 export const PANE_CSS = `
 .bm-pane{display:flex;flex-direction:column;width:100%;height:100%;min-height:0;position:relative}
@@ -16,6 +18,8 @@ export const PANE_CSS = `
 .bm-pane-banner[hidden]{display:none}
 .bm-theme-light .bm-pane-banner,.bm-theme-light.bm-pane .bm-pane-banner{background:var(--bm-banner-bg,#fff8c5);color:var(--bm-banner-fg,#4d2d00)}
 .bm-stale .bm-pane-editor{opacity:var(--bm-stale-opacity,.6)}
+.monaco-editor .bm-search-match{background-color:var(--bm-search-match,var(--vscode-editor-findMatchHighlightBackground,rgba(234,92,0,.33)))}
+.monaco-editor .bm-search-current{background-color:var(--bm-search-current,var(--vscode-editor-findMatchBackground,#515c6a));border:2px solid var(--vscode-editor-findMatchBorder,transparent);padding:1px;box-sizing:border-box}
 `;
 
 export const injectPaneCss = (): void => {

@@ -3,6 +3,7 @@ import type * as MonacoApi from 'monaco-editor';
 
 import type { BitmarkEngine } from '../engine/types.js';
 import { log } from '../log.js';
+import type { BitmarkDocumentTracker } from './documentTracker.js';
 import { attachModelJob } from './modelJob.js';
 import type { CodeEditor, IDisposable, Monaco, TextModel } from './types.js';
 
@@ -59,14 +60,16 @@ export const buildBitmarkMarkers = (
 
 /**
  * Mark a bitmark editor from the parser's diagnostics: after each change
- * (debounced) the whole document is validated and the issues set as
- * markers. A result for an older text is dropped.
+ * (debounced) the text is validated and the issues set as markers. A result
+ * for an older text is dropped. With a `document` (PLAN-035 D4) the engine
+ * answers from the text it already holds, instead of reading it all again.
  */
 export const attachBitmarkDiagnostics = (
   monaco: Monaco,
   editor: CodeEditor,
   engine: () => BitmarkEngine | undefined,
   debounceMs: number = DIAGNOSTICS_DEBOUNCE_MS,
+  document?: BitmarkDocumentTracker,
 ): IDisposable & { refresh(): void } => {
   const set = (model: TextModel, markers: MonacoApi.editor.IMarkerData[]) =>
     monaco.editor.setModelMarkers(model, BITMARK_MARKER_OWNER, markers);
@@ -75,7 +78,16 @@ export const attachBitmarkDiagnostics = (
     debounceMs,
     compute: (text) => {
       const e = engine();
-      return e?.capabilities.diagnostics ? e.diagnostics(text) : undefined;
+      if (!e?.capabilities.diagnostics) return undefined;
+      if (!document?.active) return e.diagnostics(text());
+      return document.current().then((doc) => {
+        if (!doc) return e.diagnostics(text());
+        return doc.diagnostics().catch(() => {
+          // The document failed: the whole text, now and from here on.
+          document.failed(doc);
+          return e.diagnostics(text());
+        });
+      });
     },
     apply: (model, result) =>
       set(model, result ? buildBitmarkMarkers(monaco, result.diagnostics) : []),

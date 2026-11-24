@@ -2,24 +2,29 @@ import type * as MonacoApi from 'monaco-editor';
 
 import { createTextEditor } from '../editor/textEditor.js';
 import { createLatestRunner, SUPERSEDED } from '../engine/latest.js';
-import type { Anchor, BitmarkEngine } from '../engine/types.js';
+import { withParseMs } from '../engine/parseTime.js';
+import type { Anchor, BitmarkEngine, EngineViewOptions } from '../engine/types.js';
 import { attachBitmarkEditor, BitmarkEditorServices } from '../monaco/attach.js';
+import { JSON_SCHEMA_MAX_LINES, setBitmarkJsonSchemaApplies } from '../monaco/jsonSchema.js';
 import { BITMARK_LANGUAGE_ID } from '../monaco/setup.js';
 import { snapAnchorKeys } from '../scroll/anchorKeys.js';
 import { attachBitMarkers, BitMarkers } from '../scroll/bitMarkers.js';
 import { liveBitmarkAnchors } from '../scroll/liveBitmarkAnchors.js';
 import type { AnchorList, ScrollSyncMember } from '../scroll/scrollSyncGroup.js';
 import { createSplitBitStarts, SplitBitStarts } from '../scroll/splitBitStarts.js';
-import { offsetMap } from '../scroll/textChange.js';
+import { moveOffset, offsetMap } from '../scroll/textChange.js';
+import type { SessionView, SessionViewUpdate } from '../session/sessionDocument.js';
 import type { SessionInternals } from '../session/types.js';
 import type {
   BitmarkPane,
   BitmarkSession,
+  BitmarkWritingOptions,
   PaneControl,
   PaneType,
   ToBitmarkResult,
 } from '../session/types.js';
 import { AppliedTheme, applyBitmarkTheme } from '../theme/applyTheme.js';
+import { attachSourceDocument, SourceDocument } from './sourceDocument.js';
 import { injectPaneCss } from './styles.js';
 import { attachSyncView } from './syncView.js';
 
@@ -39,15 +44,42 @@ export interface PaneSpec {
   /** Needs the `full` variant's markup formats (D1). */
   needsMarkup?: boolean;
   /**
-   * Text in this pane → bitmark, and where each bit starts in the text
-   * (pinned in the pane, so typed text links its scrolling by bit).
+   * Text in this pane → bitmark, written as the session's `bitmarkOptions`
+   * say (PLAN-046), and where each bit starts in the text (pinned in the
+   * pane, so typed text links its scrolling by bit).
    */
-  toBitmark?(engine: BitmarkEngine, text: string): Promise<ToBitmarkResult>;
-  /** Regenerate the pane's text from the session. */
+  toBitmark?(
+    engine: BitmarkEngine,
+    text: string,
+    writing: BitmarkWritingOptions | undefined,
+  ): Promise<ToBitmarkResult>;
+  /**
+   * Regenerate the pane's text from the session. `parseMs`: the parser's
+   * time for it, where the engine told it (PLAN-044).
+   */
   fromSession?(
     engine: BitmarkEngine,
     session: SessionInternals,
-  ): Promise<{ text: string; bitStarts?: readonly number[]; anchors?: readonly Anchor[] }>;
+  ): Promise<{
+    text: string;
+    bitStarts?: readonly number[];
+    anchors?: readonly Anchor[];
+    parseMs?: number;
+  }>;
+  /**
+   * The pane's text as a view of the session's document (PLAN-035 D6): the
+   * same text as `fromSession` gives, kept up to date by edits while the
+   * engine has documents.
+   */
+  view?: EngineViewOptions;
+  /** Where an anchor at `offset` of the view's `text` is shown from (as `fromSession` reports its anchors). */
+  viewAnchor?(text: string, offset: number): number;
+  /**
+   * The pane's own text as a document with a bitmark view (PLAN-035 D7): an
+   * edit here reaches the bitmark as the parser's edits, where `toBitmark`
+   * converts the whole text.
+   */
+  source?: { inputFormat: string; view: EngineViewOptions };
 }
 
 export interface PaneOptions {
@@ -61,8 +93,15 @@ export interface PaneOptions {
   errorSlot?: HTMLElement | ((message: string | undefined) => void);
   /** The pane's label (ARIA, mapping report). Default: the session's messages. */
   label?: string;
-  /** After each regeneration that is shown: how long it took (e.g. for a host's timing display). */
-  onRender?: (info: { durationMs: number }) => void;
+  /**
+   * After each regeneration that is shown: how long the parser took for it,
+   * in milliseconds (PLAN-044). The parser's time and nothing else, also
+   * from a worker engine; the panes that follow the session's document by
+   * edits report the same time for one change, which one parse serves. Where
+   * the engine does not tell the parser's time (the Info and Mappings panes,
+   * a host's own engine), it is how long the pane's calls took.
+   */
+  onRender?: (info: { parseMs: number }) => void;
 }
 
 /** Marker owner for a failed conversion of the edited pane (D15). */
@@ -72,6 +111,19 @@ const DEFAULT_EDITOR_OPTIONS: MonacoApi.editor.IStandaloneEditorConstructionOpti
   wordWrap: 'on',
   minimap: { enabled: false },
   scrollBeyondLastLine: false,
+  // No colour swatches (PLAN-038 D1). For them Monaco asks its JSON worker,
+  // on every change, for each schema match in the whole document: 9 ms a bit
+  // with the bitmark schema, and on a large document the worker runs out of
+  // stack ("Maximum call stack size exceeded").
+  colorDecorators: false,
+  // Text is pasted as it is (PLAN-038 D2). With "paste as" on, Monaco starts
+  // a cancellable operation for every paste and rejects the one before it,
+  // unhandled ("Uncaught (in promise) Canceled").
+  pasteAs: { enabled: false },
+  // Typographic quotes, dashes and the like are what a book's text is made
+  // of, not look-alikes to warn about (PLAN-038 D4): no boxes around them and
+  // no banner "This document contains many ambiguous unicode characters".
+  unicodeHighlight: { ambiguousCharacters: false },
 };
 
 /**
@@ -140,14 +192,41 @@ export const createPane = (
       ariaLabel: label,
       ...options.editorOptions,
     },
-    onInput: (text) => {
+    onInput: (text, changes) => {
       if (readOnly) return;
       // The user's own text now wins: drop any catch-up waiting for blur.
       pending = false;
-      s.edit(control, text);
+      viewShown = -1;
+      s.edit(control, text, changes);
     },
+    onEdit: (event) => {
+      if (readOnly || !source) return false;
+      if (!source.edit(event)) return false;
+      pending = false;
+      // Whether or not the edit converts: the view's edits no longer apply to this text.
+      viewShown = -1;
+      moveAnchors(event);
+      return true;
+    },
+    onReplaced: () => source?.drop(),
   });
   const { editor, model } = textEditor;
+
+  // A large JSON document is not checked against the schema (PLAN-039 D2).
+  let schemaSize: MonacoApi.IDisposable | undefined;
+  if (spec.type === 'json') {
+    const uri = model.uri.toString();
+    const apply = () =>
+      setBitmarkJsonSchemaApplies(monaco, uri, model.getLineCount() <= JSON_SCHEMA_MAX_LINES);
+    apply();
+    const listener = model.onDidChangeContent(apply);
+    schemaSize = {
+      dispose: () => {
+        listener.dispose();
+        setBitmarkJsonSchemaApplies(monaco, uri, true);
+      },
+    };
+  }
 
   let services: BitmarkEditorServices | undefined;
   if (spec.services) {
@@ -168,7 +247,8 @@ export const createPane = (
    */
   let anchored = {
     list: [] as AnchorList,
-    text: '',
+    /** The text the offsets are in; `undefined`: not kept (the anchors were moved by the edits themselves). */
+    text: '' as string | undefined,
     version: -1,
     bitmark: '',
   };
@@ -176,10 +256,11 @@ export const createPane = (
     const version = editor.getModel()?.getVersionId() ?? -1;
     if (anchored.list.length > 0 && version !== anchored.version) {
       const text = textEditor.getValue();
-      const move = offsetMap(anchored.text, text);
+      // Without the text they were in, they cannot be moved: the pane then links by its bits.
+      const move = anchored.text === undefined ? undefined : offsetMap(anchored.text, text);
       anchored = {
         ...anchored,
-        list: anchored.list.map((a) => ({ ...a, offset: move(a.offset) })),
+        list: move ? anchored.list.map((a) => ({ ...a, offset: move(a.offset) })) : [],
         text,
         version,
       };
@@ -195,6 +276,34 @@ export const createPane = (
     }
     return anchored.list;
   };
+  /**
+   * The anchors moved by an edit of the user's, as Monaco reports it (PLAN-035
+   * D7): no reading and comparing of the pane's whole text.
+   */
+  const moveAnchors = (event: MonacoApi.editor.IModelContentChangedEvent) => {
+    if (anchored.list.length === 0) return;
+    // Up to date with the text before this edit, or not movable this way.
+    // The event's own version: the changes of one operation arrive together.
+    const before = event.versionId - 1;
+    if (anchored.version !== before || event.isFlush) {
+      anchored = { ...anchored, list: [], text: undefined, version: before + 1 };
+      return;
+    }
+    // In the order given, each in the text the one before left: Monaco tells
+    // the changes of one operation from the last to the first.
+    let list = anchored.list;
+    for (const c of event.changes) {
+      const change = {
+        start: c.rangeOffset,
+        oldEnd: c.rangeOffset + c.rangeLength,
+        newEnd: c.rangeOffset + c.text.length,
+      };
+      list = list.map((a) => ({ ...a, offset: moveOffset(a.offset, change) }));
+    }
+    anchored = { ...anchored, list, text: undefined, version: before + 1 };
+  };
+  // The pane's own text as a document (PLAN-035 D7): made below, once the control exists.
+  let source: SourceDocument | undefined;
   // The bitmark pane's anchors: keys onto the text being typed (PLAN-029 R5).
   const bitmarkAnchors = liveBitmarkAnchors(
     () => editor.getModel()?.getVersionId() ?? -1,
@@ -230,9 +339,8 @@ export const createPane = (
   }
 
   const regenerate = createLatestRunner(async (engine: BitmarkEngine) => {
-    const started = performance.now();
-    const out = await spec.fromSession!(engine, s);
-    return { ...out, durationMs: performance.now() - started };
+    const { value, parseMs } = await withParseMs(() => spec.fromSession!(engine, s));
+    return { ...value, parseMs };
   });
 
   /**
@@ -289,8 +397,143 @@ export const createPane = (
     return applied;
   };
 
-  const render = (opts?: { force?: boolean }) => {
+  /**
+   * The pane as a view of the session's document (PLAN-035 D6). `viewShown`:
+   * the session version whose view output the editor shows, exactly (-1:
+   * some other text). An update's edits apply only to that text; otherwise
+   * the view sends its whole output again.
+   */
+  let view: SessionView | undefined;
+  let viewShown = -1;
+  let viewText = '';
+  /** The whole output was asked for again: edits are skipped until it comes. */
+  let resyncing = false;
+  /** The session version this pane's own edit made (it keeps the user's text for it). */
+  let sourceVersion = -1;
+  /** The whole output asked for is an API change's: shown even where the user has focus. */
+  let resyncForce = false;
+  const resyncView = (force = false) => {
+    resyncForce ||= force;
+    if (resyncing) return;
+    resyncing = true;
+    viewShown = -1;
+    view?.resync();
+  };
+  /**
+   * The view's output is not followed (D1a): its offsets and edits are
+   * places in the text as the parser wrote it, and the pane's model, whose
+   * line ends are LF, would not hold a text with CRLF in it as it is. The
+   * pane converts the whole text instead, as without a view, until another
+   * document is set.
+   */
+  let viewRefused = false;
+  const onViewUpdate = (update: SessionViewUpdate) => {
+    if (disposed) return;
+    if (
+      update.output?.includes('\r\n') ||
+      update.edits.some((edit) => edit.newText.includes('\r\n'))
+    ) {
+      // An API change is shown also where the user has focus, by the whole conversion too.
+      const force = update.force || resyncForce;
+      viewRefused = true;
+      followView();
+      render({ force }, false);
+      return;
+    }
+    const whole = update.output !== undefined;
+    // An API change is the new document: an edit of this pane still being converted is not.
+    if (update.force) source?.drop();
+    const force = update.force || (whole && resyncForce);
+    if (whole) {
+      resyncing = false;
+      resyncForce = false;
+    } else if (resyncing) {
+      resyncForce ||= update.force;
+      return;
+    }
+    // This pane's own edit made the version: it keeps the user's text.
+    if (update.version === sourceVersion && !force) {
+      viewShown = -1;
+      return;
+    }
+    if (!whole && update.base !== viewShown) {
+      resyncView(update.force);
+      return;
+    }
+    if (editor.hasTextFocus() && !force) {
+      // Not overwritten while the user works here: it catches up on blur.
+      viewShown = -1;
+      pending = true;
+      state.notice = undefined;
+      state.renderError = undefined;
+      state.stale = false;
+      showBanner();
+      return;
+    }
+    if (whole) {
+      textEditor.setValue(update.output!, { force: true });
+      viewText = update.output!;
+    } else if (update.edits.length > 0) {
+      viewText = textEditor.applyEdits(update.edits, viewText);
+    }
+    viewShown = update.version;
+    isSource = false;
+    pending = false;
+    if (state.sourceError !== undefined) clearSourceError();
+    state.notice = undefined;
+    state.renderError = undefined;
+    state.stale = false;
+    const anchorAt = spec.viewAnchor;
+    anchored = {
+      list: snapAnchorKeys(update.bitmark, update.anchors ?? []).map((a) => ({
+        key: a.input,
+        offset: anchorAt ? anchorAt(viewText, a.output) : a.output,
+        end: a.end,
+      })),
+      text: viewText,
+      version: editor.getModel()?.getVersionId() ?? -1,
+      bitmark: update.bitmark,
+    };
+    if (update.bitStarts) markers?.set(update.bitStarts);
+    showBanner();
+    options.onRender?.({ parseMs: update.parseMs });
+  };
+
+  /**
+   * The view is held while the pane can show it: a markup pane waits for
+   * the engine's markup formats, as its whole conversion does.
+   */
+  const followView = () => {
+    const wanted = !!spec.view && !viewRefused && !(spec.needsMarkup && !s.engine?.markupFormats);
+    if (wanted === (view !== undefined)) return;
+    if (!wanted) {
+      view!.dispose();
+      view = undefined;
+      viewShown = -1;
+      resyncing = false;
+      resyncForce = false;
+      return;
+    }
+    view = s.openView(spec.view!, {
+      update: onViewUpdate,
+      // No view (any more): the whole text is converted, as without one.
+      lost: () => {
+        if (disposed) return;
+        viewShown = -1;
+        resyncing = false;
+        render();
+      },
+    });
+  };
+
+  const render = (opts?: { force?: boolean }, retryView = true) => {
     const force = !!opts?.force;
+    // Another document: its view is tried again, and shown as an API change is.
+    if (force && viewRefused && retryView) {
+      viewRefused = false;
+      followView();
+      resyncForce = view !== undefined;
+    }
     if (spec.type === 'bitmark') {
       show(s.getBitmark(), force);
       state.stale = false;
@@ -308,10 +551,12 @@ export const createPane = (
       showBanner();
       return;
     }
+    // Its text comes from the session's document, as the view's updates.
+    if (view?.expected) return;
     const version = s.version;
     regenerate(engine).then(
       (out) => {
-        if (out === SUPERSEDED || version !== s.version || disposed) return;
+        if (out === SUPERSEDED || version !== s.version || disposed || view?.expected) return;
         state.notice = undefined;
         state.renderError = undefined;
         state.stale = false;
@@ -329,7 +574,7 @@ export const createPane = (
           markers?.pin(out.text, out.bitStarts);
         }
         showBanner();
-        options.onRender?.({ durationMs: out.durationMs });
+        options.onRender?.({ parseMs: out.parseMs });
       },
       (err: unknown) => {
         if (disposed) return;
@@ -350,7 +595,8 @@ export const createPane = (
   const blurListener = editor.onDidBlurEditorText?.(() => {
     if (!pending || disposed) return;
     pending = false;
-    render();
+    if (view?.expected) resyncView();
+    else render();
   });
 
   const clearSourceError = () => {
@@ -378,7 +624,10 @@ export const createPane = (
       if (disposed) return;
       disposed = true;
       unregister();
+      view?.dispose();
+      source?.dispose();
       blurListener?.dispose();
+      schemaSize?.dispose();
       services?.dispose();
       split?.dispose();
       markers?.dispose();
@@ -401,6 +650,9 @@ export const createPane = (
     engineChanged: () => {
       services?.setEngine(s.engine);
       split?.refresh();
+      source?.drop();
+      viewRefused = false;
+      followView();
       render();
     },
     showEngineError: (error: Error) => {
@@ -412,7 +664,10 @@ export const createPane = (
       if (!error) {
         isSource = true;
         pending = false;
-        realignAnchors();
+        sourceVersion = s.version;
+        viewShown = -1;
+        // With its own document, the anchors moved with the edit itself.
+        if (!source?.active) realignAnchors();
       }
       state.sourceError = error?.message;
       // A JSON syntax error is marked by Monaco's JSON language already.
@@ -444,8 +699,30 @@ export const createPane = (
       theme = next === undefined ? undefined : applyBitmarkTheme(container, next);
     },
     syncViewChanged: () => syncView.refresh(),
+    // The pane's own document writes its bitmark the new way from here on.
+    bitmarkOptionsChanged: () => source?.reopenView(),
   } satisfies PaneControl);
 
+  if (spec.source) {
+    const { inputFormat, view: bitmarkView } = spec.source;
+    // The bitmark it makes is written as the session says (PLAN-046 D2).
+    const ownSpec = { inputFormat, view: () => ({ ...s.bitmarkOptions, ...bitmarkView }) };
+    source = attachSourceDocument(model, () => s.engine, ownSpec, {
+      converted: (bitmark, inputStarts, changes) => {
+        if (disposed) return;
+        s.commitEdit(control, bitmark, () => textEditor.getValue(), changes);
+        if (inputStarts) markers?.set(inputStarts);
+      },
+      failed: (error) => {
+        if (!disposed) s.failEdit(control, error);
+      },
+      // No documents (any more): the whole text is converted, as without one.
+      lost: () => {
+        if (!disposed && !readOnly) s.edit(control, textEditor.getValue());
+      },
+    });
+  }
+  followView();
   // The session sets the first state: rendered, its engine error, or loading.
   const unregister = s.register(control);
   return pane;

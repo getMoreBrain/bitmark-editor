@@ -32,6 +32,17 @@ export const ENGINE_METHODS = [
 ] as const;
 export type EngineMethod = (typeof ENGINE_METHODS)[number];
 
+/** The calls on a document a worker keeps (PLAN-045 D1). */
+export const DOCUMENT_METHODS = [
+  'applyChanges',
+  'setText',
+  'openView',
+  'closeView',
+  'semanticTokens',
+  'diagnostics',
+] as const;
+export type DocumentMethod = (typeof DOCUMENT_METHODS)[number];
+
 /** Start the engine in the worker: load the parser at `url`, two stages. */
 export interface InitRequest {
   type: 'init';
@@ -44,6 +55,35 @@ export interface CallRequest {
   id: number;
   method: EngineMethod;
   args: unknown[];
+}
+
+/**
+ * Open a text as a document (PLAN-045 D1): the worker keeps it under `doc`,
+ * a number the caller chose. Answered as a call: `{ views }`, whether it has
+ * views, or nothing where the worker's engine has no documents.
+ */
+export interface OpenDocumentRequest {
+  type: 'open';
+  id: number;
+  doc: number;
+  text: string;
+  version: number;
+  inputFormat?: string;
+}
+
+/** A call on a document the worker keeps. */
+export interface DocumentRequest {
+  type: 'document';
+  id: number;
+  doc: number;
+  method: DocumentMethod;
+  args: unknown[];
+}
+
+/** Release a document. Not answered. */
+export interface ReleaseDocumentRequest {
+  type: 'release';
+  doc: number;
 }
 
 /** The worker's engine is up (stage 1). */
@@ -74,7 +114,8 @@ export interface FailedMessage {
   error: { name: string; message: string };
 }
 
-export type ToWorker = InitRequest | CallRequest;
+export type ToWorker =
+  InitRequest | CallRequest | OpenDocumentRequest | DocumentRequest | ReleaseDocumentRequest;
 export type FromWorker = ReadyMessage | FeatureMessage | ResultMessage | FailedMessage;
 
 export const serializeError = (e: unknown): { name: string; message: string } =>

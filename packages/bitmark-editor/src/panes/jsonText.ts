@@ -16,11 +16,17 @@ export const jsonTextFor = async (
   engine: BitmarkEngine,
   bitmark: string,
   mode: OutputMode | undefined,
-): Promise<{ text: string; bitStarts?: readonly number[]; anchors?: readonly Anchor[] }> => {
+): Promise<{
+  text: string;
+  bitStarts?: readonly number[];
+  anchors?: readonly Anchor[];
+  /** The parser's time for it, where the engine told it (PLAN-044). */
+  parseMs?: number;
+}> => {
   if (!engine.capabilities.bitPositions || withoutAnchors.has(engine)) {
     return engine.bitmarkToJsonText(bitmark, { mode });
   }
-  const { output, bitStarts, anchors } = await engine.convertWithBitStarts(bitmark, {
+  const { output, bitStarts, anchors, parseMs } = await engine.convertWithBitStarts(bitmark, {
     inputFormat: 'bitmark',
     outputFormat: 'json',
     mode,
@@ -35,5 +41,6 @@ export const jsonTextFor = async (
     text: output,
     bitStarts,
     anchors: anchors.map((a) => ({ ...a, output: jsonMemberStart(output, a.output) })),
+    parseMs,
   };
 };

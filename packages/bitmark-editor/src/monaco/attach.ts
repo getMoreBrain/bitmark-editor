@@ -1,6 +1,7 @@
 import type { BitmarkEngine } from '../engine/types.js';
 import { log } from '../log.js';
 import { attachBitmarkDiagnostics } from './diagnostics.js';
+import { attachBitmarkDocument } from './documentTracker.js';
 import { attachBitmarkHighlighter } from './highlighter.js';
 import { bindModelEngine, setupBitmarkMonaco } from './setup.js';
 import type { CodeEditor, IDisposable, Monaco } from './types.js';
@@ -65,21 +66,34 @@ export const attachBitmarkEditor = (
   bind();
   const modelListener = editor.onDidChangeModel(bind);
 
-  const parts = [
-    options.highlight === false ? undefined : attachBitmarkHighlighter(monaco, editor, get),
-    options.diagnostics === false ? undefined : attachBitmarkDiagnostics(monaco, editor, get),
-  ].filter((p) => p !== undefined);
+  // The text as a document in the engine, where it has them (PLAN-035 D2);
+  // the highlighter and the diagnostics run again once one has opened.
+  const parts: { refresh(): void; dispose(): void }[] = [];
+  const document =
+    options.highlight !== false || options.diagnostics !== false
+      ? attachBitmarkDocument(editor, get, () => {
+          for (const p of parts) p.refresh();
+        })
+      : undefined;
+  if (options.highlight !== false) {
+    parts.push(attachBitmarkHighlighter(monaco, editor, get, undefined, document));
+  }
+  if (options.diagnostics !== false) {
+    parts.push(attachBitmarkDiagnostics(monaco, editor, get, undefined, document));
+  }
 
   return {
     setEngine: (next) => {
       if (next === current) return;
       current = next;
+      document?.refresh();
       for (const p of parts) p.refresh();
     },
     dispose: () => {
       modelListener.dispose();
       unbind?.();
       for (const p of parts) p.dispose();
+      document?.dispose();
     },
   };
 };

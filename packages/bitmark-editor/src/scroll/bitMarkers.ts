@@ -12,6 +12,11 @@ export interface BitMarkers extends IDisposable {
    *   markers are cleared, as they describe text that is gone.
    */
   pin(text: string, bitStarts: readonly number[] | undefined): void;
+  /**
+   * Pin `bitStarts` in the text the editor is known to show (PLAN-035 D6):
+   * as `pin`, without reading the text to compare it.
+   */
+  set(bitStarts: readonly number[]): void;
   /** The markers' current offsets, in order. */
   bitStarts(): number[];
 }
@@ -39,6 +44,12 @@ export const attachBitMarkers = (
       }
       return;
     }
+    set(bitStarts);
+  };
+
+  const set = (bitStarts: readonly number[]): void => {
+    const model = editor.getModel();
+    if (!model) return;
     collection.set(
       bitStarts.map((offset) => {
         const { lineNumber, column } = model.getPositionAt(offset);
@@ -70,5 +81,5 @@ export const attachBitMarkers = (
       .sort((a, b) => a - b);
   };
 
-  return { pin, bitStarts, dispose: () => collection.clear() };
+  return { pin, set, bitStarts, dispose: () => collection.clear() };
 };

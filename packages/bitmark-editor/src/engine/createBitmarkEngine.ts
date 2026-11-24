@@ -1,7 +1,15 @@
 import type { ConvertOptions, Feature } from '@gmb/bitmark-parser';
 
 import { jsonWithBitStarts } from '../json/jsonText.js';
-import { Anchor, BitmarkEngine, BitmarkEngineError, RawParserModule } from './types.js';
+import {
+  Anchor,
+  BitmarkEngine,
+  BitmarkEngineError,
+  EngineDocument,
+  EngineDocumentUpdate,
+  EngineViewUpdate,
+  RawParserModule,
+} from './types.js';
 
 // The string-based API (`convert`, `info`) reports failures by returning an
 // `error: …`-prefixed string rather than throwing.
@@ -55,6 +63,81 @@ const call = <T>(fn: () => T): Promise<T> => {
   }
 };
 
+/** What `fn` answers and how long it took: the parser's own time (PLAN-044 D2). */
+const timed = <T>(fn: () => T): [T, number] => {
+  const started = performance.now();
+  const value = fn();
+  return [value, performance.now() - started];
+};
+
+/** The parser's own error for a call its loaded variant does not have. */
+const isUnsupportedFeature = (e: unknown): boolean =>
+  (e as { name?: unknown } | undefined)?.name === 'UnsupportedFeatureError';
+
+/** A view's update as the editor reads it: bit starts and anchors, as a conversion gives them. */
+const viewUpdate = (update: {
+  view: number;
+  output?: string;
+  edits: EngineViewUpdate['edits'];
+  bitSpans?: { spans: { outputStart?: number; start?: number; inputStart?: number }[] };
+}): EngineViewUpdate => ({
+  view: update.view,
+  ...(update.output !== undefined && { output: update.output }),
+  edits: update.edits,
+  bitStarts: update.bitSpans?.spans.map(spanOutputStart),
+  inputStarts: offsets(update.bitSpans?.spans.map((span) => span.inputStart)),
+  anchors: anchorsOf(update),
+});
+
+type ParserDocument = ReturnType<NonNullable<RawParserModule['createDocument']>>;
+
+/** The answer to a change, with where the text does not parse while it does not. */
+const documentUpdate = (
+  doc: ParserDocument,
+  [views, parseMs]: [readonly Parameters<typeof viewUpdate>[0][] | undefined, number],
+): EngineDocumentUpdate => {
+  const inputError = doc.inputError;
+  return { views: (views ?? []).map(viewUpdate), ...(inputError && { inputError }), parseMs };
+};
+
+/** A parser document behind the engine's async interface (PLAN-035 D1, D6). */
+const engineDocument = (doc: ParserDocument): EngineDocument => ({
+  applyChanges: (version, changes) =>
+    call(() =>
+      documentUpdate(
+        doc,
+        timed(() => doc.applyChanges(version, changes)?.views),
+      ),
+    ),
+  setText: (version, text) =>
+    call(() =>
+      documentUpdate(
+        doc,
+        timed(() => doc.setText(version, text)?.views),
+      ),
+    ),
+  // A document without views (none known, but the session then converts whole texts).
+  ...(typeof doc.openView === 'function' && {
+    openView: (options) =>
+      call(() =>
+        documentUpdate(
+          doc,
+          timed(() => [
+            doc.openView({
+              ...(options as Parameters<typeof doc.openView>[0]),
+              bitSpans: true,
+              bitAnchors: true,
+            }),
+          ]),
+        ),
+      ),
+    closeView: (view) => doc.closeView(view),
+  }),
+  semanticTokens: (range) => call(() => doc.semanticTokens(range, { tokensLayout: 'absolute' })),
+  diagnostics: () => call(() => doc.diagnostics()),
+  dispose: () => doc.free(),
+});
+
 export interface CreateBitmarkEngineOptions {
   /**
    * The variant the host already loaded (PLAN-022 D7). The package never
@@ -104,30 +187,38 @@ export const createBitmarkEngine = (
 
     bitmarkToObjects: (input, opts) => call(() => module.bitmarkToObjects(input, opts)),
     bitmarkToJsonText: (input, opts) =>
-      call(() => jsonWithBitStarts(module.bitmarkToObjects(input, { mode: opts?.mode }))),
+      call(() => {
+        const [json, parseMs] = timed(() =>
+          jsonWithBitStarts(module.bitmarkToObjects(input, { mode: opts?.mode })),
+        );
+        return { ...json, parseMs };
+      }),
     convert: (input, opts) => call(() => throwIfParserError(module.convert(input, opts))),
     convertWithBitStarts: (input, opts: ConvertOptions) =>
       call(() => {
         // An engine without `convertWithDetails` still converts; it just
         // gives no positions (PLAN-018 D2).
         if (!module.convertWithDetails) {
+          const [output, parseMs] = timed(() => module.convert(input, opts));
           return {
-            output: throwIfParserError(module.convert(input, opts)),
+            output: throwIfParserError(output),
             bitStarts: undefined,
             inputStarts: undefined,
             anchors: undefined,
+            parseMs,
           };
         }
         // `bitAnchors` (PLAN-028 D2): a parser that predates it ignores the
         // flag and returns no anchors.
         const details = { ...opts, bitSpans: true, bitAnchors: true };
-        const result = module.convertWithDetails(input, details);
+        const [result, parseMs] = timed(() => module.convertWithDetails!(input, details));
         const { output, bitSpans } = result;
         return {
           output: throwIfParserError(output),
           bitStarts: bitSpans?.spans.map(spanOutputStart),
           inputStarts: offsets(bitSpans?.spans.map((span) => span.inputStart)),
           anchors: anchorsOf(result),
+          parseMs,
         };
       }),
     semanticTokens: (input) =>
@@ -140,6 +231,18 @@ export const createBitmarkEngine = (
       call(() => module.resolve?.(input, position, item, { ...UTF16, ...opts })),
     hover: (input, position) => call(() => module.hover?.(input, position, UTF16)),
     info: (opts) => call(() => (module.info ? throwIfParserError(module.info(opts)) : undefined)),
+    openDocument: (text, version, opts) =>
+      call(() => {
+        if (!module.createDocument) return undefined;
+        try {
+          const inputFormat = (opts?.inputFormat ?? 'bitmark') as 'bitmark';
+          return engineDocument(module.createDocument(text, { inputFormat, version, ...UTF16 }));
+        } catch (e) {
+          // The variant loaded has no documents (`bitmark-json`).
+          if (isUnsupportedFeature(e)) return undefined;
+          throw e;
+        }
+      }),
     dispose: () => listeners.clear(),
   };
   return engine;

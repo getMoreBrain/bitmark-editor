@@ -1,4 +1,4 @@
-export type { TextEditor, TextEditorOptions } from './textEditor.js';
+export type { EditChanges, TextEditor, TextEditorOptions, ViewEdit } from './textEditor.js';
 export {
   createChangeFilter,
   createModelUri,

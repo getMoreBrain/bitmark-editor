@@ -55,7 +55,17 @@ export interface BitmarkSessionProps extends Omit<
 
 /** One document (PLAN-022 D9). Created once; `monaco` and `engine` are read at creation. */
 export const BitmarkSession = (props: BitmarkSessionProps): ReactElement => {
-  const { children, value, theme, syncLine, syncMatch, onChange, onError, onReady } = props;
+  const {
+    children,
+    value,
+    theme,
+    syncLine,
+    syncMatch,
+    bitmarkOptions,
+    onChange,
+    onError,
+    onReady,
+  } = props;
   const [session, setSession] = useState<Session>();
   /** The session's recent reports: a `value` among them is the host's own echo. */
   const echo = useRef(createEchoGuard());
@@ -107,6 +117,12 @@ export const BitmarkSession = (props: BitmarkSessionProps): ReactElement => {
     if (session && syncMatch !== undefined) session.setSyncMatch(syncMatch);
   }, [session, syncMatch]);
 
+  // How bitmark made from another format is written (PLAN-046): the same
+  // options in a new object are no change.
+  useEffect(() => {
+    session?.setBitmarkOptions(bitmarkOptions);
+  }, [session, bitmarkOptions]);
+
   return <SessionContext.Provider value={session}>{children}</SessionContext.Provider>;
 };
 
@@ -124,8 +140,8 @@ export interface BitmarkPaneProps {
   style?: CSSProperties;
   /** The pane, once mounted. */
   onPane?: (pane: Pane | undefined) => void;
-  /** After each regeneration that is shown: how long it took. */
-  onRender?: (info: { durationMs: number }) => void;
+  /** After each regeneration that is shown: how long the parser took for it (ms). */
+  onRender?: (info: { parseMs: number }) => void;
 }
 
 /** One pane of the nearest `<BitmarkSession>`, in a `<div>` the host sizes. */
@@ -157,7 +173,7 @@ export const BitmarkPane = (props: BitmarkPaneProps): ReactElement => {
       scrollSync,
       label,
       editorOptions,
-      onRender: (info: { durationMs: number }) => onRenderRef.current?.(info),
+      onRender: (info: { parseMs: number }) => onRenderRef.current?.(info),
     };
     const pane =
       type === 'bitmark'

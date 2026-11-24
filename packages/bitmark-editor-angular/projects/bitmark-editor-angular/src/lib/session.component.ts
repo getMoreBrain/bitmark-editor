@@ -2,12 +2,14 @@ import {
   Component,
   effect,
   ElementRef,
+  EventEmitter,
   forwardRef,
   inject,
   input,
   NgZone,
   OnDestroy,
   OnInit,
+  Output,
   output,
   signal,
 } from '@angular/core';
@@ -16,6 +18,7 @@ import {
   type BitmarkEngine,
   type BitmarkSession,
   type BitmarkTheme,
+  type BitmarkWritingOptions,
   createBitmarkSession,
   createEchoGuard,
   type EngineSource,
@@ -33,7 +36,8 @@ import { BITMARK_EDITOR_CONFIG } from './config';
  *
  * Monaco and the session run outside the Angular zone, so typing causes no
  * change detection (0 against 122 turns per 21 keystrokes in PLAN-023
- * Phase 0); the outputs re-enter it.
+ * Phase 0); the outputs re-enter it. An edit re-enters it only for a form
+ * control or a `(change)` listener (PLAN-034 D1).
  */
 @Component({
   selector: 'bm-session',
@@ -61,8 +65,14 @@ export class BmSessionComponent implements OnInit, OnDestroy, ControlValueAccess
   readonly syncMatch = input<boolean>();
   /** The JSON schema: an object, a URL, or `false`. */
   readonly schema = input<unknown>();
+  /** How bitmark made from an edit in another pane is written (default: the parser's own). */
+  readonly bitmarkOptions = input<BitmarkWritingOptions>();
 
-  readonly change = output<SessionChange>();
+  /**
+   * The document changed by an edit. An `EventEmitter`, so the session can tell
+   * whether anything listens (PLAN-034 D1).
+   */
+  @Output() readonly change = new EventEmitter<SessionChange>();
   readonly error = output<SessionError>();
   readonly ready = output<BitmarkEngine>();
 
@@ -72,6 +82,8 @@ export class BmSessionComponent implements OnInit, OnDestroy, ControlValueAccess
   readonly disabled = signal(false);
 
   private onChange: (value: string) => void = () => {};
+  /** A form control is bound (`registerOnChange` was called). */
+  private formBound = false;
   private onTouched: () => void = () => {};
   private pendingValue: string | undefined;
   private destroyed = false;
@@ -102,6 +114,10 @@ export class BmSessionComponent implements OnInit, OnDestroy, ControlValueAccess
       const on = this.syncMatch();
       const s = this.session();
       if (s && on !== undefined) s.setSyncMatch(on);
+    });
+    effect(() => {
+      const options = this.bitmarkOptions();
+      this.session()?.setBitmarkOptions(options);
     });
   }
 
@@ -135,6 +151,7 @@ export class BmSessionComponent implements OnInit, OnDestroy, ControlValueAccess
         debounceMs: this.debounceMs(),
         syncLine: this.syncLine(),
         syncMatch: this.syncMatch(),
+        bitmarkOptions: this.bitmarkOptions(),
         schema: this.schema() ?? this.config.schema,
       }),
     );
@@ -143,6 +160,9 @@ export class BmSessionComponent implements OnInit, OnDestroy, ControlValueAccess
       // `[value]` input): not an edit, so not echoed back to the form.
       if (!e.source) return;
       this.echo.remember(e.bitmark);
+      // Re-entering the zone runs the app's change detection: only when a
+      // form control or `(change)` needs the edit (PLAN-034 D1).
+      if (!this.formBound && !this.change.observed) return;
       this.zone.run(() => {
         this.onChange(e.bitmark);
         this.change.emit(e);
@@ -172,6 +192,7 @@ export class BmSessionComponent implements OnInit, OnDestroy, ControlValueAccess
   }
   registerOnChange(fn: (value: string) => void): void {
     this.onChange = fn;
+    this.formBound = true;
   }
   registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
@@ -181,6 +202,6 @@ export class BmSessionComponent implements OnInit, OnDestroy, ControlValueAccess
   }
   /** Called by panes when an editor loses focus. */
   touched(): void {
-    this.zone.run(() => this.onTouched());
+    if (this.formBound) this.zone.run(() => this.onTouched());
   }
 }

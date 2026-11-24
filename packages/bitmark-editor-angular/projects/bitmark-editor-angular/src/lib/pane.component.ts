@@ -1,4 +1,4 @@
-import { Component, computed, effect, ElementRef, inject, input, NgZone, OnDestroy, signal, untracked } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, input, NgZone, OnDestroy, output, signal, untracked } from '@angular/core';
 import {
   type BitmarkPane,
   createBitmarkPane,
@@ -59,8 +59,15 @@ export class BmPaneComponent implements OnDestroy {
   /** Set by an enclosing `bm-tabs` for every tab but the active one. */
   readonly hiddenByTabs = signal(false);
   readonly isInactive = computed(() => this.inactive() || this.hiddenByTabs());
+  /**
+   * The pane, each time one is made, and `undefined` when it goes while the
+   * component stays (it became inactive, or its session went): for a host
+   * that works on the pane's editor, such as a search over the panes.
+   */
+  readonly paneChange = output<BitmarkPane | undefined>();
 
   private pane: BitmarkPane | undefined;
+  private destroyed = false;
 
   constructor() {
     // A new pane for a new session, type, mode, mapping, label or activity.
@@ -104,10 +111,13 @@ export class BmPaneComponent implements OnDestroy {
       });
       const blur = this.zone.runOutsideAngular(() => pane.textEditor.editor.onDidBlurEditorText(() => this.sessionHost.touched()));
       this.pane = pane;
+      this.paneChange.emit(pane);
       onCleanup(() => {
         blur.dispose();
         pane.dispose();
-        if (this.pane === pane) this.pane = undefined;
+        if (this.pane !== pane) return;
+        this.pane = undefined;
+        if (!this.destroyed) this.paneChange.emit(undefined);
       });
     });
     effect(() => {
@@ -126,6 +136,7 @@ export class BmPaneComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.destroyed = true;
     this.pane?.dispose();
     this.pane = undefined;
   }

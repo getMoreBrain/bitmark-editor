@@ -9,13 +9,37 @@ export interface TextChange {
   newEnd: number;
 }
 
+/**
+ * The texts are compared a block at a time first, then character by
+ * character inside the first block that differs (PLAN-043 D5): two stretches
+ * are compared far faster as strings than by a loop over their characters.
+ */
+const BLOCK = 4096;
+
 export const textChange = (before: string, after: string): TextChange => {
+  if (before === after) {
+    return { start: before.length, oldEnd: before.length, newEnd: before.length };
+  }
   const max = Math.min(before.length, after.length);
   let start = 0;
+  while (
+    start + BLOCK <= max &&
+    before.slice(start, start + BLOCK) === after.slice(start, start + BLOCK)
+  ) {
+    start += BLOCK;
+  }
   while (start < max && before.charCodeAt(start) === after.charCodeAt(start)) start++;
+  const room = max - start;
   let end = 0;
   while (
-    end < max - start &&
+    end + BLOCK <= room &&
+    before.slice(before.length - end - BLOCK, before.length - end) ===
+      after.slice(after.length - end - BLOCK, after.length - end)
+  ) {
+    end += BLOCK;
+  }
+  while (
+    end < room &&
     before.charCodeAt(before.length - 1 - end) === after.charCodeAt(after.length - 1 - end)
   ) {
     end++;
@@ -195,4 +219,22 @@ export const textEdits = (before: string, after: string): TextEdit[] => {
     newFrom = newAt + length;
   }
   return edits;
+};
+
+/** Whether `code` is the first half of a UTF-16 surrogate pair, or a CR (of a CRLF). */
+export const splitsPair = (code: number): boolean =>
+  (code >= 0xd800 && code <= 0xdbff) || code === 13;
+
+/**
+ * Where the line after the one at `from` starts in `text`, or -1 on the last
+ * line. A line ends at LF, CRLF or a CR alone, as the parser's documents (and
+ * the LSP) count lines.
+ */
+export const nextLineStart = (text: string, from: number): number => {
+  for (let i = from; i < text.length; i++) {
+    const code = text.charCodeAt(i);
+    if (code === 10) return i + 1;
+    if (code === 13) return text.charCodeAt(i + 1) === 10 ? i + 2 : i + 1;
+  }
+  return -1;
 };

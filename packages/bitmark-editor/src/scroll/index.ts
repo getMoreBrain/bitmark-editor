@@ -6,12 +6,14 @@ export { buildKnots, mapPosition, mapScrollTop } from './mapScrollTop.js';
 export type {
   AnchorList,
   JoinOptions,
+  JoinViewOptions,
   MatchRange,
   MemberAnchors,
   ScrollSyncEditor,
   ScrollSyncGroup,
   ScrollSyncGroupOptions,
   ScrollSyncMember,
+  ScrollSyncView,
 } from './scrollSyncGroup.js';
 export { BITMARK_ANCHORS, createScrollSyncGroup } from './scrollSyncGroup.js';
 export type { SplitBitStarts } from './splitBitStarts.js';

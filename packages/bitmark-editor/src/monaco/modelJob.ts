@@ -32,8 +32,12 @@ export const debounce = (fn: () => void, ms: number) => {
 export interface ModelJobOptions<R> {
   editor: CodeEditor;
   debounceMs: number;
-  /** Compute for this model text. `undefined`: nothing to apply (no engine, no capability). */
-  compute: (text: string) => Promise<R> | undefined;
+  /**
+   * Compute for this model's text, which `text()` reads (once): a job that
+   * does not need it does not pay for it. `undefined`: nothing to apply (no
+   * engine, no capability).
+   */
+  compute: (text: () => string) => Promise<R> | undefined;
   /** Apply a result that is still current for `model`. */
   apply: (model: TextModel, result: R) => void;
   /** Nothing to compute (no engine): clear what was applied. */
@@ -54,7 +58,7 @@ export const attachModelJob = <R>(options: ModelJobOptions<R>): IDisposable & { 
     async (
       model: TextModel,
       version: number,
-      text: string,
+      text: () => string,
     ): Promise<{ model: TextModel; version: number; result: R } | undefined> => {
       const pending = options.compute(text);
       if (!pending) return undefined;
@@ -66,7 +70,10 @@ export const attachModelJob = <R>(options: ModelJobOptions<R>): IDisposable & { 
     const model = editor.getModel();
     if (!model || disposed) return;
     const version = model.getVersionId();
-    latest(model, version, model.getValue()).then(
+    // Read late, the text may be a later version's: the result is then dropped as stale.
+    let read: string | undefined;
+    const text = () => (read ??= model.getValue());
+    latest(model, version, text).then(
       (out) => {
         if (disposed || out === SUPERSEDED) return;
         if (out === undefined) {

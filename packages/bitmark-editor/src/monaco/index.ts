@@ -17,10 +17,13 @@ export {
   DIAGNOSTICS_DEBOUNCE_MS,
   markerSeverity,
 } from './diagnostics.js';
+export type { BitmarkDocumentTracker } from './documentTracker.js';
+export { attachBitmarkDocument } from './documentTracker.js';
 export {
   attachBitmarkHighlighter,
   buildBitmarkDecorations,
   HIGHLIGHT_DEBOUNCE_MS,
+  highlightRange,
 } from './highlighter.js';
 export {
   bindBitmarkJsonSchema,

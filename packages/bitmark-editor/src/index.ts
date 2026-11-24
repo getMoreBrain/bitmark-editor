@@ -5,5 +5,6 @@ export * from './json/jsonText.js';
 export * from './monaco/index.js';
 export * from './panes/index.js';
 export * from './scroll/index.js';
+export * from './search/index.js';
 export * from './session/index.js';
 export * from './theme/index.js';

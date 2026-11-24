@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.5.0 (2026-11-24)
+
+### Updated
+
+- Session
+- Panes
+- Monaco integration
+- Parser engine
+- Scroll sync
+- Custom elements
+- React adapter
+- Core
+- Angular wrapper
+- README
+
+**Packages:** [`@gmb/bitmark-editor@0.5.0`](https://www.npmjs.com/package/@gmb/bitmark-editor/v/0.5.0), [`@gmb/bitmark-editor-angular@0.5.0`](https://www.npmjs.com/package/@gmb/bitmark-editor-angular/v/0.5.0)
+
 ## 0.4.2 (2026-11-03)
 
 ### Updated

@@ -1,6 +1,22 @@
 import { parserCdnUrl } from '../loadBitmarkEngine.js';
-import { BitmarkEngine, BitmarkEngineError, EngineCapabilities, Feature } from '../types.js';
-import { EngineMethod, EnginePort, FromWorker, ResultMessage } from './protocol.js';
+import {
+  BitmarkEngine,
+  BitmarkEngineError,
+  EngineCapabilities,
+  EngineDocument,
+  Feature,
+} from '../types.js';
+import {
+  CallRequest,
+  DocumentMethod,
+  DocumentRequest,
+  EngineMethod,
+  EnginePort,
+  FromWorker,
+  OpenDocumentRequest,
+  ReleaseDocumentRequest,
+  ResultMessage,
+} from './protocol.js';
 
 /**
  * Methods on the fast lane: what the editor needs on every keystroke and
@@ -25,12 +41,24 @@ export interface CreateBitmarkWorkerEngineOptions {
   feature?: Feature;
 }
 
+/** A message that is answered: the lane gives it its `id`. */
+type Request =
+  Omit<CallRequest, 'id'> | Omit<OpenDocumentRequest, 'id'> | Omit<DocumentRequest, 'id'>;
+
 interface Lane {
   port: EnginePort;
   feature: Feature;
   /** Reject `ready` and every pending call; later calls reject at once. */
   fail(error: Error): void;
-  call(method: EngineMethod, args: unknown[]): Promise<unknown>;
+  /** Send `request` and resolve its answer. */
+  request(request: Request): Promise<unknown>;
+  /** Send a message that is not answered. */
+  post(message: ReleaseDocumentRequest): void;
+  /**
+   * The documents the lane's worker keeps (PLAN-045): each is told here
+   * when the worker lost it.
+   */
+  documents: Set<() => void>;
   ready: Promise<{ version: string; feature: Feature; capabilities: EngineCapabilities }>;
 }
 
@@ -65,14 +93,22 @@ const openLane = (
       for (const p of pending.values()) p.reject(error);
       pending.clear();
     },
-    call(method, args) {
+    request(request) {
       if (dead) return Promise.reject(dead);
       const id = ++nextId;
       return new Promise((resolve, reject) => {
         pending.set(id, { resolve, reject });
-        port.postMessage({ type: 'call', id, method, args });
+        port.postMessage({ ...request, id });
       });
     },
+    post(message) {
+      if (!dead) port.postMessage(message);
+    },
+    documents: new Set(),
+  };
+  /** The worker no longer has the documents it kept, or cannot be trusted to (PLAN-045 D4). */
+  const loseDocuments = () => {
+    for (const lost of [...lane.documents]) lost();
   };
   port.addEventListener('message', (event: MessageEvent) => {
     const message = event.data as FromWorker;
@@ -82,6 +118,8 @@ const openLane = (
       resolveReady(message);
     } else if (message.type === 'feature') {
       lane.feature = message.feature;
+      // Another variant is another parser: the worker gave its documents up.
+      loseDocuments();
       onFeature();
     } else if (message.type === 'failed') {
       rejectReady(new BitmarkEngineError(message.error.message));
@@ -111,6 +149,8 @@ const openLane = (
     else {
       for (const p of pending.values()) p.reject(error);
       pending.clear();
+      // What became of a document whose call was lost is not known.
+      loseDocuments();
     }
   };
   port.addEventListener('error', onError as (e: MessageEvent) => void);
@@ -124,7 +164,8 @@ const openLane = (
  * D14): one worker for the fast lane (tokens, diagnostics, completion,
  * hover, bit splits) and one for conversions. Resolves once both workers
  * have loaded the parser (stage 1); `feature` follows stage 2 once both
- * lanes have it.
+ * lanes have it. The workers keep the documents (PLAN-045), so the
+ * incremental work is theirs too.
  *
  * Calls are not coalesced here: one engine can serve several documents, so
  * "the latest call" is the caller's to decide (`createLatestRunner`).
@@ -169,7 +210,60 @@ export const createBitmarkWorkerEngine = async (
   const call =
     <R>(method: EngineMethod) =>
     (...args: unknown[]): Promise<R> =>
-      (FAST_LANE.has(method) ? fast : slow).call(method, args) as Promise<R>;
+      (FAST_LANE.has(method) ? fast : slow).request({ type: 'call', method, args }) as Promise<R>;
+
+  /**
+   * A document kept in a worker (PLAN-045): an editor's own on the fast
+   * lane, where its colours and diagnostics never wait behind a conversion;
+   * one opened for its views on the other, beside the conversions it
+   * replaces (D2). Its calls reach the worker in the order they are made.
+   */
+  let documents = 0;
+  const openDocument: BitmarkEngine['openDocument'] = async (text, version, opts) => {
+    const lane = opts?.views ? slow : fast;
+    const doc = ++documents;
+    let opened: { views: boolean } | undefined;
+    try {
+      opened = (await lane.request({
+        type: 'open',
+        doc,
+        text,
+        version,
+        inputFormat: opts?.inputFormat,
+      })) as typeof opened;
+    } catch (e) {
+      // The answer was lost, not the request: the worker may hold the document.
+      lane.post({ type: 'release', doc });
+      throw e;
+    }
+    // The worker's parser, or its variant, has no documents.
+    if (!opened) return undefined;
+    let gone: string | undefined;
+    const releaseDocument = (why: string) => {
+      if (gone) return;
+      gone = why;
+      lane.documents.delete(lost);
+      lane.post({ type: 'release', doc });
+    };
+    const lost = () => releaseDocument('the worker lost the document');
+    lane.documents.add(lost);
+    const on = <R>(method: DocumentMethod, ...args: unknown[]): Promise<R> =>
+      gone
+        ? Promise.reject(new BitmarkEngineError(gone))
+        : (lane.request({ type: 'document', doc, method, args }) as Promise<R>);
+    const proxy: EngineDocument = {
+      applyChanges: (v, changes) => on('applyChanges', v, changes),
+      setText: (v, next) => on('setText', v, next),
+      ...(opened.views && {
+        openView: (options) => on('openView', options),
+        closeView: (view) => void on('closeView', view).catch(() => undefined),
+      }),
+      semanticTokens: (range) => on('semanticTokens', range),
+      diagnostics: () => on('diagnostics'),
+      dispose: () => releaseDocument('the document was released'),
+    };
+    return proxy;
+  };
 
   return {
     version: first.version,
@@ -197,6 +291,7 @@ export const createBitmarkWorkerEngine = async (
     resolve: call('resolve'),
     hover: call('hover'),
     info: call('info'),
+    openDocument,
     dispose: () => {
       listeners.clear();
       end();
